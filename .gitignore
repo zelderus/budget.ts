@@ -1,7 +1,9 @@
 .DS_Store
 *.log
 node_modules
+public
 build
+src/scripts/_prebuild
 *.node
 *.orig
 .idea
