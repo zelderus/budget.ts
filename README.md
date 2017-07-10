@@ -10,8 +10,8 @@
 
 Сборка
 --------
+- установите `nodejs` и `npm`
 - установка всех компонентов `npm install`
-- установка типов модулей `npm install --save @types/react @types/react-dom`
 
 Публикация
 --------
