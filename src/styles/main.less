@@ -16,13 +16,13 @@
 *******************/
 
 // обертка всего приложения
-.AppWrapper { max-width: 1200px; margin: 0 auto; font: 400 14px 'MyriadPro_Cond', sans-serif; color: #000;}
+.AppWrapper { max-width: 1200px; margin: 0 auto; padding: 10px; font: 400 14px 'MyriadPro_Cond', sans-serif; color: #000;}
 // описание приложения
-.AppDesc {margin: 10px; padding: 8px 12px; border: 1px dashed #aaa; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; background-color: #D5EDF5;}
+.AppDesc { margin: 0 0 20px 0; padding: 8px 12px; border: 1px dashed #aaa; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; background-color: #D5EDF5;}
 // в разработке
-.MainDomNotYet {margin: 10px; padding: 8px 12px; text-align: center; color:#801111; border: 1px dashed #AD1717; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; background-color: #F2DFDF;}
+.MainDomNotYet { padding: 8px 12px; text-align: center; color:#801111; border: 1px dashed #AD1717; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; background-color: #F2DFDF;}
 // логи
-.LogPanel {overflow: hidden;margin: 10px; padding: 4px 12px; border: 1px dashed #aaa; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; background-color: #EBF0DD; color: #111; font-size: 10px;}
+.LogPanel {overflow: hidden;margin: 10px 0; padding: 4px 12px; border: 1px dashed #aaa; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; background-color: #EBF0DD; color: #111; font-size: 10px;}
 
 
 /********************
@@ -31,12 +31,29 @@
 *
 *******************/
 
-.MainDom { margin: 10px; padding: 4px; border: 1px solid #aaa;}
+
+// основные кнопки
+.ControlPanel {margin:5px 0; padding: 4px; border-top: 2px solid #ddd; clear: both;overflow: hidden;}
+.ControlPanel .Buttons {}
+.ControlPanel .Buttons .Button {float: left; margin: 6px; padding: 6px;text-align: center; border: 1px solid #da0; cursor: pointer; background-color: #da1;color: #fff;}
+.ControlPanel .Buttons .Button:hover {background-color: #d81;}
+
+
+// основная часть приложения
+.MainPanel { margin: 0; padding: 0; border: 1px dashed #aaa; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;}
 
 
 
-.MainControlPanel {padding: 4px; border-top: 2px solid #ddd; clear: both;overflow: hidden;}
-.MainControlPanel .Buttons {}
-.MainControlPanel .Buttons .Button {float: left; margin: 6px; padding: 6px;text-align: center; border: 1px solid #da0; cursor: pointer; background-color: #da1;color: #fff;}
-.MainControlPanel .Buttons .Button:hover {background-color: #d81;}
+
+
+
+
+
+
+
+
+
+
+
+
 

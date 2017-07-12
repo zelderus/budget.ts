@@ -2,7 +2,7 @@ module.exports = {
     entry: "./src/scripts/index",
     output: {
         filename: "bundle.js",
-        path: __dirname + "/src/scripts/_prebuild"
+        path: __dirname + "/src/_prebuild"
     },
 
     devtool: "source-map",

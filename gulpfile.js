@@ -15,7 +15,13 @@ var path = {
         'src/styles/ext.less'
     ],
     destCssFile: 'main.css',
-	sourceAppFile: 'src/scripts/_prebuild/bundle.js', // собранный файл из webpack
+    scriptsForWatch: [
+        'src/scripts/**/*.ts',
+        'src/scripts/**/*.tsx',
+        'src/scripts/**/*.js',
+        'src/scripts/**/*.json',
+    ],
+	sourceAppFile: 'src/_prebuild/bundle.js', // собранный файл из webpack
 	externalJsFiles: [ // внешние модули, которые необходимо переложить в публичную папку
 		'node_modules/react/dist/react.min.js',
 		'node_modules/react-dom/dist/react-dom.min.js'
@@ -94,6 +100,18 @@ gulp.task('build:dev', ['scripts:dev', 'styles'], function(){
 gulp.task('build:release', ['scripts:release', 'styles', 'external:js'], function(){
 
 });
+
+
+
+//
+// Watchers
+//
+gulp.task('watch', function(){
+    gulp.watch(path.lessFiles, ['styles']);
+    gulp.watch(path.scriptsForWatch, ['scripts:dev']);
+});
+
+
 
 // default
 gulp.task('default', ['build:dev'], function(){
