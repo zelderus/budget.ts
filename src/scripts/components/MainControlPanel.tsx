@@ -1,7 +1,6 @@
 
 
 import * as React from "react";
-import Actions from './../actions/Actions';
 import View from './../flux/View';
 import AppStore from './../stores/AppStore';
 
@@ -26,7 +25,7 @@ export class MainControlPanel extends View<IMainControlPanelProps, IMainControlP
             
         };
     }
-    
+
 
 
     ///
@@ -34,10 +33,10 @@ export class MainControlPanel extends View<IMainControlPanelProps, IMainControlP
     ///
 
     private onButtonAdd(){
-        Actions.addItem({t:'bebebeee'});
+        this.getActionCreator().addItem({t:'bebebeee'});
     }
     private onButtonDelete(){
-        Actions.deleteItem(null);
+        this.getActionCreator().deleteItem(null);
     }
 
 

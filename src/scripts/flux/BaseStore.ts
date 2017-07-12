@@ -51,7 +51,7 @@ export class BaseStore implements StoreFlux.IStore {
      * @param obj 
      */
     public onDispatch(type: number, obj: any):boolean {
-        console.log("'" + this.__myName + "' не переопределил метод 'onDispatch' из базового BaseStore");
+        FluxUtils.logError("'" + this.__myName + "' не переопределил метод 'onDispatch' из базового BaseStore");
         return false;
         /*
         * Must be like:

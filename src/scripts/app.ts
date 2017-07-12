@@ -26,7 +26,6 @@ export class ZeApp{
         let mainDiv = document.getElementById(mainDivId);
         /*** 
          * Статические вечные слои. Они никогда не меняются и незачем их рендерить React'ом.
-         * А вот, контент их уже с использованием React.
          * **/
         //- оборачиваем
         let wrapDiv = document.createElement('div');
@@ -48,10 +47,7 @@ export class ZeApp{
      * Все хранилища приложения.
      */
     private getStores(): StoreFlux.IStore[] {
-        let arr = [];
-        arr.push(AppStore);
-
-        return arr;
+        return [AppStore];
     }
 
 

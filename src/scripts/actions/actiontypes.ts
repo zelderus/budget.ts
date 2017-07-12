@@ -1,8 +1,10 @@
 
 
 enum ActionTypes {
-  ADD_ITEM = 1,
-  DELETE_ITEM = 2,
+  LOG = 1,
+  
+  ADD_ITEM = 10,
+  DELETE_ITEM = 11,
 
 };
 

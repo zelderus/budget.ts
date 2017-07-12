@@ -2,6 +2,7 @@
 import * as React from "react";
 import FluxUtils from './../flux/Utils';
 import FluxStore from './../flux/Store';
+import * as Actions from './../actions/Actions';
 
 
 /**
@@ -15,10 +16,11 @@ export class View<P, S> extends React.Component<P, S> {
     constructor(props: any, stores: FluxStore.IStore[]){
         super(props);
         this.__myName = FluxUtils.getClassName(this);
-        // устанавливаем состояния
-        this.state = this.getState();
         // Сторы, на которые подписываемся
         this.__stores = stores;
+
+        // устанавливаем состояния - !!! выполняется последним, после всей инициализации объекта !!!
+        this.state = this.getState(); // такая форма записи обновления состояний позволительна только в конструкторе вьюшек
     }
 
 
@@ -56,14 +58,26 @@ export class View<P, S> extends React.Component<P, S> {
 
     /**
      * Интересующие нас состояния (получаем их строго из Сторов)
+     * Если наследующая вьюшка слушает Сторы, то обязана переопределить этот метод и вернуть необходимый объект.
      */
     protected getState() : S {
         if (this._hasAnyStore()) {
             let storeNames = this.__stores.map(s => FluxUtils.getClassName(s));
-            console.log("View '" + this.__myName + "' не переопределил метод 'getState', в котором слушает состояния из Сторов, хотя подписался на '"+storeNames+"'");
+            FluxUtils.logError("Вьюшка '" + this.__myName + "' не переопределила метод 'getState', в котором слушает состояния из Сторов, хотя подписалась на '"+storeNames+"'");
         }
         return null;
     }
+
+
+    /**
+     * ActionCreator - система сообщений, через которую все компоненты оповещают приложение о новых событиях в одном направлении.
+     * - этот метод можно использовать, если лень импортировать пространство имен ('import Actions from './actions/Actions';')
+     */
+    protected getActionCreator(): Actions.Actions.ActionCreator {
+        return Actions.default;
+    }
+
+
 
 
     ///

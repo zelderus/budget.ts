@@ -1,13 +1,14 @@
 
-//import * as React from "react";
-//import * as ReactDOM from "react-dom";
 
 import StoreFlux from './../flux/store';
 import BaseStore from './../flux/BaseStore';
 import ActionTypes from './../actions/ActionTypes';
 
 
-
+/**
+ * Основное хранилище приложения.
+ * Глобальные модели состояний.
+ */
 export class AppStore extends BaseStore {
 
     _logTextValue: string;
@@ -15,12 +16,12 @@ export class AppStore extends BaseStore {
     constructor() {
         super();
 
-        this._logTextValue = "лог строка";
+        this._logTextValue = "";
     }
 
 
     //
-    // Функции интерфес для Вьюшек.
+    // Функции интерфейсы для Вьюшек.
     // Эти данные для их состояний. При изменении которых, Вьюшки обновляются.
     //
 
@@ -28,7 +29,7 @@ export class AppStore extends BaseStore {
         return this._logTextValue;
     }
 
-    
+
 
 
     /**
@@ -39,11 +40,14 @@ export class AppStore extends BaseStore {
      */
     onDispatch(type: number, obj: any):boolean {
         switch(type) {
+            case ActionTypes.LOG:
+                this._logTextValue = obj;            
+                break;
             case ActionTypes.ADD_ITEM:
-                this._logTextValue = "adding..";
+                // TODO: 
                 break;
             case ActionTypes.DELETE_ITEM:
-                this._logTextValue = "deleting..";
+                // TODO: 
                 break;
             default:
                 return true;
