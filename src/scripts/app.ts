@@ -1,54 +1,70 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import {AppDescWidget} from "./widgets/AppDesc";
+import AppWidget from "./widgets/MainAppWidget";
 
-//import * as DescWidget from "./widgets/appdesc";
-import {AppDescWidget} from "./widgets/appdesc";
-import * as AppWidget from "./widgets/appnotyet";
+
+import Actions from './actions/Actions';
+import Dispatcher from './flux/Dispatcher';
+import StoreFlux from './flux/store';
+
+import AppStore from './stores/AppStore';
+
+
+
 
 /**
  * Приложение.
  */
 export class ZeApp{
-    _mainDiv: HTMLElement;
-    _wrapDiv: HTMLElement;
-    _emptyStr: string;
     _descDiv: HTMLElement;
     _appDiv: HTMLElement;
 
-    _widgetDescription: IWidget;
-    _widgetApp: IWidget;
 
     constructor(mainDivId: string){
-        this._mainDiv = document.getElementById(mainDivId);
+        let mainDiv = document.getElementById(mainDivId);
+        /*** 
+         * Статические вечные слои. Они никогда не меняются и незачем их рендерить React'ом.
+         * А вот, контент их уже с использованием React.
+         * **/
         //- оборачиваем
-        this._wrapDiv = document.createElement('div');
-        this._mainDiv.appendChild(this._wrapDiv);
-        this._mainDiv.className += " AppWrapper";
-
+        let wrapDiv = document.createElement('div');
+        mainDiv.appendChild(wrapDiv);
+        mainDiv.className += " AppWrapper";
         //- слой для описания
         this._descDiv = document.createElement('div');
-        this._wrapDiv.appendChild(this._descDiv);
+        wrapDiv.appendChild(this._descDiv);
         //- слой для приложения
         this._appDiv = document.createElement('div');
-        this._wrapDiv.appendChild(this._appDiv);
-
-        this.initWidgets();
+        wrapDiv.appendChild(this._appDiv);
     }
 
 
-    // инициализация виджетов
-    private initWidgets(){
-        this._widgetDescription = new AppDescWidget(this._descDiv);
-        this._widgetApp = new AppWidget.AppNotYetWidget(this._appDiv);
+
+
+
+    /**
+     * Все хранилища приложения.
+     */
+    private getStores(): StoreFlux.IStore[] {
+        let arr = [];
+        arr.push(AppStore);
+
+        return arr;
     }
 
 
 
     public start(){
-        this._widgetDescription.draw();
-        this._widgetApp.draw();
-        // TODO:
+        // инициализируем диспетчера
+        Dispatcher.initStores(this.getStores());
+        // основные виджеты
+        let widgetDescription = new AppDescWidget(this._descDiv);
+        let widgetApp = new AppWidget(this._appDiv);
+        // отображаем виджеты
+        widgetDescription.draw();
+        widgetApp.draw();
     }
 
 

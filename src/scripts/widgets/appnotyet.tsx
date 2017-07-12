@@ -20,3 +20,5 @@ export class AppNotYetWidget implements IWidget {
 
 
 }
+
+export default AppNotYetWidget;
