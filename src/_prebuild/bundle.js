@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 11);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -71,56 +71,6 @@ module.exports = React;
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var FluxUtils;
-(function (FluxUtils) {
-    /**
-     * Имя класса.
-     */
-    function getClassName(obj) {
-        var funcNameRegex = /function (.{1,})\(/;
-        var results = (funcNameRegex).exec((obj).constructor.toString());
-        return (results && results.length > 1) ? results[1] : "";
-    }
-    FluxUtils.getClassName = getClassName;
-    /**
-     * GUID.
-     */
-    function guidGenerator() {
-        var S4 = function () {
-            return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-        };
-        return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
-    }
-    FluxUtils.guidGenerator = guidGenerator;
-    function logStyle(msg, style) {
-        if (!console)
-            return;
-        if (!style)
-            style = 'background: #F22; color: #FFFF66; padding: 0 4px;';
-        console.log("%c" + msg, style);
-    }
-    FluxUtils.logStyle = logStyle;
-    function logRed(msg) { logStyle(msg, 'background: #F22; color: #FFFF66; padding: 0 4px;'); }
-    FluxUtils.logRed = logRed;
-    function logGreen(msg) { logStyle(msg, 'background: #ECF8EC; color: #339933; padding: 0 4px;'); }
-    FluxUtils.logGreen = logGreen;
-    function logYellow(msg) { logStyle(msg, 'background: #FFFAE5; color: #FF7B24; padding: 0 4px;'); }
-    FluxUtils.logYellow = logYellow;
-    function log(msg) { logYellow(msg); }
-    FluxUtils.log = log;
-    function logError(msg) { logRed(msg); }
-    FluxUtils.logError = logError;
-})(FluxUtils || (FluxUtils = {}));
-exports.default = FluxUtils;
-
-
-/***/ }),
-/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -137,8 +87,8 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
-var Utils_1 = __webpack_require__(1);
-var Actions = __webpack_require__(5);
+var Utils_1 = __webpack_require__(3);
+var Actions = __webpack_require__(6);
 /**
  * Вьюшка.
  */
@@ -217,7 +167,126 @@ exports.default = View;
 
 
 /***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var BaseStore_1 = __webpack_require__(20);
+var ActionTypes_1 = __webpack_require__(7);
+/**
+ * Основное хранилище приложения.
+ * Глобальные модели состояний.
+ */
+var AppStore = (function (_super) {
+    __extends(AppStore, _super);
+    function AppStore() {
+        var _this = _super.call(this) || this;
+        _this._logTextValue = "";
+        _this._navIndex = 1;
+        return _this;
+    }
+    //
+    // Функции интерфейсы для Вьюшек.
+    // Эти данные для их состояний. При изменении которых, Вьюшки обновляются.
+    //
+    AppStore.prototype.getLogText = function () { return this._logTextValue; };
+    AppStore.prototype.getNavigationIndex = function () { return this._navIndex; };
+    /**
+     * Обрабатываем сообщения от диспетчера.
+     * Обновляем модели данных, обращаемся к серверу.
+     * @param type
+     * @param obj
+     */
+    AppStore.prototype.onDispatch = function (type, obj) {
+        switch (type) {
+            case ActionTypes_1.default.LOG:
+                this._logTextValue = obj;
+                break;
+            case ActionTypes_1.default.NAVIGATION:
+                this._navIndex = obj;
+                break;
+            case ActionTypes_1.default.ADD_ITEM:
+                // TODO: 
+                break;
+            case ActionTypes_1.default.DELETE_ITEM:
+                // TODO: 
+                break;
+            default:
+                return true;
+        }
+        this.emitChange();
+        return true;
+    };
+    return AppStore;
+}(BaseStore_1.default));
+exports.AppStore = AppStore;
+exports.default = new AppStore;
+
+
+/***/ }),
 /* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var FluxUtils;
+(function (FluxUtils) {
+    /**
+     * Имя класса.
+     */
+    function getClassName(obj) {
+        var funcNameRegex = /function (.{1,})\(/;
+        var results = (funcNameRegex).exec((obj).constructor.toString());
+        return (results && results.length > 1) ? results[1] : "";
+    }
+    FluxUtils.getClassName = getClassName;
+    /**
+     * GUID.
+     */
+    function guidGenerator() {
+        var S4 = function () {
+            return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+        };
+        return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+    }
+    FluxUtils.guidGenerator = guidGenerator;
+    function logStyle(msg, style) {
+        if (!console)
+            return;
+        if (!style)
+            style = 'background: #F22; color: #FFFF66; padding: 0 4px;';
+        console.log("%c" + msg, style);
+    }
+    FluxUtils.logStyle = logStyle;
+    function logRed(msg) { logStyle(msg, 'background: #F22; color: #FFFF66; padding: 0 4px;'); }
+    FluxUtils.logRed = logRed;
+    function logGreen(msg) { logStyle(msg, 'background: #ECF8EC; color: #339933; padding: 0 4px;'); }
+    FluxUtils.logGreen = logGreen;
+    function logYellow(msg) { logStyle(msg, 'background: #FFFAE5; color: #FF7B24; padding: 0 4px;'); }
+    FluxUtils.logYellow = logYellow;
+    function log(msg) { logYellow(msg); }
+    FluxUtils.log = log;
+    function logError(msg) { logRed(msg); }
+    FluxUtils.logError = logError;
+})(FluxUtils || (FluxUtils = {}));
+exports.default = FluxUtils;
+
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -407,20 +476,20 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports) {
 
 module.exports = ReactDOM;
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var ActionTypes_1 = __webpack_require__(6);
-var Dispatcher_1 = __webpack_require__(7);
+var ActionTypes_1 = __webpack_require__(7);
+var Dispatcher_1 = __webpack_require__(8);
 /**
  *      Action Creator - методы, как singleton - доступны из всего приложения
  *  Все действия приложения, которые через диспетчера оповестят интересующихся
@@ -436,6 +505,10 @@ var Actions;
         }
         ActionCreator.prototype.log = function (msg) {
             Dispatcher_1.default.dispatch(ActionTypes_1.default.LOG, msg);
+        };
+        ActionCreator.prototype.navigation = function (navIndex) {
+            Dispatcher_1.default.dispatch(ActionTypes_1.default.NAVIGATION, navIndex);
+            this.log("навигация: " + navIndex);
         };
         ActionCreator.prototype.addItem = function (item) {
             Dispatcher_1.default.dispatch(ActionTypes_1.default.ADD_ITEM, item);
@@ -454,7 +527,7 @@ exports.default = new Actions.ActionCreator;
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -463,15 +536,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var ActionTypes;
 (function (ActionTypes) {
     ActionTypes[ActionTypes["LOG"] = 1] = "LOG";
-    ActionTypes[ActionTypes["ADD_ITEM"] = 10] = "ADD_ITEM";
-    ActionTypes[ActionTypes["DELETE_ITEM"] = 11] = "DELETE_ITEM";
+    ActionTypes[ActionTypes["NAVIGATION"] = 10] = "NAVIGATION";
+    ActionTypes[ActionTypes["ADD_ITEM"] = 50] = "ADD_ITEM";
+    ActionTypes[ActionTypes["DELETE_ITEM"] = 51] = "DELETE_ITEM";
 })(ActionTypes || (ActionTypes = {}));
 ;
 exports.default = ActionTypes;
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -505,72 +579,6 @@ var Flux;
 // пример импорта: import Dispatcher from './../flux/Dispatcher';
 // пример использования: Dispatcher.dispatch(ActionTypes.ADD_ITEM, item);
 exports.default = new Flux.Dispatcher();
-
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseStore_1 = __webpack_require__(20);
-var ActionTypes_1 = __webpack_require__(6);
-/**
- * Основное хранилище приложения.
- * Глобальные модели состояний.
- */
-var AppStore = (function (_super) {
-    __extends(AppStore, _super);
-    function AppStore() {
-        var _this = _super.call(this) || this;
-        _this._logTextValue = "";
-        return _this;
-    }
-    //
-    // Функции интерфейсы для Вьюшек.
-    // Эти данные для их состояний. При изменении которых, Вьюшки обновляются.
-    //
-    AppStore.prototype.getLogText = function () {
-        return this._logTextValue;
-    };
-    /**
-     * Обрабатываем сообщения от диспетчера.
-     * Обновляем модели данных, обращаемся к серверу.
-     * @param type
-     * @param obj
-     */
-    AppStore.prototype.onDispatch = function (type, obj) {
-        switch (type) {
-            case ActionTypes_1.default.LOG:
-                this._logTextValue = obj;
-                break;
-            case ActionTypes_1.default.ADD_ITEM:
-                // TODO: 
-                break;
-            case ActionTypes_1.default.DELETE_ITEM:
-                // TODO: 
-                break;
-            default:
-                return true;
-        }
-        this.emitChange();
-        return true;
-    };
-    return AppStore;
-}(BaseStore_1.default));
-exports.AppStore = AppStore;
-exports.default = new AppStore;
 
 
 /***/ }),
@@ -687,7 +695,7 @@ function invariant(condition, format, a, b, c, d, e, f) {
 }
 
 module.exports = invariant;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 11 */
@@ -696,11 +704,36 @@ module.exports = invariant;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var app_1 = __webpack_require__(12);
-window.onload = function () {
-    var zapp = new app_1.ZeApp("appplace");
-    zapp.start();
-};
+var Navigation_1 = __webpack_require__(28);
+// активные вьюшки
+var SpendActive_1 = __webpack_require__(29);
+var ProfitActive_1 = __webpack_require__(30);
+// сторы
+var AppStore_1 = __webpack_require__(2);
+var AppData;
+(function (AppData) {
+    /**
+     * Пункты навигации и их связь с Вьюшками.
+     * В конструктор третьим параметром передаем на нужный тип Вьюшки с реализацией.
+     */
+    function getNavigations() {
+        var ind = 1;
+        return [
+            new Navigation_1.default.NavigationLine(ind++, "Расходы", SpendActive_1.SpendActive),
+            new Navigation_1.default.NavigationLine(ind++, "Доходы", ProfitActive_1.ProfitActive)
+        ];
+    }
+    AppData.getNavigations = getNavigations;
+    /**
+     * Список всех сторов (синглетонов).
+     * Необходимо для Диспетчера.
+     */
+    function getStores() {
+        return [AppStore_1.default];
+    }
+    AppData.getStores = getStores;
+})(AppData || (AppData = {}));
+exports.default = AppData;
 
 
 /***/ }),
@@ -710,10 +743,25 @@ window.onload = function () {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var AppDesc_1 = __webpack_require__(13);
-var MainAppWidget_1 = __webpack_require__(15);
-var Dispatcher_1 = __webpack_require__(7);
-var AppStore_1 = __webpack_require__(8);
+var app_1 = __webpack_require__(13);
+window.onload = function () {
+    var zapp = new app_1.ZeApp("appplace");
+    zapp.start();
+};
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var AppDesc_1 = __webpack_require__(14);
+var MainAppWidget_1 = __webpack_require__(16);
+var Dispatcher_1 = __webpack_require__(8);
+//import AppStore from './stores/AppStore';
+var AppData_1 = __webpack_require__(11);
 /**
  * Приложение.
  */
@@ -734,15 +782,9 @@ var ZeApp = (function () {
         this._appDiv = document.createElement('div');
         wrapDiv.appendChild(this._appDiv);
     }
-    /**
-     * Все хранилища приложения.
-     */
-    ZeApp.prototype.getStores = function () {
-        return [AppStore_1.default];
-    };
     ZeApp.prototype.start = function () {
         // инициализируем диспетчера
-        Dispatcher_1.default.initStores(this.getStores());
+        Dispatcher_1.default.initStores(AppData_1.default.getStores());
         // основные виджеты
         var widgetDescription = new AppDesc_1.AppDescWidget(this._descDiv);
         var widgetApp = new MainAppWidget_1.default(this._appDiv);
@@ -756,15 +798,15 @@ exports.ZeApp = ZeApp;
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
-var ReactDOM = __webpack_require__(4);
-var ComDesc = __webpack_require__(14);
+var ReactDOM = __webpack_require__(5);
+var ComDesc = __webpack_require__(15);
 /**
  * Виджет вывода описания приложения.
  */
@@ -781,7 +823,7 @@ exports.AppDescWidget = AppDescWidget;
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -822,7 +864,7 @@ exports.AppDesc = AppDesc;
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -839,10 +881,10 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
-var ReactDOM = __webpack_require__(4);
-var BaseWidget_1 = __webpack_require__(16);
-var MainPanel_1 = __webpack_require__(17);
-var LogPanel_1 = __webpack_require__(19);
+var ReactDOM = __webpack_require__(5);
+var BaseWidget_1 = __webpack_require__(17);
+var MainPanel_1 = __webpack_require__(18);
+var LogPanel_1 = __webpack_require__(31);
 /**
  * Основной виджет приложения.
  */
@@ -870,14 +912,14 @@ exports.default = MainAppWidget;
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Utils_1 = __webpack_require__(1);
-var Actions = __webpack_require__(5);
+var Utils_1 = __webpack_require__(3);
+var Actions = __webpack_require__(6);
 /**
  * Базовый виджет.
  */
@@ -902,55 +944,6 @@ exports.default = BaseWidget;
 
 
 /***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(0);
-var View_1 = __webpack_require__(2);
-var ControlPanel_1 = __webpack_require__(18);
-/**
- * Основная панель
- */
-var MainPanel = (function (_super) {
-    __extends(MainPanel, _super);
-    function MainPanel(props) {
-        return _super.call(this, props, []) || this;
-    }
-    // Интересующие нас состояния (получаем их строго из Сторов)
-    MainPanel.prototype.getState = function () {
-        return {};
-    };
-    ///
-    /// Render
-    ///
-    MainPanel.prototype.drawSome = function () {
-        return React.createElement("div", null, "some....");
-    };
-    MainPanel.prototype.render = function () {
-        var some = this.drawSome();
-        return React.createElement("div", { className: "MainPanel" },
-            some,
-            React.createElement(ControlPanel_1.ControlPanel, { title: "not" }));
-    };
-    return MainPanel;
-}(View_1.default));
-exports.MainPanel = MainPanel;
-
-
-/***/ }),
 /* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -968,44 +961,36 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
-var View_1 = __webpack_require__(2);
+var View_1 = __webpack_require__(1);
+var NavigationPanel_1 = __webpack_require__(19);
+var ActionPanel_1 = __webpack_require__(26);
+var ControlPanel_1 = __webpack_require__(27);
+var AppData_1 = __webpack_require__(11);
 /**
- * Основные кнопки управления
+ * Основная панель
  */
-var ControlPanel = (function (_super) {
-    __extends(ControlPanel, _super);
-    function ControlPanel(props) {
+var MainPanel = (function (_super) {
+    __extends(MainPanel, _super);
+    function MainPanel(props) {
         return _super.call(this, props, []) || this;
     }
     // Интересующие нас состояния (получаем их строго из Сторов)
-    ControlPanel.prototype.getState = function () {
+    MainPanel.prototype.getState = function () {
         return {};
-    };
-    ///
-    /// User interactions
-    ///
-    ControlPanel.prototype.onButtonAdd = function () {
-        this.getActionCreator().addItem({ t: 'bebebeee' });
-    };
-    ControlPanel.prototype.onButtonDelete = function () {
-        this.getActionCreator().deleteItem(null);
     };
     ///
     /// Render
     ///
-    ControlPanel.prototype.drawButtons = function () {
-        var _this = this;
-        return React.createElement("div", { className: "Buttons" },
-            React.createElement("div", { className: "Button", onClick: function (e) { return _this.onButtonAdd(); } }, "Add"),
-            React.createElement("div", { className: "Button", onClick: function (e) { return _this.onButtonDelete(); } }, "Delete"));
+    MainPanel.prototype.render = function () {
+        var navs = AppData_1.default.getNavigations();
+        return React.createElement("div", { className: "MainPanel" },
+            React.createElement(NavigationPanel_1.NavigationPanel, { navLines: navs }),
+            React.createElement(ActionPanel_1.ActionPanel, { navLines: navs }),
+            React.createElement(ControlPanel_1.ControlPanel, null));
     };
-    ControlPanel.prototype.render = function () {
-        var buttons = this.drawButtons();
-        return React.createElement("div", { className: "ControlPanel", "data-p1": this.props.title }, buttons);
-    };
-    return ControlPanel;
+    return MainPanel;
 }(View_1.default));
-exports.ControlPanel = ControlPanel;
+exports.MainPanel = MainPanel;
 
 
 /***/ }),
@@ -1026,34 +1011,54 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
-var AppStore_1 = __webpack_require__(8);
-var View_1 = __webpack_require__(2);
+var View_1 = __webpack_require__(1);
+var AppStore_1 = __webpack_require__(2);
 /**
- * Лог
+ * Навигация (расходы, доходы, бюджет, статистика..)
  */
-var LogPanel = (function (_super) {
-    __extends(LogPanel, _super);
-    function LogPanel(props) {
+var NavigationPanel = (function (_super) {
+    __extends(NavigationPanel, _super);
+    function NavigationPanel(props) {
         return _super.call(this, props, [AppStore_1.default]) || this;
     }
     // Интересующие нас состояния (получаем их строго из Сторов)
-    LogPanel.prototype.getState = function () {
+    NavigationPanel.prototype.getState = function () {
         return {
-            logText: AppStore_1.default.getLogText()
+            navIndex: AppStore_1.default.getNavigationIndex()
         };
+    };
+    ///
+    /// User interactions
+    ///
+    NavigationPanel.prototype.onNavClick = function (navIndex) {
+        if (navIndex == this.state.navIndex)
+            return false; // хоть и ничего не обновится, если не изменилось, все же поможем ничего не делать (расслабим React)
+        this.getActionCreator().navigation(navIndex);
     };
     ///
     /// Render
     ///
-    LogPanel.prototype.render = function () {
-        return React.createElement("div", { className: "LogPanel" },
-            React.createElement("span", null,
-                "\u043B\u043E\u0433: ",
-                React.createElement("b", null, this.state.logText)));
+    // контент кнопки
+    NavigationPanel.prototype.renderButtonLine = function (navLine) {
+        var _this = this;
+        var activeNavIndex = this.state.navIndex; // текущая вкладка (меняется через диспетчера)
+        var classNameExt = activeNavIndex == navLine.navIndex ? 'Active' : '';
+        var classNameFull = "Button " + classNameExt;
+        // разница с привязкой обработчиков
+        if (navLine.navIndex == this.state.navIndex)
+            return React.createElement("div", { className: classNameFull }, navLine.title);
+        else
+            return React.createElement("div", { className: classNameFull, onClick: function (e) { return _this.onNavClick(navLine.navIndex); } }, navLine.title);
     };
-    return LogPanel;
+    NavigationPanel.prototype.render = function () {
+        var _this = this;
+        // все кнопки
+        var lines = this.props.navLines.map(function (line) { return _this.renderButtonLine(line); });
+        return React.createElement("div", { className: "NavigationPanel" }, lines);
+    };
+    return NavigationPanel;
 }(View_1.default));
-exports.LogPanel = LogPanel;
+exports.NavigationPanel = NavigationPanel;
 
 
 /***/ }),
@@ -1064,7 +1069,7 @@ exports.LogPanel = LogPanel;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var fbemitter_1 = __webpack_require__(21);
-var Utils_1 = __webpack_require__(1);
+var Utils_1 = __webpack_require__(3);
 //type StoreCallback = () => any;
 /**
  * Базовый стор.
@@ -1085,7 +1090,9 @@ var BaseStore = (function () {
         this.__emitter.emit(this.__changeEvent);
         //}
     };
-    // Emit Change event
+    /**
+     * Реализующий Стор, должен вызывать этот метод, когда произошли хоть какие изменения в моделях (после сообщения диспетчера, в методе 'onDispatch').
+     */
     BaseStore.prototype.emitChange = function () {
         this.__invokeOnDispatch(null);
     };
@@ -1345,7 +1352,7 @@ var BaseEventEmitter = (function () {
 })();
 
 module.exports = BaseEventEmitter;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 23 */
@@ -1510,7 +1517,7 @@ var EventSubscriptionVendor = (function () {
 })();
 
 module.exports = EventSubscriptionVendor;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 25 */
@@ -1555,6 +1562,292 @@ emptyFunction.thatReturnsArgument = function (arg) {
 };
 
 module.exports = emptyFunction;
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(0);
+var View_1 = __webpack_require__(1);
+var AppStore_1 = __webpack_require__(2);
+/**
+ * Основная панель приложения.
+ * Эта часть меняется в зависимости от выбранного пункта навигации, и отображается каждая часть через свою 'Активную Вьюшку'.
+ * На основе выбранной вкладки - отображает текущий контент - активную Вьюшку (лежат в '/components/ActivePanels').
+ * Все необходимые 'активные вьюшки' связаны с навигацией и инициализируются в '/datas/AppData'.
+ */
+var ActionPanel = (function (_super) {
+    __extends(ActionPanel, _super);
+    function ActionPanel(props) {
+        return _super.call(this, props, [AppStore_1.default]) || this;
+    }
+    // Интересующие нас состояния (получаем их строго из Сторов)
+    ActionPanel.prototype.getState = function () {
+        return {
+            navIndex: AppStore_1.default.getNavigationIndex()
+        };
+    };
+    ///
+    /// Render
+    ///
+    ActionPanel.prototype.drawError = function (msg) {
+        return React.createElement("div", { className: "ActiveViewError" }, msg);
+    };
+    ActionPanel.prototype.render = function () {
+        var curNavIndex = this.state.navIndex;
+        var curLine = null;
+        //this.props.navLines.forEach(line => { if (line.navIndex == curNavIndex) { curLine = line; return false;} });
+        for (var _i = 0, _a = this.props.navLines; _i < _a.length; _i++) {
+            var line = _a[_i];
+            if (line.navIndex == curNavIndex) {
+                curLine = line;
+                break; // только ради этого
+            }
+        }
+        if (curLine == null || curLine == undefined)
+            return this.drawError("Не найдена активная панель приложения с индексом '" + curNavIndex + "'");
+        // динамически определяем компонент (активную вьюшку) и рендерим ее
+        var PanelViewName = curLine.viewRef;
+        return React.createElement("div", { className: "ActionPanel" },
+            React.createElement(PanelViewName, null));
+    };
+    return ActionPanel;
+}(View_1.default));
+exports.ActionPanel = ActionPanel;
+
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(0);
+var View_1 = __webpack_require__(1);
+/**
+ * Основные кнопки управления
+ */
+var ControlPanel = (function (_super) {
+    __extends(ControlPanel, _super);
+    function ControlPanel(props) {
+        return _super.call(this, props, []) || this;
+    }
+    // Интересующие нас состояния (получаем их строго из Сторов)
+    ControlPanel.prototype.getState = function () {
+        return {};
+    };
+    ///
+    /// User interactions
+    ///
+    ControlPanel.prototype.onButtonAdd = function () {
+        this.getActionCreator().addItem({ t: 'bebebeee' });
+    };
+    ControlPanel.prototype.onButtonDelete = function () {
+        this.getActionCreator().deleteItem(null);
+    };
+    ///
+    /// Render
+    ///
+    ControlPanel.prototype.drawButtons = function () {
+        var _this = this;
+        return React.createElement("div", { className: "Buttons" },
+            React.createElement("div", { className: "Button", onClick: function (e) { return _this.onButtonAdd(); } }, "Add"),
+            React.createElement("div", { className: "Button", onClick: function (e) { return _this.onButtonDelete(); } }, "Delete"));
+    };
+    ControlPanel.prototype.render = function () {
+        var buttons = this.drawButtons();
+        return React.createElement("div", { className: "ControlPanel" }, buttons);
+    };
+    return ControlPanel;
+}(View_1.default));
+exports.ControlPanel = ControlPanel;
+
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Navigation;
+(function (Navigation) {
+    var NavigationLine = (function () {
+        function NavigationLine(navIndex, title, viewRef) {
+            this.navIndex = navIndex;
+            this.title = title;
+            this.viewRef = viewRef;
+        }
+        return NavigationLine;
+    }());
+    Navigation.NavigationLine = NavigationLine;
+})(Navigation || (Navigation = {}));
+exports.default = Navigation;
+
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(0);
+var View_1 = __webpack_require__(1);
+var AppStore_1 = __webpack_require__(2);
+/**
+ * Панель - Расходы.
+ */
+var SpendActive = (function (_super) {
+    __extends(SpendActive, _super);
+    function SpendActive(props) {
+        return _super.call(this, props, [AppStore_1.default]) || this;
+    }
+    // Интересующие нас состояния (получаем их строго из Сторов)
+    SpendActive.prototype.getState = function () {
+        return {};
+    };
+    ///
+    /// User interactions
+    ///
+    ///
+    /// Render
+    ///
+    SpendActive.prototype.render = function () {
+        return React.createElement("div", { className: "Act" }, "speeeend");
+    };
+    return SpendActive;
+}(View_1.default));
+exports.SpendActive = SpendActive;
+
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(0);
+var View_1 = __webpack_require__(1);
+var AppStore_1 = __webpack_require__(2);
+/**
+ * Панель - Доходы.
+ */
+var ProfitActive = (function (_super) {
+    __extends(ProfitActive, _super);
+    function ProfitActive(props) {
+        return _super.call(this, props, [AppStore_1.default]) || this;
+    }
+    // Интересующие нас состояния (получаем их строго из Сторов)
+    ProfitActive.prototype.getState = function () {
+        return {};
+    };
+    ///
+    /// User interactions
+    ///
+    ///
+    /// Render
+    ///
+    ProfitActive.prototype.render = function () {
+        return React.createElement("div", { className: "Act" }, "prooofit");
+    };
+    return ProfitActive;
+}(View_1.default));
+exports.ProfitActive = ProfitActive;
+
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(0);
+var AppStore_1 = __webpack_require__(2);
+var View_1 = __webpack_require__(1);
+/**
+ * Лог
+ */
+var LogPanel = (function (_super) {
+    __extends(LogPanel, _super);
+    function LogPanel(props) {
+        return _super.call(this, props, [AppStore_1.default]) || this;
+    }
+    // Интересующие нас состояния (получаем их строго из Сторов)
+    LogPanel.prototype.getState = function () {
+        return {
+            logText: AppStore_1.default.getLogText()
+        };
+    };
+    ///
+    /// Render
+    ///
+    LogPanel.prototype.render = function () {
+        return React.createElement("div", { className: "LogPanel" },
+            React.createElement("span", null,
+                "\u043B\u043E\u0433: ",
+                React.createElement("b", null, this.state.logText)));
+    };
+    return LogPanel;
+}(View_1.default));
+exports.LogPanel = LogPanel;
+
 
 /***/ })
 /******/ ]);

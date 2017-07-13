@@ -9,19 +9,23 @@
 //- page size to portrait
 .initPageOrientation(@v) when (@v = 2) { max-width: @screenSizeY; }
 //- app screen to portrait
-.initAppOrientation(@v) when (@v = 2) { width: @screenSizeY; height: @screenSizeX; }
-
+.initAppOrientation(@v) when (@v = 2) { max-width: @screenSizeY; max-height: @screenSizeX;}
+//- main logic screen to portrait
+.initMainLogicOrientation(@v) when (@v = 2) { min-height: @screenSizeX / 2; }
 
 .pageSize {
     max-width: @screenSizeX;
     .initPageOrientation(@pageOrientation);
 }
 .appSize {
-    width: @screenSizeX; 
-    height: @screenSizeY;
+    max-width: @screenSizeX; 
+    max-height: @screenSizeY;
     .initAppOrientation(@pageOrientation);
 }
-
+.actionPanelSize {
+    min-height: @screenSizeY / 2;
+    .initMainLogicOrientation(@pageOrientation);
+}
 
 
 
@@ -46,6 +50,8 @@
 
 // Вьюшка без рендера
 .ViewErrorBlock { margin: 2px; padding: 4px; text-align: center; font-weight: bold; color: #801111; background-color: #F2DFDF; border: 1px dashed #801111;}
+// Не найдена активная Вьюшка
+.ActiveViewError {margin: 2px; padding: 4px; text-align: center; font-weight: bold; color: #801111; background-color: #F2DFDF; border: 1px dashed #801111;}
 
 
 
@@ -62,7 +68,7 @@
 // в разработке
 .MainDomNotYet { padding: 8px 12px; text-align: center; color:#801111; border: 1px dashed #AD1717; .roundBorder4; background-color: #F2DFDF;}
 // логи
-.LogPanel {overflow: hidden;margin: 10px 0; padding: 4px 12px; border: 1px dashed #aaa; .roundBorder4; background-color: #EBF0DD; color: #111; font-size: 10px;}
+.LogPanel { overflow: hidden;margin: 10px 0; padding: 4px 12px; border: 1px dashed #aaa; .roundBorder4; background-color: #EBF0DD; color: #111; font-size: 10px; }
 
 
 /********************
@@ -70,14 +76,32 @@
 *   основная часть приложения
 *
 *******************/
-
-
 // основная часть приложения
-.MainPanel { .appSize; margin: 0; padding: 0; border: 1px dashed #aaa; .roundBorder4;}
+.MainPanel { .appSize; margin: 0; padding: 0; border: 1px dashed #aaa; .roundBorder4; }
 
 
-// основные кнопки
-.ControlPanel {margin:5px 0; padding: 4px; border-top: 2px solid #ddd; clear: both;overflow: hidden;}
+
+//
+// навигация
+//
+.NavigationPanel { padding: 6px; background-color:#EBEBEB; border-top: 1px solid #EBEBEB; border-bottom: 1px solid #DEDEDE; clear: both;overflow: hidden;}
+.NavigationPanel .Button {float: left; margin: 6px; padding: 4px;text-align: center; cursor: pointer; color: #2B6499; border: 1px solid transparent;}
+.NavigationPanel .Button:hover {color: #042B4F;}
+.NavigationPanel .Button.Active {color: #042B4F; cursor: default; border: 1px solid #042B4F; .roundBorder4; }
+
+
+//
+// основная часть приложения
+//
+.ActionPanel { .actionPanelSize; clear: both; overflow: hidden; }
+
+
+
+
+//
+// управление
+//
+.ControlPanel { margin:0; padding: 4px; background-color:#EBEBEB; border-top: 1px solid #EBEBEB; border-bottom: 1px solid #DEDEDE; clear: both;overflow: hidden;}
 .ControlPanel .Buttons {}
 .ControlPanel .Buttons .Button {float: left; margin: 6px; padding: 6px;text-align: center; border: 1px solid #da0; cursor: pointer; background-color: #da1;color: #fff;}
 .ControlPanel .Buttons .Button:hover {background-color: #d81;}

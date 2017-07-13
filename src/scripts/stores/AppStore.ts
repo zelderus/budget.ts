@@ -12,11 +12,13 @@ import ActionTypes from './../actions/ActionTypes';
 export class AppStore extends BaseStore {
 
     _logTextValue: string;
+    _navIndex: number;
 
     constructor() {
         super();
 
         this._logTextValue = "";
+        this._navIndex = 1;
     }
 
 
@@ -25,9 +27,9 @@ export class AppStore extends BaseStore {
     // Эти данные для их состояний. При изменении которых, Вьюшки обновляются.
     //
 
-    public getLogText(){
-        return this._logTextValue;
-    }
+    public getLogText() { return this._logTextValue; }
+    public getNavigationIndex() { return this._navIndex; }
+
 
 
 
@@ -43,6 +45,11 @@ export class AppStore extends BaseStore {
             case ActionTypes.LOG:
                 this._logTextValue = obj;            
                 break;
+            case ActionTypes.NAVIGATION:
+                this._navIndex = obj;
+                break;
+
+
             case ActionTypes.ADD_ITEM:
                 // TODO: 
                 break;

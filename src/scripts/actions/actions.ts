@@ -25,6 +25,12 @@ export namespace Actions{
             Dispatcher.dispatch(ActionTypes.LOG, msg);
         }
 
+        navigation(navIndex: number) {
+            Dispatcher.dispatch(ActionTypes.NAVIGATION, navIndex);
+            this.log("навигация: " + navIndex);
+        }
+
+
 
         addItem(item: any){ // TODO: item cast to Type
             Dispatcher.dispatch(ActionTypes.ADD_ITEM, item);

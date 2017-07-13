@@ -2,8 +2,10 @@
 
 import * as React from "react";
 import View from './../flux/View';
-import AppStore from './../stores/AppStore';
-import {ControlPanel} from "./../components/ControlPanel";
+import {NavigationPanel} from "./NavigationPanel";
+import {ActionPanel} from "./ActionPanel";
+import {ControlPanel} from "./ControlPanel";
+import AppData from './../datas/AppData';
 
 
 export interface IMainPanelProps { }
@@ -30,25 +32,17 @@ export class MainPanel extends View<IMainPanelProps, IMainPanelStates> {
 
 
 
-
-
     ///
     /// Render
     ///
 
-    private drawSome(){
-        return <div>
-            some....
-        </div>
-    }
-
 	render(){
-
-        let some = this.drawSome();
+        let navs = AppData.getNavigations();
 
 		return <div className="MainPanel">
-            {some}
-            <ControlPanel title="not" />
+            <NavigationPanel navLines={navs} />
+            <ActionPanel navLines={navs} />
+            <ControlPanel />
         </div>;
 	}
 

@@ -9,7 +9,8 @@ import Actions from './actions/Actions';
 import Dispatcher from './flux/Dispatcher';
 import StoreFlux from './flux/store';
 
-import AppStore from './stores/AppStore';
+//import AppStore from './stores/AppStore';
+import AppData from './datas/AppData';
 
 
 
@@ -43,18 +44,10 @@ export class ZeApp{
 
 
 
-    /**
-     * Все хранилища приложения.
-     */
-    private getStores(): StoreFlux.IStore[] {
-        return [AppStore];
-    }
-
-
 
     public start(){
         // инициализируем диспетчера
-        Dispatcher.initStores(this.getStores());
+        Dispatcher.initStores(AppData.getStores());
         // основные виджеты
         let widgetDescription = new AppDescWidget(this._descDiv);
         let widgetApp = new AppWidget(this._appDiv);

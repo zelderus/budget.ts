@@ -31,7 +31,9 @@ export class BaseStore implements StoreFlux.IStore {
             this.__emitter.emit(this.__changeEvent);
         //}
     }
-    // Emit Change event
+    /**
+     * Реализующий Стор, должен вызывать этот метод, когда произошли хоть какие изменения в моделях (после сообщения диспетчера, в методе 'onDispatch').
+     */
     public emitChange() {
         this.__invokeOnDispatch(null);
     }

@@ -4,7 +4,7 @@ import * as React from "react";
 import View from './../flux/View';
 import AppStore from './../stores/AppStore';
 
-export interface IControlPanelProps { title: string; }
+export interface IControlPanelProps {  }
 export interface IControlPanelStates {  }
 
 
@@ -55,7 +55,7 @@ export class ControlPanel extends View<IControlPanelProps, IControlPanelStates> 
 
         let buttons = this.drawButtons();
 
-		return <div className="ControlPanel" data-p1={this.props.title}>
+		return <div className="ControlPanel">
             {buttons}
         </div>;
 	}
