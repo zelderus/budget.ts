@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 14);
+/******/ 	return __webpack_require__(__webpack_require__.s = 15);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -298,8 +298,11 @@ var ActionTypes;
 (function (ActionTypes) {
     ActionTypes[ActionTypes["LOG"] = 1] = "LOG";
     ActionTypes[ActionTypes["NAVIGATION"] = 10] = "NAVIGATION";
-    ActionTypes[ActionTypes["ADD_ITEM"] = 50] = "ADD_ITEM";
-    ActionTypes[ActionTypes["DELETE_ITEM"] = 51] = "DELETE_ITEM";
+    ActionTypes[ActionTypes["LOAD_INIT_DATA"] = 20] = "LOAD_INIT_DATA";
+    ActionTypes[ActionTypes["ACCOUNTS_LOAD"] = 100] = "ACCOUNTS_LOAD";
+    ActionTypes[ActionTypes["TRANSACTIONS_LOAD"] = 200] = "TRANSACTIONS_LOAD";
+    ActionTypes[ActionTypes["ADD_ITEM"] = 950] = "ADD_ITEM";
+    ActionTypes[ActionTypes["DELETE_ITEM"] = 951] = "DELETE_ITEM";
 })(ActionTypes || (ActionTypes = {}));
 ;
 exports.default = ActionTypes;
@@ -514,19 +517,50 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var BaseStore_1 = __webpack_require__(10);
 var ActionTypes_1 = __webpack_require__(4);
+var Transactions_1 = __webpack_require__(14);
+var Client_1 = __webpack_require__(32);
 /**
  * Хранилище с транзакциями
  */
 var TransactionStore = (function (_super) {
     __extends(TransactionStore, _super);
     function TransactionStore() {
-        return _super.call(this) || this;
+        var _this = _super.call(this) || this;
+        _this.__accounts = [];
+        _this.__transactions = [];
+        _this.__transactionFilter = new Transactions_1.default.TransactionFilters();
+        return _this;
     }
     //
     // Функции интерфейсы для Вьюшек.
     // Эти данные для их состояний. При изменении которых, Вьюшки обновляются.
     //
-    TransactionStore.prototype.getSome = function () { return ""; };
+    TransactionStore.prototype.getAccounts = function () { return this.__accounts; };
+    TransactionStore.prototype.getTransactions = function () { return this.__transactions; };
+    //
+    //
+    //
+    TransactionStore.prototype._loadInitDataAsync = function () {
+        this._loadAccountsAsync(false);
+        this._loadTransctions();
+        // оповещаем
+        this.emitChange();
+    };
+    TransactionStore.prototype._loadAccountsAsync = function (withEmit) {
+        var _this = this;
+        console.log("_loadAccounts");
+        //this.__accounts = Client.getAccounts();
+        Client_1.default.getAccounts(function (acs) {
+            _this.__accounts = acs;
+            // do next
+            if (withEmit)
+                _this.emitChange();
+        });
+    };
+    TransactionStore.prototype._loadTransctions = function () {
+        console.log("_loadTransctions");
+        this.__transactions = Client_1.default.getTransactions(this.__transactionFilter);
+    };
     /**
      * Обрабатываем сообщения от диспетчера.
      * Обновляем модели данных, обращаемся к серверу.
@@ -535,12 +569,17 @@ var TransactionStore = (function (_super) {
      */
     TransactionStore.prototype.onDispatch = function (type, obj) {
         switch (type) {
-            case ActionTypes_1.default.ADD_ITEM:
-                // TODO: 
+            case ActionTypes_1.default.LOAD_INIT_DATA:
+                this._loadInitDataAsync();
+                return true;
+            case ActionTypes_1.default.ACCOUNTS_LOAD:// TODO: научить ждать асинхронку (возможно Диспетчера)
+                this._loadAccountsAsync(true);
+                return true;
+            //break;
+            case ActionTypes_1.default.TRANSACTIONS_LOAD:// TODO: научить ждать асинхронку (возможно Диспетчера)
+                this._loadTransctions();
                 break;
-            case ActionTypes_1.default.DELETE_ITEM:
-                // TODO: 
-                break;
+            // TODO: update transaction filters
             default:
                 return true;
         }
@@ -586,6 +625,15 @@ var Actions;
         };
         ActionCreator.prototype.navigation = function (navIndex) {
             Dispatcher_1.default.dispatch(ActionTypes_1.default.NAVIGATION, navIndex);
+        };
+        ActionCreator.prototype.loadInitData = function () {
+            Dispatcher_1.default.dispatch(ActionTypes_1.default.LOAD_INIT_DATA, null);
+        };
+        ActionCreator.prototype.loadAccounts = function () {
+            Dispatcher_1.default.dispatch(ActionTypes_1.default.ACCOUNTS_LOAD, null);
+        };
+        ActionCreator.prototype.loadTransactions = function () {
+            Dispatcher_1.default.dispatch(ActionTypes_1.default.TRANSACTIONS_LOAD, null);
         };
         ActionCreator.prototype.addItem = function (item) {
             Dispatcher_1.default.dispatch(ActionTypes_1.default.ADD_ITEM, item);
@@ -647,7 +695,7 @@ exports.default = new Flux.Dispatcher();
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var fbemitter_1 = __webpack_require__(22);
+var fbemitter_1 = __webpack_require__(23);
 var Utils_1 = __webpack_require__(3);
 //type StoreCallback = () => any;
 /**
@@ -738,7 +786,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var EventSubscription = __webpack_require__(24);
+var EventSubscription = __webpack_require__(25);
 
 /**
  * EmitterSubscription represents a subscription with listener and context data.
@@ -838,10 +886,10 @@ module.exports = invariant;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Navigation_1 = __webpack_require__(29);
+var Navigation_1 = __webpack_require__(30);
 // активные вьюшки
-var TransactionActive_1 = __webpack_require__(30);
-var AccountActive_1 = __webpack_require__(33);
+var TransactionActive_1 = __webpack_require__(31);
+var AccountActive_1 = __webpack_require__(36);
 // сторы
 var AppStore_1 = __webpack_require__(2);
 var TransactionStore_1 = __webpack_require__(6);
@@ -878,11 +926,44 @@ exports.default = AppData;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var app_1 = __webpack_require__(15);
-window.onload = function () {
-    var zapp = new app_1.ZeApp("appplace");
-    zapp.start();
-};
+var Transactions;
+(function (Transactions) {
+    /**
+     * Фильтры транзакций. Используется Клиентом при запросах к данным.
+     */
+    var TransactionFilters = (function () {
+        function TransactionFilters() {
+            this.packType = 1; // пакет - размерность выборки (день,месяц,год)
+            this.packType = 1;
+        }
+        return TransactionFilters;
+    }());
+    Transactions.TransactionFilters = TransactionFilters;
+    /**
+     * Типы транзакции.
+     */
+    var TransactionTypes;
+    (function (TransactionTypes) {
+        TransactionTypes[TransactionTypes["Spend"] = 1] = "Spend";
+        TransactionTypes[TransactionTypes["Profit"] = 2] = "Profit";
+        TransactionTypes[TransactionTypes["Transfer"] = 3] = "Transfer"; // перевод на другой счет
+    })(TransactionTypes = Transactions.TransactionTypes || (Transactions.TransactionTypes = {}));
+    /**
+     * Вывод транзакции.
+     */
+    var TransactionLine = (function () {
+        function TransactionLine(id, date, type, currency, cost) {
+            this.id = id;
+            this.date = date;
+            this.type = type;
+            this.currency = currency;
+            this.cost = cost;
+        }
+        return TransactionLine;
+    }());
+    Transactions.TransactionLine = TransactionLine;
+})(Transactions || (Transactions = {}));
+exports.default = Transactions;
 
 
 /***/ }),
@@ -892,8 +973,22 @@ window.onload = function () {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var AppDesc_1 = __webpack_require__(16);
-var MainAppWidget_1 = __webpack_require__(18);
+var app_1 = __webpack_require__(16);
+window.onload = function () {
+    var zapp = new app_1.ZeApp("appplace");
+    zapp.start();
+};
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var AppDesc_1 = __webpack_require__(17);
+var MainAppWidget_1 = __webpack_require__(19);
 var Dispatcher_1 = __webpack_require__(9);
 //import AppStore from './stores/AppStore';
 var AppData_1 = __webpack_require__(13);
@@ -933,7 +1028,7 @@ exports.ZeApp = ZeApp;
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -941,7 +1036,7 @@ exports.ZeApp = ZeApp;
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
 var ReactDOM = __webpack_require__(7);
-var ComDesc = __webpack_require__(17);
+var ComDesc = __webpack_require__(18);
 /**
  * Виджет вывода описания приложения.
  */
@@ -958,7 +1053,7 @@ exports.AppDescWidget = AppDescWidget;
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -999,7 +1094,7 @@ exports.AppDesc = AppDesc;
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1017,9 +1112,9 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
 var ReactDOM = __webpack_require__(7);
-var BaseWidget_1 = __webpack_require__(19);
-var MainPanel_1 = __webpack_require__(20);
-var LogPanel_1 = __webpack_require__(34);
+var BaseWidget_1 = __webpack_require__(20);
+var MainPanel_1 = __webpack_require__(21);
+var LogPanel_1 = __webpack_require__(38);
 /**
  * Основной виджет приложения.
  */
@@ -1035,6 +1130,8 @@ var MainAppWidget = (function (_super) {
         _this._logDiv = document.createElement('div');
         place.appendChild(_this._logDiv);
         return _this;
+        // загружаем начальные данные !!!
+        //this.getActionCreator().loadInitData();
     }
     MainAppWidget.prototype.draw = function () {
         ReactDOM.render(React.createElement(MainPanel_1.MainPanel, null), this._mainDiv);
@@ -1047,7 +1144,7 @@ exports.default = MainAppWidget;
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1079,7 +1176,7 @@ exports.default = BaseWidget;
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1097,9 +1194,9 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
 var View_1 = __webpack_require__(1);
-var NavigationPanel_1 = __webpack_require__(21);
-var ActionPanel_1 = __webpack_require__(27);
-var ControlPanel_1 = __webpack_require__(28);
+var NavigationPanel_1 = __webpack_require__(22);
+var ActionPanel_1 = __webpack_require__(28);
+var ControlPanel_1 = __webpack_require__(29);
 var AppData_1 = __webpack_require__(13);
 /**
  * Основная панель
@@ -1129,7 +1226,7 @@ exports.MainPanel = MainPanel;
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1197,7 +1294,7 @@ exports.NavigationPanel = NavigationPanel;
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -1210,7 +1307,7 @@ exports.NavigationPanel = NavigationPanel;
  */
 
 var fbemitter = {
-  EventEmitter: __webpack_require__(23),
+  EventEmitter: __webpack_require__(24),
   EmitterSubscription : __webpack_require__(11)
 };
 
@@ -1218,7 +1315,7 @@ module.exports = fbemitter;
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1239,9 +1336,9 @@ module.exports = fbemitter;
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var EmitterSubscription = __webpack_require__(11);
-var EventSubscriptionVendor = __webpack_require__(25);
+var EventSubscriptionVendor = __webpack_require__(26);
 
-var emptyFunction = __webpack_require__(26);
+var emptyFunction = __webpack_require__(27);
 var invariant = __webpack_require__(12);
 
 /**
@@ -1416,7 +1513,7 @@ module.exports = BaseEventEmitter;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1471,7 +1568,7 @@ var EventSubscription = (function () {
 module.exports = EventSubscription;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1581,7 +1678,7 @@ module.exports = EventSubscriptionVendor;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1625,7 +1722,7 @@ emptyFunction.thatReturnsArgument = function (arg) {
 module.exports = emptyFunction;
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1691,7 +1788,7 @@ exports.ActionPanel = ActionPanel;
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1749,7 +1846,7 @@ exports.ControlPanel = ControlPanel;
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1771,7 +1868,7 @@ exports.default = Navigation;
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1790,8 +1887,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
 var View_1 = __webpack_require__(1);
 var TransactionStore_1 = __webpack_require__(6);
-var Transactions_1 = __webpack_require__(31);
-var TransactionLine_1 = __webpack_require__(32);
+var TransactionLine_1 = __webpack_require__(35);
 /**
  * Панель - транзакции.
  */
@@ -1800,9 +1896,15 @@ var TransactionActive = (function (_super) {
     function TransactionActive(props) {
         return _super.call(this, props, [TransactionStore_1.default]) || this;
     }
+    TransactionActive.prototype.componentDidMount = function () {
+        _super.prototype.componentDidMount.call(this);
+        this.getActionCreator().loadTransactions();
+    };
     // Интересующие нас состояния (получаем их строго из Сторов)
     TransactionActive.prototype.getState = function () {
-        return {};
+        return {
+            transactions: TransactionStore_1.default.getTransactions()
+        };
     };
     ///
     /// User interactions
@@ -1811,15 +1913,9 @@ var TransactionActive = (function (_super) {
     /// Render
     ///
     TransactionActive.prototype.renderLines = function () {
-        var lines = [
-            new Transactions_1.default.TransactionLine('1', new Date(2017, 5, 10), Transactions_1.default.TransactionTypes.Spend, "rub", 400),
-            new Transactions_1.default.TransactionLine('2', new Date(2017, 5, 10), Transactions_1.default.TransactionTypes.Spend, "rub", 2400),
-            new Transactions_1.default.TransactionLine('3', new Date(2017, 5, 11), Transactions_1.default.TransactionTypes.Profit, "rub", 50000),
-            new Transactions_1.default.TransactionLine('4', new Date(2017, 5, 11), Transactions_1.default.TransactionTypes.Spend, "rub", 1700),
-            new Transactions_1.default.TransactionLine('5', new Date(2017, 5, 12), Transactions_1.default.TransactionTypes.Spend, "rub", 400),
-        ];
+        var lines = this.state.transactions;
         // sort by Date
-        lines = lines.sort(function (line) { return line.date.getUTCDate(); });
+        lines = lines.sort(function (a, b) { return a.date.getUTCDate() > b.date.getUTCDate() ? -1 : 1; });
         // render
         var linesForRender = lines.map(function (line) { return React.createElement(TransactionLine_1.default, { transaction: line }); });
         return React.createElement("div", { className: "LinesPlace" }, linesForRender);
@@ -1833,39 +1929,107 @@ exports.TransactionActive = TransactionActive;
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Transactions;
-(function (Transactions) {
-    var TransactionTypes;
-    (function (TransactionTypes) {
-        TransactionTypes[TransactionTypes["Spend"] = 1] = "Spend";
-        TransactionTypes[TransactionTypes["Profit"] = 2] = "Profit";
-    })(TransactionTypes = Transactions.TransactionTypes || (Transactions.TransactionTypes = {}));
+var MockData_1 = __webpack_require__(33);
+var Client;
+(function (Client) {
     /**
-     * Вывод транзакции.
+     * Запрос к данным.
      */
-    var TransactionLine = (function () {
-        function TransactionLine(id, date, type, currency, cost) {
-            this.id = id;
-            this.date = date;
-            this.type = type;
-            this.currency = currency;
-            this.cost = cost;
+    var ClientAccessor = (function () {
+        function ClientAccessor() {
         }
-        return TransactionLine;
+        /**
+         * Счета.
+         */
+        /*getAccounts(callBack: ICbfGetAccounts): Accounts.AccountLine[] {
+            return Mock.getAccounts();
+        }*/
+        ClientAccessor.prototype.getAccounts = function (callBack) {
+            callBack(MockData_1.default.getAccounts());
+        };
+        /**
+         * Транзакции.
+         */
+        ClientAccessor.prototype.getTransactions = function (filters) {
+            var data = MockData_1.default.getTransactions();
+            // TODO: filters
+            return data;
+        };
+        return ClientAccessor;
     }());
-    Transactions.TransactionLine = TransactionLine;
-})(Transactions || (Transactions = {}));
-exports.default = Transactions;
+    Client.ClientAccessor = ClientAccessor;
+})(Client || (Client = {}));
+exports.default = new Client.ClientAccessor;
 
 
 /***/ }),
-/* 32 */
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Accounts_1 = __webpack_require__(34);
+var Transactions_1 = __webpack_require__(14);
+var Mock;
+(function (Mock) {
+    function _getDate(year, month, day, hours, minutes, seconds) {
+        return new Date(year, month, day, hours, minutes, seconds, 0);
+    }
+    function getAccounts() {
+        return [
+            new Accounts_1.default.AccountLine('1', 'Кошелек', 1),
+            new Accounts_1.default.AccountLine('2', 'Кредитка', 2)
+        ];
+    }
+    Mock.getAccounts = getAccounts;
+    function getTransactions() {
+        return [
+            new Transactions_1.default.TransactionLine('1', _getDate(2017, 5, 10, 13, 20, 0), Transactions_1.default.TransactionTypes.Spend, "rub", 400),
+            new Transactions_1.default.TransactionLine('2', _getDate(2017, 5, 10, 20, 40, 0), Transactions_1.default.TransactionTypes.Spend, "rub", 2400),
+            new Transactions_1.default.TransactionLine('3', _getDate(2017, 5, 11, 10, 15, 0), Transactions_1.default.TransactionTypes.Profit, "rub", 55000),
+            new Transactions_1.default.TransactionLine('4', _getDate(2017, 5, 11, 19, 50, 0), Transactions_1.default.TransactionTypes.Spend, "rub", 1750),
+            new Transactions_1.default.TransactionLine('5', _getDate(2017, 5, 12, 13, 10, 0), Transactions_1.default.TransactionTypes.Spend, "rub", 400),
+        ];
+    }
+    Mock.getTransactions = getTransactions;
+})(Mock || (Mock = {}));
+exports.default = Mock;
+
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Accounts;
+(function (Accounts) {
+    /**
+     * Счет.
+     */
+    var AccountLine = (function () {
+        function AccountLine(id, title, order) {
+            this.id = id;
+            this.title = title;
+            this.order = order;
+        }
+        return AccountLine;
+    }());
+    Accounts.AccountLine = AccountLine;
+})(Accounts || (Accounts = {}));
+exports.default = Accounts;
+
+
+/***/ }),
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1895,6 +2059,12 @@ var TransactionLine = (function (_super) {
     TransactionLine.prototype.getState = function () {
         return {};
     };
+    TransactionLine.prototype.numberFormat = function (num, slices) {
+        return ("0" + num).slice(-slices);
+    };
+    TransactionLine.prototype.numTo2Zero = function (num) {
+        return this.numberFormat(num, 2);
+    };
     ///
     /// User interactions
     ///
@@ -1902,7 +2072,20 @@ var TransactionLine = (function (_super) {
     /// Render
     ///
     TransactionLine.prototype.render = function () {
-        return React.createElement("div", { className: "TransactionLine" }, this.props.transaction.cost);
+        return React.createElement("div", { className: "TransactionLine" },
+            React.createElement("span", { className: "Date" },
+                this.numTo2Zero(this.props.transaction.date.getDate()),
+                ".",
+                this.numTo2Zero(this.props.transaction.date.getMonth()),
+                ".",
+                this.props.transaction.date.getFullYear()),
+            React.createElement("span", { className: "Time" },
+                "(",
+                this.numTo2Zero(this.props.transaction.date.getHours()),
+                ":",
+                this.numTo2Zero(this.props.transaction.date.getMinutes()),
+                ")"),
+            React.createElement("span", { className: "Title" }, this.props.transaction.cost));
     };
     return TransactionLine;
 }(View_1.default));
@@ -1911,7 +2094,7 @@ exports.default = TransactionLine;
 
 
 /***/ }),
-/* 33 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1930,6 +2113,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
 var View_1 = __webpack_require__(1);
 var TransactionStore_1 = __webpack_require__(6);
+var AccountLine_1 = __webpack_require__(37);
 /**
  * Панель - счета.
  */
@@ -1938,8 +2122,67 @@ var AccountActive = (function (_super) {
     function AccountActive(props) {
         return _super.call(this, props, [TransactionStore_1.default]) || this;
     }
+    AccountActive.prototype.componentDidMount = function () {
+        _super.prototype.componentDidMount.call(this);
+        this.getActionCreator().loadAccounts();
+    };
     // Интересующие нас состояния (получаем их строго из Сторов)
     AccountActive.prototype.getState = function () {
+        return {
+            accounts: TransactionStore_1.default.getAccounts()
+        };
+    };
+    ///
+    /// User interactions
+    ///
+    ///
+    /// Render
+    ///
+    AccountActive.prototype.renderAccountLines = function () {
+        var lines = this.state.accounts;
+        // sort
+        lines = lines.sort(function (a, b) { return a.order < b.order ? -1 : 1; });
+        // render
+        var linesForRender = lines.map(function (line) { return React.createElement(AccountLine_1.default, { account: line }); });
+        return React.createElement("div", { className: "LinesPlace" }, linesForRender);
+    };
+    AccountActive.prototype.render = function () {
+        return React.createElement("div", { className: "AccountActive" }, this.renderAccountLines());
+    };
+    return AccountActive;
+}(View_1.default));
+exports.AccountActive = AccountActive;
+
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(0);
+var View_1 = __webpack_require__(1);
+/**
+ * Строка счета
+ */
+var AccountLine = (function (_super) {
+    __extends(AccountLine, _super);
+    function AccountLine(props) {
+        return _super.call(this, props, []) || this;
+    }
+    // Интересующие нас состояния (получаем их строго из Сторов)
+    AccountLine.prototype.getState = function () {
         return {};
     };
     ///
@@ -1948,16 +2191,17 @@ var AccountActive = (function (_super) {
     ///
     /// Render
     ///
-    AccountActive.prototype.render = function () {
-        return React.createElement("div", { className: "AccountActive" }, "\u0441\u0447\u0435\u0442\u0430\u0430\u0430\u0430");
+    AccountLine.prototype.render = function () {
+        return React.createElement("div", { className: "AccountLine" }, this.props.account.title);
     };
-    return AccountActive;
+    return AccountLine;
 }(View_1.default));
-exports.AccountActive = AccountActive;
+exports.AccountLine = AccountLine;
+exports.default = AccountLine;
 
 
 /***/ }),
-/* 34 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

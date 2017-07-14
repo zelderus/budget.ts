@@ -29,12 +29,16 @@ export class TransactionLine extends View<ITransactionLineProps, ITransactionLin
         };
     }
 
-
+    private numberFormat(num: number, slices: number): string {
+        return ("0" + num).slice(-slices);
+    }
+    private numTo2Zero(num: number): string {
+        return this.numberFormat(num, 2);
+    }
 
     ///
     /// User interactions
     ///
-
 
 
 
@@ -46,7 +50,9 @@ export class TransactionLine extends View<ITransactionLineProps, ITransactionLin
 	render() {
 
 		return <div className="TransactionLine">
-            {this.props.transaction.cost}
+            <span className="Date">{this.numTo2Zero(this.props.transaction.date.getDate())}.{this.numTo2Zero(this.props.transaction.date.getMonth())}.{this.props.transaction.date.getFullYear()}</span>
+            <span className="Time">({this.numTo2Zero(this.props.transaction.date.getHours())}:{this.numTo2Zero(this.props.transaction.date.getMinutes())})</span>
+            <span className="Title">{this.props.transaction.cost}</span>
         </div>;
 	}
 

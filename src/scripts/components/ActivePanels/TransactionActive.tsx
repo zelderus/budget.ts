@@ -9,7 +9,7 @@ import TransactionLine from './../Partials/TransactionLine';
 
 
 export interface ITransactionActiveProps {  }
-export interface ITransactionActiveStates {  }
+export interface ITransactionActiveStates { transactions: Transactions.TransactionLine[]; }
 
 
 /**
@@ -23,10 +23,17 @@ export class TransactionActive extends View<ITransactionActiveProps, ITransactio
     }
 
 
+    componentDidMount () {
+        super.componentDidMount();
+        this.getActionCreator().loadTransactions(); // TODO: не стоит загружать каждый раз !!!!
+    }
+
+
+
     // Интересующие нас состояния (получаем их строго из Сторов)
     protected getState() : ITransactionActiveStates {
         return {
-            
+            transactions: TransactionStore.getTransactions()
         };
     }
 
@@ -45,16 +52,9 @@ export class TransactionActive extends View<ITransactionActiveProps, ITransactio
 
     private renderLines() {
 
-        let lines = [
-            new Transactions.TransactionLine('1', new Date(2017, 5, 10), Transactions.TransactionTypes.Spend, "rub", 400),
-            new Transactions.TransactionLine('2', new Date(2017, 5, 10), Transactions.TransactionTypes.Spend, "rub", 2400),
-            new Transactions.TransactionLine('3', new Date(2017, 5, 11), Transactions.TransactionTypes.Profit, "rub", 50000),
-            new Transactions.TransactionLine('4', new Date(2017, 5, 11), Transactions.TransactionTypes.Spend, "rub", 1700),
-            new Transactions.TransactionLine('5', new Date(2017, 5, 12), Transactions.TransactionTypes.Spend, "rub", 400),
-        ];
-
+        let lines = this.state.transactions;
         // sort by Date
-        lines = lines.sort(line => line.date.getUTCDate());
+        lines = lines.sort((a,b) => a.date.getUTCDate() > b.date.getUTCDate() ? -1 : 1);
         // render
         let linesForRender = lines.map(line => { return <TransactionLine transaction={line} /> });
         

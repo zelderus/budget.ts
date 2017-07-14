@@ -103,7 +103,11 @@
         
 
         .TransactionLine { 
-            display: block; margin: 5px; padding: 8px; border: 1px solid #aaa; color: #333; .roundBorder4;
+            display: block; margin: 5px; padding: 8px; border: 1px solid #aaa; color: #333; .roundBorder4; clear: both; overflow: hidden;
+
+            .Date { color:#444; display: block; float: left; margin: 0 0 0 5px; font-size: 0.8em;}
+            .Time { color:#888; font-style: italic; display: block; float: left; margin: 0 0 0 5px; font-size: 0.75em;}
+            .Title { font-weight: bold; color:#000; display: block; float: left; margin: 0 0 0 5px;}
         }
     }
 }
@@ -113,7 +117,16 @@
 // Счета
 //
 .AccountActive {
+    overflow: hidden;
 
+    // список со счетами
+    .LinesPlace {
+        
+
+        .AccountLine { 
+            display: block; margin: 5px; padding: 8px; border: 1px solid #aaa; color: #333; .roundBorder4;
+        }
+    }
 }
 
 

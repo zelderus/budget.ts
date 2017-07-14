@@ -29,7 +29,18 @@ export namespace Actions{
             Dispatcher.dispatch(ActionTypes.NAVIGATION, navIndex);
         }
 
+        loadInitData() {
+            Dispatcher.dispatch(ActionTypes.LOAD_INIT_DATA, null);
+        }
 
+
+        loadAccounts() {
+            Dispatcher.dispatch(ActionTypes.ACCOUNTS_LOAD, null);
+        }
+
+        loadTransactions() {
+            Dispatcher.dispatch(ActionTypes.TRANSACTIONS_LOAD, null);
+        }
 
 
 

@@ -24,6 +24,8 @@ export class MainAppWidget extends BaseWidget {
         this._logDiv = document.createElement('div');
         place.appendChild(this._logDiv);
 
+        // загружаем начальные данные !!!
+        //this.getActionCreator().loadInitData();
     }
 
 
