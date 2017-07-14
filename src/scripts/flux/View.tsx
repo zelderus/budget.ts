@@ -3,7 +3,7 @@ import * as React from "react";
 import FluxUtils from './../flux/Utils';
 import FluxStore from './../flux/Store';
 import * as Actions from './../actions/Actions';
-
+import {EventSubscription} from "fbemitter";
 
 /**
  * Вьюшка.
@@ -12,6 +12,7 @@ export class View<P, S> extends React.Component<P, S> {
 
     __myName: string;
     __stores: FluxStore.IStore[];
+    __emmiterTokens: EventSubscription[] = [];
 
     constructor(props: any, stores: FluxStore.IStore[]){
         super(props);
@@ -34,7 +35,7 @@ export class View<P, S> extends React.Component<P, S> {
      */
     componentDidMount () {
         if (this._hasAnyStore()) {
-            this.__stores.forEach(store => store.addChangeListener(this._onChange, this));
+            this.__stores.forEach(store => this.__emmiterTokens.push(store.addChangeListener(this._onChange, this)));
         }
     }
     /**
@@ -43,8 +44,14 @@ export class View<P, S> extends React.Component<P, S> {
      */
     componentWillUnmount () {
         if (this._hasAnyStore()) {
+            //
             this.__stores.forEach(store => store.removeChangeListener(this._onChange));
             this.__stores = null;
+            //
+            if (this.__emmiterTokens != null && this.__emmiterTokens != undefined && this.__emmiterTokens.length > 0) {
+                this.__emmiterTokens.forEach(token => token.remove());
+                this.__emmiterTokens = null;
+            }
         }
     }
     /**

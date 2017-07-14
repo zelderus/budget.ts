@@ -1,11 +1,11 @@
 
 
 import * as React from "react";
-import View from './../flux/View';
+import View from './../../flux/View';
 import {NavigationPanel} from "./NavigationPanel";
 import {ActionPanel} from "./ActionPanel";
 import {ControlPanel} from "./ControlPanel";
-import AppData from './../datas/AppData';
+import AppData from './../../datas/AppData';
 
 
 export interface IMainPanelProps { }

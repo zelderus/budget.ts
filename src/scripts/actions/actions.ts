@@ -27,8 +27,10 @@ export namespace Actions{
 
         navigation(navIndex: number) {
             Dispatcher.dispatch(ActionTypes.NAVIGATION, navIndex);
-            this.log("навигация: " + navIndex);
         }
+
+
+
 
 
 

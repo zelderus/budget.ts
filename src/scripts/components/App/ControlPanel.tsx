@@ -1,8 +1,8 @@
 
 
 import * as React from "react";
-import View from './../flux/View';
-import AppStore from './../stores/AppStore';
+import View from './../../flux/View';
+import AppStore from './../../stores/AppStore';
 
 export interface IControlPanelProps {  }
 export interface IControlPanelStates {  }

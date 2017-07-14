@@ -1,9 +1,9 @@
 
 
 import * as React from "react";
-import View from './../flux/View';
-import AppStore from './../stores/AppStore';
-import Navigation from './../models/Navigation';
+import View from './../../flux/View';
+import AppStore from './../../stores/AppStore';
+import Navigation from './../../models/Navigation';
 
 export interface INavigationPanelProps { navLines: Navigation.NavigationLine[]; }
 export interface INavigationPanelStates { navIndex: number;  }

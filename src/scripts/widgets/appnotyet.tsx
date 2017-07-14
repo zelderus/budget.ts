@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import {AppNotYet} from "./../components/appnotyet";
+import {AppNotYet} from "./../components/App/appnotyet";
 
 
 /**

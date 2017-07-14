@@ -2,8 +2,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import {BaseWidget} from "./BaseWidget";
-import {MainPanel} from "./../components/MainPanel";
-import {LogPanel} from "./../components/LogPanel";
+import {MainPanel} from "./../components/App/MainPanel";
+import {LogPanel} from "./../components/App/LogPanel";
 
 
 

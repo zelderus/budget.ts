@@ -28,8 +28,6 @@
 }
 
 
-
-
 /********************
 *
 *     helpers
@@ -39,28 +37,21 @@
 .roundBorder6 { -webkit-border-radius: 6px; -moz-border-radius: 6px; border-radius: 6px; }
 .roundBorder8 { -webkit-border-radius: 8px; -moz-border-radius: 8px; border-radius: 8px; }
 
-
-
-
 /********************
 *
 *     системные
 *
 *******************/
-
 // Вьюшка без рендера
 .ViewErrorBlock { margin: 2px; padding: 4px; text-align: center; font-weight: bold; color: #801111; background-color: #F2DFDF; border: 1px dashed #801111;}
 // Не найдена активная Вьюшка
 .ActiveViewError {margin: 2px; padding: 4px; text-align: center; font-weight: bold; color: #801111; background-color: #F2DFDF; border: 1px dashed #801111;}
-
-
 
 /********************
 *
 *     приложение
 *
 *******************/
-
 // обертка всего приложения
 .AppWrapper { .pageSize; margin: 0 auto; padding: 0px; font: 400 14px 'MyriadPro_Cond', sans-serif; color: #000;}
 // описание приложения
@@ -70,7 +61,6 @@
 // логи
 .LogPanel { overflow: hidden;margin: 10px 0; padding: 4px 12px; border: 1px dashed #aaa; .roundBorder4; background-color: #EBF0DD; color: #111; font-size: 10px; }
 
-
 /********************
 *
 *   основная часть приложения
@@ -79,32 +69,51 @@
 // основная часть приложения
 .MainPanel { .appSize; margin: 0; padding: 0; border: 1px dashed #aaa; .roundBorder4; }
 
-
-
 //
-// навигация
+// навигация (отображается вверху)
 //
 .NavigationPanel { padding: 6px; background-color:#EBEBEB; border-top: 1px solid #EBEBEB; border-bottom: 1px solid #DEDEDE; clear: both;overflow: hidden;}
 .NavigationPanel .Button {float: left; margin: 6px; padding: 4px;text-align: center; cursor: pointer; color: #2B6499; border: 1px solid transparent;}
 .NavigationPanel .Button:hover {color: #042B4F;}
 .NavigationPanel .Button.Active {color: #042B4F; cursor: default; border: 1px solid #042B4F; .roundBorder4; }
 
-
 //
-// основная часть приложения
-//
-.ActionPanel { .actionPanelSize; clear: both; overflow: hidden; }
-
-
-
-
-//
-// управление
+// управление (отображается внизу приложения)
 //
 .ControlPanel { margin:0; padding: 4px; background-color:#EBEBEB; border-top: 1px solid #EBEBEB; border-bottom: 1px solid #DEDEDE; clear: both;overflow: hidden;}
 .ControlPanel .Buttons {}
 .ControlPanel .Buttons .Button {float: left; margin: 6px; padding: 6px;text-align: center; border: 1px solid #da0; cursor: pointer; background-color: #da1;color: #fff;}
 .ControlPanel .Buttons .Button:hover {background-color: #d81;}
+
+//
+// основная часть приложения (центральная часть)
+//
+.ActionPanel { .actionPanelSize; clear: both; overflow: hidden; }
+
+
+
+//
+// расходы/доходы активная панель
+//
+.TransactionActive {
+    overflow: hidden;
+
+    // список с платежками
+    .LinesPlace {
+        
+
+        .TransactionLine { 
+            display: block; margin: 5px; padding: 8px; border: 1px solid #aaa; color: #333; .roundBorder4;
+        }
+    }
+}
+
+
+
+
+
+
+
 
 
 

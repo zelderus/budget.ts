@@ -96,6 +96,7 @@ var View = (function (_super) {
     __extends(View, _super);
     function View(props, stores) {
         var _this = _super.call(this, props) || this;
+        _this.__emmiterTokens = [];
         _this.__myName = Utils_1.default.getClassName(_this);
         // Сторы, на которые подписываемся
         _this.__stores = stores;
@@ -113,7 +114,7 @@ var View = (function (_super) {
     View.prototype.componentDidMount = function () {
         var _this = this;
         if (this._hasAnyStore()) {
-            this.__stores.forEach(function (store) { return store.addChangeListener(_this._onChange, _this); });
+            this.__stores.forEach(function (store) { return _this.__emmiterTokens.push(store.addChangeListener(_this._onChange, _this)); });
         }
     };
     /**
@@ -122,9 +123,16 @@ var View = (function (_super) {
      */
     View.prototype.componentWillUnmount = function () {
         var _this = this;
+        console.log("componentWillUnmount: " + Utils_1.default.getClassName(this));
         if (this._hasAnyStore()) {
+            //
             this.__stores.forEach(function (store) { return store.removeChangeListener(_this._onChange); });
             this.__stores = null;
+            //
+            if (this.__emmiterTokens != null && this.__emmiterTokens != undefined && this.__emmiterTokens.length > 0) {
+                this.__emmiterTokens.forEach(function (token) { return token.remove(); });
+                this.__emmiterTokens = null;
+            }
         }
     };
     /**
@@ -508,7 +516,6 @@ var Actions;
         };
         ActionCreator.prototype.navigation = function (navIndex) {
             Dispatcher_1.default.dispatch(ActionTypes_1.default.NAVIGATION, navIndex);
-            this.log("навигация: " + navIndex);
         };
         ActionCreator.prototype.addItem = function (item) {
             Dispatcher_1.default.dispatch(ActionTypes_1.default.ADD_ITEM, item);
@@ -707,7 +714,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Navigation_1 = __webpack_require__(28);
 // активные вьюшки
 var SpendActive_1 = __webpack_require__(29);
-var ProfitActive_1 = __webpack_require__(30);
+var ProfitActive_1 = __webpack_require__(32);
 // сторы
 var AppStore_1 = __webpack_require__(2);
 var AppData;
@@ -884,7 +891,7 @@ var React = __webpack_require__(0);
 var ReactDOM = __webpack_require__(5);
 var BaseWidget_1 = __webpack_require__(17);
 var MainPanel_1 = __webpack_require__(18);
-var LogPanel_1 = __webpack_require__(31);
+var LogPanel_1 = __webpack_require__(33);
 /**
  * Основной виджет приложения.
  */
@@ -1103,6 +1110,7 @@ var BaseStore = (function () {
     };
     // Remove change listener
     BaseStore.prototype.removeChangeListener = function (callback) {
+        //this.__emitter.removeAllListeners()
     };
     /**
      * Получили сообщение от диспетчера. Наследующий обязуется реализовать его.
@@ -1729,6 +1737,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
 var View_1 = __webpack_require__(1);
 var AppStore_1 = __webpack_require__(2);
+var Transactions_1 = __webpack_require__(30);
+var TransactionLine_1 = __webpack_require__(31);
 /**
  * Панель - Расходы.
  */
@@ -1739,6 +1749,7 @@ var SpendActive = (function (_super) {
     }
     // Интересующие нас состояния (получаем их строго из Сторов)
     SpendActive.prototype.getState = function () {
+        console.log("SpendActive getState");
         return {};
     };
     ///
@@ -1747,8 +1758,22 @@ var SpendActive = (function (_super) {
     ///
     /// Render
     ///
+    SpendActive.prototype.renderLines = function () {
+        var lines = [
+            new Transactions_1.default.TransactionLine('1', new Date(2017, 5, 10), Transactions_1.default.TransactionTypes.Spend, "rub", 400),
+            new Transactions_1.default.TransactionLine('2', new Date(2017, 5, 10), Transactions_1.default.TransactionTypes.Spend, "rub", 2400),
+            new Transactions_1.default.TransactionLine('3', new Date(2017, 5, 11), Transactions_1.default.TransactionTypes.Profit, "rub", 50000),
+            new Transactions_1.default.TransactionLine('4', new Date(2017, 5, 11), Transactions_1.default.TransactionTypes.Spend, "rub", 1700),
+            new Transactions_1.default.TransactionLine('5', new Date(2017, 5, 12), Transactions_1.default.TransactionTypes.Spend, "rub", 400),
+        ];
+        // sort by Date
+        lines = lines.sort(function (line) { return line.date.getUTCDate(); });
+        // render
+        var linesForRender = lines.map(function (line) { return React.createElement(TransactionLine_1.default, { transaction: line }); });
+        return React.createElement("div", { className: "LinesPlace" }, linesForRender);
+    };
     SpendActive.prototype.render = function () {
-        return React.createElement("div", { className: "Act" }, "speeeend");
+        return React.createElement("div", { className: "TransactionActive" }, this.renderLines());
     };
     return SpendActive;
 }(View_1.default));
@@ -1757,6 +1782,84 @@ exports.SpendActive = SpendActive;
 
 /***/ }),
 /* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Transactions;
+(function (Transactions) {
+    var TransactionTypes;
+    (function (TransactionTypes) {
+        TransactionTypes[TransactionTypes["Spend"] = 1] = "Spend";
+        TransactionTypes[TransactionTypes["Profit"] = 2] = "Profit";
+    })(TransactionTypes = Transactions.TransactionTypes || (Transactions.TransactionTypes = {}));
+    /**
+     * Вывод транзакции.
+     */
+    var TransactionLine = (function () {
+        function TransactionLine(id, date, type, currency, cost) {
+            this.id = id;
+            this.date = date;
+            this.type = type;
+            this.currency = currency;
+            this.cost = cost;
+        }
+        return TransactionLine;
+    }());
+    Transactions.TransactionLine = TransactionLine;
+})(Transactions || (Transactions = {}));
+exports.default = Transactions;
+
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(0);
+var View_1 = __webpack_require__(1);
+/**
+ * Строка дохода/расхода
+ */
+var TransactionLine = (function (_super) {
+    __extends(TransactionLine, _super);
+    function TransactionLine(props) {
+        return _super.call(this, props, []) || this;
+    }
+    // Интересующие нас состояния (получаем их строго из Сторов)
+    TransactionLine.prototype.getState = function () {
+        return {};
+    };
+    ///
+    /// User interactions
+    ///
+    ///
+    /// Render
+    ///
+    TransactionLine.prototype.render = function () {
+        return React.createElement("div", { className: "TransactionLine" }, this.props.transaction.cost);
+    };
+    return TransactionLine;
+}(View_1.default));
+exports.TransactionLine = TransactionLine;
+exports.default = TransactionLine;
+
+
+/***/ }),
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1785,6 +1888,7 @@ var ProfitActive = (function (_super) {
     }
     // Интересующие нас состояния (получаем их строго из Сторов)
     ProfitActive.prototype.getState = function () {
+        console.log("ProfitActive getState");
         return {};
     };
     ///
@@ -1802,7 +1906,7 @@ exports.ProfitActive = ProfitActive;
 
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

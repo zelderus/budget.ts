@@ -1,7 +1,7 @@
 
 import * as React from "react";
-import AppStore from './../stores/AppStore';
-import View from './../flux/View';
+import AppStore from './../../stores/AppStore';
+import View from './../../flux/View';
 
 export interface ILogPanelProps {  }
 export interface ILogPanelStates { logText: string  }

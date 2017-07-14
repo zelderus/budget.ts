@@ -1,5 +1,5 @@
 
-import {EventEmitter} from "fbemitter";
+import {EventEmitter, EventSubscription} from "fbemitter";
 import StoreFlux from './../flux/store';
 import FluxUtils from './../flux/Utils';
 
@@ -38,13 +38,13 @@ export class BaseStore implements StoreFlux.IStore {
         this.__invokeOnDispatch(null);
     }
     // Add change listener
-    public addChangeListener(callback: StoreFlux.StoreCallback, s: any) {
+    public addChangeListener(callback: StoreFlux.StoreCallback, s: any): EventSubscription {
         var token = this.__emitter.addListener(this.__changeEvent, callback, s);
         return token;
     }
     // Remove change listener
     public removeChangeListener(callback: StoreFlux.StoreCallback) {
-        
+        //this.__emitter.removeAllListeners()
     }
 
     /**

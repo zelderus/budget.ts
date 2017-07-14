@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import * as ComDesc from "./../components/appdesc";
+import * as ComDesc from "./../components/App/appdesc";
 
 
 /**

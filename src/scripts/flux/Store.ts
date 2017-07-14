@@ -1,5 +1,5 @@
 
-
+import {EventSubscription} from "fbemitter";
 
 namespace Flux {
 
@@ -12,7 +12,7 @@ namespace Flux {
         emitChange():void;
 
         // Add change listener
-        addChangeListener(callback: StoreCallback, s: any) : any;
+        addChangeListener(callback: StoreCallback, s: any) : EventSubscription;
         
         // Remove change listener
         removeChangeListener(callback: StoreCallback) : void;
