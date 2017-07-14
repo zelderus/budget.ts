@@ -6,20 +6,14 @@ import ActionTypes from './../actions/ActionTypes';
 
 
 /**
- * Основное хранилище приложения.
- * Глобальные модели состояний, состяние интерфейса приложения. 
- * Отдельно от изменений транзакций и прочее, чтобы не обновлялись вьюшки с данными.
+ * Хранилище с транзакциями
  */
-export class AppStore extends BaseStore {
-
-    _logTextValue: string;
-    _navIndex: number;
+export class TransactionStore extends BaseStore {
 
     constructor() {
         super();
 
-        this._logTextValue = "";
-        this._navIndex = 1;
+        
     }
 
 
@@ -28,8 +22,8 @@ export class AppStore extends BaseStore {
     // Эти данные для их состояний. При изменении которых, Вьюшки обновляются.
     //
 
-    public getLogText() { return this._logTextValue; }
-    public getNavigationIndex() { return this._navIndex; }
+    public getSome() { return ""; }
+
 
 
 
@@ -43,12 +37,16 @@ export class AppStore extends BaseStore {
      */
     onDispatch(type: number, obj: any):boolean {
         switch(type) {
-            case ActionTypes.LOG:
-                this._logTextValue = obj;            
+
+            case ActionTypes.ADD_ITEM:
+                // TODO: 
                 break;
-            case ActionTypes.NAVIGATION:
-                this._navIndex = obj;
+                
+            case ActionTypes.DELETE_ITEM:
+                // TODO: 
                 break;
+
+
 
             default:
                 return true;
@@ -59,4 +57,4 @@ export class AppStore extends BaseStore {
     
 }
 
-export default new AppStore;
+export default new TransactionStore;

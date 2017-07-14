@@ -2,26 +2,26 @@
 
 import * as React from "react";
 import View from './../../flux/View';
-import AppStore from './../../stores/AppStore';
+import TransactionStore from './../../stores/TransactionStore';
 
 
-export interface IProfitActiveProps {  }
-export interface IProfitActiveStates {  }
+export interface IAccountActiveProps {  }
+export interface IAccountActiveStates {  }
 
 
 /**
- * Панель - Доходы.
+ * Панель - счета.
  */
-export class ProfitActive extends View<IProfitActiveProps, IProfitActiveStates> {
+export class AccountActive extends View<IAccountActiveProps, IAccountActiveStates> {
 
     constructor(props: any){
-        super(props, [AppStore]);
+        super(props, [TransactionStore]);
 
     }
 
 
     // Интересующие нас состояния (получаем их строго из Сторов)
-    protected getState() : IProfitActiveStates {
+    protected getState() : IAccountActiveStates {
         return {
             
         };
@@ -44,8 +44,8 @@ export class ProfitActive extends View<IProfitActiveProps, IProfitActiveStates> 
 
 	render(){
 
-		return <div className="Act">
-            prooofit
+		return <div className="AccountActive">
+            счетаааа
         </div>;
 	}
 

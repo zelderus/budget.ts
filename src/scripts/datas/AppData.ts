@@ -3,11 +3,12 @@ import StoreFlux from './../flux/store';
 import Navigation from './../models/Navigation';
 
 // активные вьюшки
-import {SpendActive} from "./../components/ActivePanels/SpendActive";
-import {ProfitActive} from "./../components/ActivePanels/ProfitActive";
+import {TransactionActive} from "./../components/ActivePanels/TransactionActive";
+import {AccountActive} from "./../components/ActivePanels/AccountActive";
 
 // сторы
 import AppStore from './../stores/AppStore';
+import TransactionStore from './../stores/TransactionStore';
 
 
 
@@ -22,18 +23,18 @@ namespace AppData {
     export function getNavigations(): Navigation.NavigationLine[] {
         let ind = 1;
         return [
-            new Navigation.NavigationLine(ind++, "Расходы", SpendActive),
-            new Navigation.NavigationLine(ind++, "Доходы", ProfitActive)
+            new Navigation.NavigationLine(ind++, "Транзакции", TransactionActive),
+            new Navigation.NavigationLine(ind++, "Счета", AccountActive)
         ];
     }
-    
+
 
     /**
      * Список всех сторов (синглетонов).
      * Необходимо для Диспетчера.
      */
     export function getStores(): StoreFlux.IStore[] {
-        return [AppStore];
+        return [AppStore, TransactionStore];
     }
 
 

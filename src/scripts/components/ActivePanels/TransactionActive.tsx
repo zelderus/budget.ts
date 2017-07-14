@@ -2,29 +2,29 @@
 
 import * as React from "react";
 import View from './../../flux/View';
-import AppStore from './../../stores/AppStore';
+import TransactionStore from './../../stores/TransactionStore';
 
 import Transactions from './../../models/Transactions';
 import TransactionLine from './../Partials/TransactionLine';
 
 
-export interface ISpendActiveProps {  }
-export interface ISpendActiveStates {  }
+export interface ITransactionActiveProps {  }
+export interface ITransactionActiveStates {  }
 
 
 /**
- * Панель - Расходы.
+ * Панель - транзакции.
  */
-export class SpendActive extends View<ISpendActiveProps, ISpendActiveStates> {
+export class TransactionActive extends View<ITransactionActiveProps, ITransactionActiveStates> {
 
     constructor(props: any){
-        super(props, [AppStore]);
+        super(props, [TransactionStore]);
 
     }
 
 
     // Интересующие нас состояния (получаем их строго из Сторов)
-    protected getState() : ISpendActiveStates {
+    protected getState() : ITransactionActiveStates {
         return {
             
         };
