@@ -23,10 +23,6 @@ export class AccountActive extends View<IAccountActiveProps, IAccountActiveState
 
     }
 
-    componentDidMount () {
-        super.componentDidMount();
-        this.getActionCreator().loadAccounts();
-    }
 
 
     // Интересующие нас состояния (получаем их строго из Сторов)

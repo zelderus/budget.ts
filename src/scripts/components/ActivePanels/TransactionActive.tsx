@@ -23,11 +23,6 @@ export class TransactionActive extends View<ITransactionActiveProps, ITransactio
     }
 
 
-    componentDidMount () {
-        super.componentDidMount();
-        this.getActionCreator().loadTransactions(); // TODO: не стоит загружать каждый раз !!!!
-    }
-
 
 
     // Интересующие нас состояния (получаем их строго из Сторов)
@@ -54,7 +49,7 @@ export class TransactionActive extends View<ITransactionActiveProps, ITransactio
 
         let lines = this.state.transactions;
         // sort by Date
-        lines = lines.sort((a,b) => a.date.getUTCDate() > b.date.getUTCDate() ? -1 : 1);
+        lines = lines.sort((a,b) => a.date > b.date ? -1 : 1);
         // render
         let linesForRender = lines.map(line => { return <TransactionLine transaction={line} /> });
         

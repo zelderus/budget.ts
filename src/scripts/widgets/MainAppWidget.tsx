@@ -25,7 +25,7 @@ export class MainAppWidget extends BaseWidget {
         place.appendChild(this._logDiv);
 
         // загружаем начальные данные !!!
-        //this.getActionCreator().loadInitData();
+        this.getActionCreator().loadInitData();
     }
 
 

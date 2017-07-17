@@ -40,25 +40,42 @@ export class TransactionStore extends BaseStore {
     //
 
     private _loadInitDataAsync() {
-        this._loadAccountsAsync(false);
-        this._loadTransctions();
-        // оповещаем
-        this.emitChange();
-    }
-
-    private _loadAccountsAsync(withEmit: boolean) {
-        console.log("_loadAccounts");
-        //this.__accounts = Client.getAccounts();
-        Client.getAccounts(acs => { 
-            this.__accounts = acs;
-            // do next
-            if (withEmit) this.emitChange();
+        this._loadAccountsAsync(() => { // счета
+            this._loadTransactionsAsync(() => { // транзакции
+                // оповещаем
+                this.emitChange();
+            });
         });
     }
 
-    private _loadTransctions() {
-        console.log("_loadTransctions");
-        this.__transactions = Client.getTransactions(this.__transactionFilter);
+    private _loadAccountsAsync(callBack?: () => void) {
+        //this.__accounts = Client.getAccounts();
+        Client.getAccounts((s, m, acs) => { 
+            this.__accounts = acs;
+            // do next
+            //if (withEmit) this.emitChange();
+            if (callBack != null) callBack();
+            if (!s) this._onLoadError(m);
+        });
+    }
+
+    private _loadTransactionsAsync(callBack?: () => void) {
+        //this.__transactions = Client.getTransactions(this.__transactionFilter);
+        Client.getTransactions(this.__transactionFilter, (s, m, trs) => {
+            this.__transactions = trs;
+            if (callBack != null) callBack();
+            if (!s) this._onLoadError(m);
+        });
+    }
+
+
+    //
+    //
+    //
+
+    private _onLoadError(msg: string): void {
+        // TODO: заблокировать приложение и отобразить ошибку??
+        console.log("Ошибка в Store: " + msg);
     }
 
 
@@ -78,23 +95,24 @@ export class TransactionStore extends BaseStore {
                 this._loadInitDataAsync();
                 return true;
 
-            case ActionTypes.ACCOUNTS_LOAD: // TODO: научить ждать асинхронку (возможно Диспетчера)
-                this._loadAccountsAsync(true);
+            case ActionTypes.ACCOUNTS_LOAD:
+                this._loadAccountsAsync(() => { this.emitChange(); });
                 return true;
                 //break;
 
-            case ActionTypes.TRANSACTIONS_LOAD: // TODO: научить ждать асинхронку (возможно Диспетчера)
-                this._loadTransctions();
-                break;
+            case ActionTypes.TRANSACTIONS_LOAD:
+                this._loadTransactionsAsync(() => { this.emitChange(); });
+                return true;
+                //break;
 
             // TODO: update transaction filters
 
 
 
-            default:
-                return true;
+            //default:
+            //    return true;
         }
-        this.emitChange();
+        //this.emitChange();
         return true;
     }
     

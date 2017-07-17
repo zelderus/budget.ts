@@ -541,25 +541,44 @@ var TransactionStore = (function (_super) {
     //
     //
     TransactionStore.prototype._loadInitDataAsync = function () {
-        this._loadAccountsAsync(false);
-        this._loadTransctions();
-        // оповещаем
-        this.emitChange();
-    };
-    TransactionStore.prototype._loadAccountsAsync = function (withEmit) {
         var _this = this;
-        console.log("_loadAccounts");
-        //this.__accounts = Client.getAccounts();
-        Client_1.default.getAccounts(function (acs) {
-            _this.__accounts = acs;
-            // do next
-            if (withEmit)
+        this._loadAccountsAsync(function () {
+            _this._loadTransactionsAsync(function () {
+                // оповещаем
                 _this.emitChange();
+            });
         });
     };
-    TransactionStore.prototype._loadTransctions = function () {
-        console.log("_loadTransctions");
-        this.__transactions = Client_1.default.getTransactions(this.__transactionFilter);
+    TransactionStore.prototype._loadAccountsAsync = function (callBack) {
+        var _this = this;
+        //this.__accounts = Client.getAccounts();
+        Client_1.default.getAccounts(function (s, m, acs) {
+            _this.__accounts = acs;
+            // do next
+            //if (withEmit) this.emitChange();
+            if (callBack != null)
+                callBack();
+            if (!s)
+                _this._onLoadError(m);
+        });
+    };
+    TransactionStore.prototype._loadTransactionsAsync = function (callBack) {
+        var _this = this;
+        //this.__transactions = Client.getTransactions(this.__transactionFilter);
+        Client_1.default.getTransactions(this.__transactionFilter, function (s, m, trs) {
+            _this.__transactions = trs;
+            if (callBack != null)
+                callBack();
+            if (!s)
+                _this._onLoadError(m);
+        });
+    };
+    //
+    //
+    //
+    TransactionStore.prototype._onLoadError = function (msg) {
+        // TODO: заблокировать приложение и отобразить ошибку??
+        console.log("Ошибка в Store: " + msg);
     };
     /**
      * Обрабатываем сообщения от диспетчера.
@@ -568,22 +587,20 @@ var TransactionStore = (function (_super) {
      * @param obj
      */
     TransactionStore.prototype.onDispatch = function (type, obj) {
+        var _this = this;
         switch (type) {
             case ActionTypes_1.default.LOAD_INIT_DATA:
                 this._loadInitDataAsync();
                 return true;
-            case ActionTypes_1.default.ACCOUNTS_LOAD:// TODO: научить ждать асинхронку (возможно Диспетчера)
-                this._loadAccountsAsync(true);
+            case ActionTypes_1.default.ACCOUNTS_LOAD:
+                this._loadAccountsAsync(function () { _this.emitChange(); });
                 return true;
             //break;
-            case ActionTypes_1.default.TRANSACTIONS_LOAD:// TODO: научить ждать асинхронку (возможно Диспетчера)
-                this._loadTransctions();
-                break;
-            // TODO: update transaction filters
-            default:
+            case ActionTypes_1.default.TRANSACTIONS_LOAD:
+                this._loadTransactionsAsync(function () { _this.emitChange(); });
                 return true;
         }
-        this.emitChange();
+        //this.emitChange();
         return true;
     };
     return TransactionStore;
@@ -1129,9 +1146,9 @@ var MainAppWidget = (function (_super) {
         place.appendChild(_this._mainDiv);
         _this._logDiv = document.createElement('div');
         place.appendChild(_this._logDiv);
-        return _this;
         // загружаем начальные данные !!!
-        //this.getActionCreator().loadInitData();
+        _this.getActionCreator().loadInitData();
+        return _this;
     }
     MainAppWidget.prototype.draw = function () {
         ReactDOM.render(React.createElement(MainPanel_1.MainPanel, null), this._mainDiv);
@@ -1896,10 +1913,6 @@ var TransactionActive = (function (_super) {
     function TransactionActive(props) {
         return _super.call(this, props, [TransactionStore_1.default]) || this;
     }
-    TransactionActive.prototype.componentDidMount = function () {
-        _super.prototype.componentDidMount.call(this);
-        this.getActionCreator().loadTransactions();
-    };
     // Интересующие нас состояния (получаем их строго из Сторов)
     TransactionActive.prototype.getState = function () {
         return {
@@ -1915,7 +1928,7 @@ var TransactionActive = (function (_super) {
     TransactionActive.prototype.renderLines = function () {
         var lines = this.state.transactions;
         // sort by Date
-        lines = lines.sort(function (a, b) { return a.date.getUTCDate() > b.date.getUTCDate() ? -1 : 1; });
+        lines = lines.sort(function (a, b) { return a.date > b.date ? -1 : 1; });
         // render
         var linesForRender = lines.map(function (line) { return React.createElement(TransactionLine_1.default, { transaction: line }); });
         return React.createElement("div", { className: "LinesPlace" }, linesForRender);
@@ -1951,15 +1964,34 @@ var Client;
             return Mock.getAccounts();
         }*/
         ClientAccessor.prototype.getAccounts = function (callBack) {
-            callBack(MockData_1.default.getAccounts());
+            var isSuccess = true;
+            var errorMsg = "";
+            callBack(isSuccess, errorMsg, MockData_1.default.getAccounts());
+            //
+            /*Ajax.get("http://zedk.ru/sites/budget/fakes/accounts.json", {}, (data) => {
+                // TODO:
+                callBack(isSuccess, errorMsg, Mock.getAccounts());
+            });*/
+            /*jQuery.ajax({
+                type: 'GET',
+                url: "http://zedk.ru/sites/budget/fakes/accounts.json",
+                dataType: 'json',
+                success: function(data) {
+                    callBack(isSuccess, errorMsg, Mock.getAccounts());
+                },
+                async: true
+            });*/
         };
         /**
          * Транзакции.
          */
-        ClientAccessor.prototype.getTransactions = function (filters) {
+        ClientAccessor.prototype.getTransactions = function (filters, callBack) {
+            var isSuccess = true;
+            var errorMsg = "";
             var data = MockData_1.default.getTransactions();
             // TODO: filters
-            return data;
+            //return data;
+            callBack(isSuccess, errorMsg, data);
         };
         return ClientAccessor;
     }());
@@ -2122,10 +2154,6 @@ var AccountActive = (function (_super) {
     function AccountActive(props) {
         return _super.call(this, props, [TransactionStore_1.default]) || this;
     }
-    AccountActive.prototype.componentDidMount = function () {
-        _super.prototype.componentDidMount.call(this);
-        this.getActionCreator().loadAccounts();
-    };
     // Интересующие нас состояния (получаем их строго из Сторов)
     AccountActive.prototype.getState = function () {
         return {
