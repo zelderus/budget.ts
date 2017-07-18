@@ -4,7 +4,7 @@ node_modules
 public/*.js
 public/*.css
 build
-src/scripts/_prebuild/*
+src/_prebuild
 *.node
 *.orig
 .idea
