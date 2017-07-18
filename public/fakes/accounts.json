@@ -1,0 +1,8 @@
+{
+    "success": true,
+    "message": "",
+    "data": [
+        { "id": "1" , "title": "Кошелек", "summ": "12000", "order": "1"},
+        { "id": "2" , "title": "Кредитка", "summ": "100", "order": "2"}
+    ]
+}

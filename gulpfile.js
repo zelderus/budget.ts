@@ -6,6 +6,8 @@ var less = require('gulp-less');
 var cleanCSS = require('gulp-clean-css');
 var concatCss = require('gulp-concat-css');
 var runSequence = require('run-sequence');
+//var removeFiles = require('gulp-remove-files');
+var deletefile = require('gulp-delete-file');
 
 var path = {
     buildPath: 'public/',
@@ -21,11 +23,13 @@ var path = {
         'src/scripts/**/*.js',
         'src/scripts/**/*.json',
     ],
-	sourceAppFile: 'src/_prebuild/bundle.js', // собранный файл из webpack
+	sourceAppFile: ['src/_prebuild/bundle.js'], // собранный файл из webpack
+    copyAppFile: ['src/_prebuild/bundle.js', 'src/_prebuild/bundle.js.map'], 
 	externalJsFiles: [ // внешние модули, которые необходимо переложить в публичную папку
 		'node_modules/react/dist/react.min.js',
 		'node_modules/react-dom/dist/react-dom.min.js'
-	]
+	],
+    filesToDel: [ 'public/bundle.js', 'public/bundle.js.map']
 }
 
 //
@@ -65,8 +69,12 @@ gulp.task('min:js', function(done){
             .pipe(gulp.dest(path.buildPath));
 });
 gulp.task('copy:js', function(done){
-    return gulp.src(path.sourceAppFile)
+    return gulp.src(path.copyAppFile)
             .pipe(gulp.dest(path.buildPath));
+});
+gulp.task('del:js', function(done){
+    return gulp.src(path.filesToDel)
+        .pipe(deletefile({ deleteMatch: true } ));
 });
 gulp.task('scripts:dev', function(done){
     runSequence('webpack', function() {
@@ -76,9 +84,11 @@ gulp.task('scripts:dev', function(done){
     });
 });
 gulp.task('scripts:release', function(done){
-	runSequence('webpack', function() {
-        runSequence('min:js', function() {
-            done();
+    runSequence('del:js', function() {
+        runSequence('webpack', function() {
+            runSequence('min:js', function() {
+                done();
+            });
         });
     });
 });

@@ -9,8 +9,8 @@ import Ajax from './../plugins/Ajax';
 
 namespace Client {
 
-    export interface IClientResponse<T> { (succes:boolean, msg: string, val: T): void }
-
+    export interface IClientResponse<T> { (success:boolean, msg: string, val: T): void }
+    export interface IClientServerResponse<T> { success:boolean, message: string, data: T } // формат каждого ответа с сервера
 
     /**
      * Запрос к данным.
@@ -29,33 +29,51 @@ namespace Client {
             return Mock.getAccounts();
         }*/
         getAccounts(callBack: IClientResponse<Accounts.AccountLine[]>) {
-            let isSuccess = true;
-            let errorMsg = "";
-
-            callBack(isSuccess, errorMsg, Mock.getAccounts());
+            
+            //callBack(true, "", Mock.getAccounts());
 
             /*setTimeout(function(){
-                callBack(isSuccess, errorMsg, Mock.getAccounts());
+                callBack(false, "сервер не отвечает", null);
+            }, 5000);*/
+
+            /*setTimeout(function(){
+                callBack(true, "", Mock.getAccounts());
             }, 2000);*/
             
             //
-            /*Ajax.get("/public/fakes/accounts.json", {}, (data) => {
-                callBack(isSuccess, errorMsg, <Accounts.AccountLine[]>JSON.parse(data));
-            });*/
+            Ajax.get(
+                "public/fakes/accounts.json", 
+                {}, 
+                (data) => {
+                    let dataModel = <IClientServerResponse<Accounts.AccountLine[]>>JSON.parse(data);
+                    callBack(dataModel.success, dataModel.message, dataModel.data);
+                },
+                (errorMsg) => {
+                    callBack(false, errorMsg, null);
+                }
+            );
         }
 
         /**
          * Транзакции.
          */
         getTransactions(filters: Transactions.TransactionFilters, callBack: IClientResponse<Transactions.TransactionLine[]>) : void {
-            let isSuccess = true;
-            let errorMsg = "";
-
-            let data = Mock.getTransactions();
             // TODO: filters
             //return data;
 
-            callBack(isSuccess, errorMsg, data);
+            //callBack(true, "", Mock.getTransactions());
+
+            Ajax.get(
+                "public/fakes/transactions.json", 
+                filters, 
+                (data) => {
+                    let dataModel = <IClientServerResponse<Transactions.TransactionLine[]>>JSON.parse(data);
+                    callBack(dataModel.success, dataModel.message, dataModel.data);
+                },
+                (errorMsg) => {
+                    callBack(false, errorMsg, null);
+                }
+            );
         }
 
     }

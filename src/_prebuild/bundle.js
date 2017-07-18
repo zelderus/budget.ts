@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 15);
+/******/ 	return __webpack_require__(__webpack_require__.s = 14);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -596,7 +596,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var BaseStore_1 = __webpack_require__(10);
 var ActionTypes_1 = __webpack_require__(5);
 var Actions_1 = __webpack_require__(4);
-var Transactions_1 = __webpack_require__(14);
+var Transactions_1 = __webpack_require__(31);
 var Client_1 = __webpack_require__(32);
 /**
  * Хранилище с транзакциями
@@ -749,7 +749,7 @@ exports.default = new Flux.Dispatcher();
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var fbemitter_1 = __webpack_require__(23);
+var fbemitter_1 = __webpack_require__(22);
 var Utils_1 = __webpack_require__(3);
 //type StoreCallback = () => any;
 /**
@@ -840,7 +840,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var EventSubscription = __webpack_require__(25);
+var EventSubscription = __webpack_require__(24);
 
 /**
  * EmitterSubscription represents a subscription with listener and context data.
@@ -940,10 +940,10 @@ module.exports = invariant;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Navigation_1 = __webpack_require__(30);
+var Navigation_1 = __webpack_require__(29);
 // активные вьюшки
-var TransactionActive_1 = __webpack_require__(31);
-var AccountActive_1 = __webpack_require__(36);
+var TransactionActive_1 = __webpack_require__(30);
+var AccountActive_1 = __webpack_require__(35);
 // сторы
 var AppStore_1 = __webpack_require__(2);
 var TransactionStore_1 = __webpack_require__(7);
@@ -980,44 +980,11 @@ exports.default = AppData;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Transactions;
-(function (Transactions) {
-    /**
-     * Фильтры транзакций. Используется Клиентом при запросах к данным.
-     */
-    var TransactionFilters = (function () {
-        function TransactionFilters() {
-            this.packType = 1; // пакет - размерность выборки (день,месяц,год)
-            this.packType = 1;
-        }
-        return TransactionFilters;
-    }());
-    Transactions.TransactionFilters = TransactionFilters;
-    /**
-     * Типы транзакции.
-     */
-    var TransactionTypes;
-    (function (TransactionTypes) {
-        TransactionTypes[TransactionTypes["Spend"] = 1] = "Spend";
-        TransactionTypes[TransactionTypes["Profit"] = 2] = "Profit";
-        TransactionTypes[TransactionTypes["Transfer"] = 3] = "Transfer"; // перевод на другой счет
-    })(TransactionTypes = Transactions.TransactionTypes || (Transactions.TransactionTypes = {}));
-    /**
-     * Вывод транзакции.
-     */
-    var TransactionLine = (function () {
-        function TransactionLine(id, date, type, currency, cost) {
-            this.id = id;
-            this.date = date;
-            this.type = type;
-            this.currency = currency;
-            this.cost = cost;
-        }
-        return TransactionLine;
-    }());
-    Transactions.TransactionLine = TransactionLine;
-})(Transactions || (Transactions = {}));
-exports.default = Transactions;
+var app_1 = __webpack_require__(15);
+window.onload = function () {
+    var zapp = new app_1.ZeApp("appplace");
+    zapp.start();
+};
 
 
 /***/ }),
@@ -1027,22 +994,8 @@ exports.default = Transactions;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var app_1 = __webpack_require__(16);
-window.onload = function () {
-    var zapp = new app_1.ZeApp("appplace");
-    zapp.start();
-};
-
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var AppDesc_1 = __webpack_require__(17);
-var MainAppWidget_1 = __webpack_require__(19);
+var AppDesc_1 = __webpack_require__(16);
+var MainAppWidget_1 = __webpack_require__(18);
 var Dispatcher_1 = __webpack_require__(9);
 //import AppStore from './stores/AppStore';
 var AppData_1 = __webpack_require__(13);
@@ -1082,7 +1035,7 @@ exports.ZeApp = ZeApp;
 
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1090,7 +1043,7 @@ exports.ZeApp = ZeApp;
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
 var ReactDOM = __webpack_require__(8);
-var ComDesc = __webpack_require__(18);
+var ComDesc = __webpack_require__(17);
 /**
  * Виджет вывода описания приложения.
  */
@@ -1107,7 +1060,7 @@ exports.AppDescWidget = AppDescWidget;
 
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1148,7 +1101,7 @@ exports.AppDesc = AppDesc;
 
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1166,9 +1119,9 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
 var ReactDOM = __webpack_require__(8);
-var BaseWidget_1 = __webpack_require__(20);
-var MainPanel_1 = __webpack_require__(21);
-var LogPanel_1 = __webpack_require__(38);
+var BaseWidget_1 = __webpack_require__(19);
+var MainPanel_1 = __webpack_require__(20);
+var LogPanel_1 = __webpack_require__(37);
 /**
  * Основной виджет приложения.
  */
@@ -1198,7 +1151,7 @@ exports.default = MainAppWidget;
 
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1230,7 +1183,7 @@ exports.default = BaseWidget;
 
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1248,9 +1201,9 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
 var View_1 = __webpack_require__(1);
-var NavigationPanel_1 = __webpack_require__(22);
-var ActionPanel_1 = __webpack_require__(28);
-var ControlPanel_1 = __webpack_require__(29);
+var NavigationPanel_1 = __webpack_require__(21);
+var ActionPanel_1 = __webpack_require__(27);
+var ControlPanel_1 = __webpack_require__(28);
 var AppData_1 = __webpack_require__(13);
 var AppStore_1 = __webpack_require__(2);
 /**
@@ -1304,7 +1257,7 @@ exports.MainPanel = MainPanel;
 
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1372,7 +1325,7 @@ exports.NavigationPanel = NavigationPanel;
 
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -1385,7 +1338,7 @@ exports.NavigationPanel = NavigationPanel;
  */
 
 var fbemitter = {
-  EventEmitter: __webpack_require__(24),
+  EventEmitter: __webpack_require__(23),
   EmitterSubscription : __webpack_require__(11)
 };
 
@@ -1393,7 +1346,7 @@ module.exports = fbemitter;
 
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1414,9 +1367,9 @@ module.exports = fbemitter;
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var EmitterSubscription = __webpack_require__(11);
-var EventSubscriptionVendor = __webpack_require__(26);
+var EventSubscriptionVendor = __webpack_require__(25);
 
-var emptyFunction = __webpack_require__(27);
+var emptyFunction = __webpack_require__(26);
 var invariant = __webpack_require__(12);
 
 /**
@@ -1591,7 +1544,7 @@ module.exports = BaseEventEmitter;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)))
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1646,7 +1599,7 @@ var EventSubscription = (function () {
 module.exports = EventSubscription;
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1756,7 +1709,7 @@ module.exports = EventSubscriptionVendor;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)))
 
 /***/ }),
-/* 27 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1800,7 +1753,7 @@ emptyFunction.thatReturnsArgument = function (arg) {
 module.exports = emptyFunction;
 
 /***/ }),
-/* 28 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1866,7 +1819,7 @@ exports.ActionPanel = ActionPanel;
 
 
 /***/ }),
-/* 29 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1924,7 +1877,7 @@ exports.ControlPanel = ControlPanel;
 
 
 /***/ }),
-/* 30 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1946,7 +1899,7 @@ exports.default = Navigation;
 
 
 /***/ }),
-/* 31 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1965,7 +1918,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
 var View_1 = __webpack_require__(1);
 var TransactionStore_1 = __webpack_require__(7);
-var TransactionLine_1 = __webpack_require__(35);
+var TransactionLine_1 = __webpack_require__(34);
 /**
  * Панель - транзакции.
  */
@@ -2003,13 +1956,60 @@ exports.TransactionActive = TransactionActive;
 
 
 /***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Transactions;
+(function (Transactions) {
+    /**
+     * Фильтры транзакций. Используется Клиентом при запросах к данным.
+     */
+    var TransactionFilters = (function () {
+        function TransactionFilters() {
+            this.packType = 1; // пакет - размерность выборки (день,месяц,год)
+            this.packType = 1;
+        }
+        return TransactionFilters;
+    }());
+    Transactions.TransactionFilters = TransactionFilters;
+    /**
+     * Типы транзакции.
+     */
+    var TransactionTypes;
+    (function (TransactionTypes) {
+        TransactionTypes[TransactionTypes["Spend"] = 1] = "Spend";
+        TransactionTypes[TransactionTypes["Profit"] = 2] = "Profit";
+        TransactionTypes[TransactionTypes["Transfer"] = 3] = "Transfer"; // перевод на другой счет
+    })(TransactionTypes = Transactions.TransactionTypes || (Transactions.TransactionTypes = {}));
+    /**
+     * Вывод транзакции.
+     */
+    var TransactionLine = (function () {
+        function TransactionLine(id, date, type, currency, cost) {
+            this.id = id;
+            this.date = date;
+            this.type = type;
+            this.currency = currency;
+            this.cost = cost;
+        }
+        return TransactionLine;
+    }());
+    Transactions.TransactionLine = TransactionLine;
+})(Transactions || (Transactions = {}));
+exports.default = Transactions;
+
+
+/***/ }),
 /* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var MockData_1 = __webpack_require__(33);
+var Ajax_1 = __webpack_require__(33);
 var Client;
 (function (Client) {
     /**
@@ -2025,27 +2025,34 @@ var Client;
             return Mock.getAccounts();
         }*/
         ClientAccessor.prototype.getAccounts = function (callBack) {
-            var isSuccess = true;
-            var errorMsg = "";
-            callBack(isSuccess, errorMsg, MockData_1.default.getAccounts());
+            //callBack(true, "", Mock.getAccounts());
             /*setTimeout(function(){
-                callBack(isSuccess, errorMsg, Mock.getAccounts());
+                callBack(false, "сервер не отвечает", null);
+            }, 5000);*/
+            /*setTimeout(function(){
+                callBack(true, "", Mock.getAccounts());
             }, 2000);*/
             //
-            /*Ajax.get("/public/fakes/accounts.json", {}, (data) => {
-                callBack(isSuccess, errorMsg, <Accounts.AccountLine[]>JSON.parse(data));
-            });*/
+            Ajax_1.default.get("public/fakes/accounts.json", {}, function (data) {
+                var dataModel = JSON.parse(data);
+                callBack(dataModel.success, dataModel.message, dataModel.data);
+            }, function (errorMsg) {
+                callBack(false, errorMsg, null);
+            });
         };
         /**
          * Транзакции.
          */
         ClientAccessor.prototype.getTransactions = function (filters, callBack) {
-            var isSuccess = true;
-            var errorMsg = "";
-            var data = MockData_1.default.getTransactions();
             // TODO: filters
             //return data;
-            callBack(isSuccess, errorMsg, data);
+            //callBack(true, "", Mock.getTransactions());
+            Ajax_1.default.get("public/fakes/transactions.json", filters, function (data) {
+                var dataModel = JSON.parse(data);
+                callBack(dataModel.success, dataModel.message, dataModel.data);
+            }, function (errorMsg) {
+                callBack(false, errorMsg, null);
+            });
         };
         return ClientAccessor;
     }());
@@ -2061,61 +2068,89 @@ exports.default = new Client.ClientAccessor;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Accounts_1 = __webpack_require__(34);
-var Transactions_1 = __webpack_require__(14);
-var Mock;
-(function (Mock) {
-    function _getDate(year, month, day, hours, minutes, seconds) {
-        return new Date(year, month, day, hours, minutes, seconds, 0);
-    }
-    function getAccounts() {
-        return [
-            new Accounts_1.default.AccountLine('1', 'Кошелек', 1),
-            new Accounts_1.default.AccountLine('2', 'Кредитка', 2)
+var Ajax;
+(function (Ajax) {
+    function _x() {
+        if (typeof XMLHttpRequest !== 'undefined') {
+            return new XMLHttpRequest();
+        }
+        var versions = [
+            "MSXML2.XmlHttp.6.0",
+            "MSXML2.XmlHttp.5.0",
+            "MSXML2.XmlHttp.4.0",
+            "MSXML2.XmlHttp.3.0",
+            "MSXML2.XmlHttp.2.0",
+            "Microsoft.XmlHttp"
         ];
+        var xhr;
+        for (var i = 0; i < versions.length; i++) {
+            try {
+                xhr = new ActiveXObject(versions[i]);
+                break;
+            }
+            catch (e) {
+            }
+        }
+        return xhr;
     }
-    Mock.getAccounts = getAccounts;
-    function getTransactions() {
-        return [
-            new Transactions_1.default.TransactionLine('1', _getDate(2017, 5, 10, 13, 20, 0), Transactions_1.default.TransactionTypes.Spend, "rub", 400),
-            new Transactions_1.default.TransactionLine('2', _getDate(2017, 5, 10, 20, 40, 0), Transactions_1.default.TransactionTypes.Spend, "rub", 2400),
-            new Transactions_1.default.TransactionLine('3', _getDate(2017, 5, 11, 10, 15, 0), Transactions_1.default.TransactionTypes.Profit, "rub", 55000),
-            new Transactions_1.default.TransactionLine('4', _getDate(2017, 5, 11, 19, 50, 0), Transactions_1.default.TransactionTypes.Spend, "rub", 1750),
-            new Transactions_1.default.TransactionLine('5', _getDate(2017, 5, 12, 13, 10, 0), Transactions_1.default.TransactionTypes.Spend, "rub", 400),
-        ];
+    ;
+    function send(url, callback, onerror, method, data, async) {
+        if (async === undefined) {
+            async = true;
+        }
+        var x = _x();
+        x.open(method, url, async);
+        x.onreadystatechange = function () {
+            if (x.readyState == XMLHttpRequest.DONE) {
+                if (x.status == 200) {
+                    callback(x.responseText);
+                }
+                else if (x.status == 400) {
+                    onerror("400 (" + x.statusText + "); " + url);
+                }
+                else if (x.status == 404) {
+                    onerror("404 (" + x.statusText + "); " + url);
+                }
+                else {
+                    onerror(x.statusText);
+                }
+            }
+        };
+        x.onabort = function (d) {
+            onerror(x.statusText);
+        };
+        x.onerror = function (d) {
+            onerror(x.statusText);
+        };
+        if (method == 'POST') {
+            x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        }
+        x.send(data);
     }
-    Mock.getTransactions = getTransactions;
-})(Mock || (Mock = {}));
-exports.default = Mock;
+    ;
+    function get(url, data, callback, onerror, async) {
+        var query = [];
+        for (var key in data) {
+            query.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
+        }
+        send(url + (query.length ? '?' + query.join('&') : ''), callback, onerror, 'GET', null, async);
+    }
+    Ajax.get = get;
+    ;
+    function post(url, data, callback, onerror, async) {
+        var query = [];
+        for (var key in data) {
+            query.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
+        }
+        send(url, callback, onerror, 'POST', query.join('&'), async);
+    }
+    ;
+})(Ajax = exports.Ajax || (exports.Ajax = {}));
+exports.default = Ajax;
 
 
 /***/ }),
 /* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var Accounts;
-(function (Accounts) {
-    /**
-     * Счет.
-     */
-    var AccountLine = (function () {
-        function AccountLine(id, title, order) {
-            this.id = id;
-            this.title = title;
-            this.order = order;
-        }
-        return AccountLine;
-    }());
-    Accounts.AccountLine = AccountLine;
-})(Accounts || (Accounts = {}));
-exports.default = Accounts;
-
-
-/***/ }),
-/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2180,7 +2215,7 @@ exports.default = TransactionLine;
 
 
 /***/ }),
-/* 36 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2199,7 +2234,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
 var View_1 = __webpack_require__(1);
 var TransactionStore_1 = __webpack_require__(7);
-var AccountLine_1 = __webpack_require__(37);
+var AccountLine_1 = __webpack_require__(36);
 /**
  * Панель - счета.
  */
@@ -2237,7 +2272,7 @@ exports.AccountActive = AccountActive;
 
 
 /***/ }),
-/* 37 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2283,7 +2318,7 @@ exports.default = AccountLine;
 
 
 /***/ }),
-/* 38 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

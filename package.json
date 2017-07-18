@@ -25,6 +25,7 @@
     "gulp": "^3.9.1",
     "gulp-clean-css": "^3.6.0",
     "gulp-concat-css": "^2.3.0",
+    "gulp-delete-file": "^1.0.2",
     "gulp-less": "^3.3.2",
     "gulp-uglify": "^3.0.0",
     "gulp-util": "^3.0.8",
