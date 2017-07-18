@@ -3,7 +3,9 @@
 node_modules
 public/*.js
 public/*.css
+public/*.map
 build
+src/_prebuild
 src/_prebuild/*
 *.node
 *.orig
