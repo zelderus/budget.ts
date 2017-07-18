@@ -3,6 +3,7 @@
 import StoreFlux from './../flux/store';
 import BaseStore from './../flux/BaseStore';
 import ActionTypes from './../actions/ActionTypes';
+import Actions from './../actions/Actions';
 
 import Accounts from './../models/Accounts';
 import Transactions from './../models/Transactions';
@@ -44,23 +45,20 @@ export class TransactionStore extends BaseStore {
             this._loadTransactionsAsync(() => { // транзакции
                 // оповещаем
                 this.emitChange();
+                Actions.loadingStop();
             });
         });
     }
 
     private _loadAccountsAsync(callBack?: () => void) {
-        //this.__accounts = Client.getAccounts();
         Client.getAccounts((s, m, acs) => { 
             this.__accounts = acs;
-            // do next
-            //if (withEmit) this.emitChange();
             if (callBack != null) callBack();
             if (!s) this._onLoadError(m);
         });
     }
 
     private _loadTransactionsAsync(callBack?: () => void) {
-        //this.__transactions = Client.getTransactions(this.__transactionFilter);
         Client.getTransactions(this.__transactionFilter, (s, m, trs) => {
             this.__transactions = trs;
             if (callBack != null) callBack();
@@ -75,7 +73,9 @@ export class TransactionStore extends BaseStore {
 
     private _onLoadError(msg: string): void {
         // TODO: заблокировать приложение и отобразить ошибку??
-        console.log("Ошибка в Store: " + msg);
+        let errMsg = "Ошибка в Store: " + msg;
+        console.log(errMsg);
+        Actions.log(errMsg);
     }
 
 

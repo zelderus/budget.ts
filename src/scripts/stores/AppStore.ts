@@ -14,12 +14,14 @@ export class AppStore extends BaseStore {
 
     _logTextValue: string;
     _navIndex: number;
+    _isLoading: boolean;
 
     constructor() {
         super();
 
         this._logTextValue = "";
         this._navIndex = 1;
+        this._isLoading = true;
     }
 
 
@@ -30,7 +32,7 @@ export class AppStore extends BaseStore {
 
     public getLogText() { return this._logTextValue; }
     public getNavigationIndex() { return this._navIndex; }
-
+    public isLoading() { return this._isLoading; }
 
 
 
@@ -48,6 +50,12 @@ export class AppStore extends BaseStore {
                 break;
             case ActionTypes.NAVIGATION:
                 this._navIndex = obj;
+                break;
+            case ActionTypes.LOADING_START:
+                this._isLoading = true;
+                break;
+            case ActionTypes.LOADING_STOP:
+                this._isLoading = false;
                 break;
 
             default:

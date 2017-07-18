@@ -88,7 +88,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
 var Utils_1 = __webpack_require__(3);
-var Actions = __webpack_require__(8);
+var Actions = __webpack_require__(4);
 /**
  * Вьюшка.
  */
@@ -191,7 +191,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var BaseStore_1 = __webpack_require__(10);
-var ActionTypes_1 = __webpack_require__(4);
+var ActionTypes_1 = __webpack_require__(5);
 /**
  * Основное хранилище приложения.
  * Глобальные модели состояний, состяние интерфейса приложения.
@@ -203,6 +203,7 @@ var AppStore = (function (_super) {
         var _this = _super.call(this) || this;
         _this._logTextValue = "";
         _this._navIndex = 1;
+        _this._isLoading = true;
         return _this;
     }
     //
@@ -211,6 +212,7 @@ var AppStore = (function (_super) {
     //
     AppStore.prototype.getLogText = function () { return this._logTextValue; };
     AppStore.prototype.getNavigationIndex = function () { return this._navIndex; };
+    AppStore.prototype.isLoading = function () { return this._isLoading; };
     /**
      * Обрабатываем сообщения от диспетчера.
      * Обновляем модели данных, обращаемся к серверу.
@@ -224,6 +226,12 @@ var AppStore = (function (_super) {
                 break;
             case ActionTypes_1.default.NAVIGATION:
                 this._navIndex = obj;
+                break;
+            case ActionTypes_1.default.LOADING_START:
+                this._isLoading = true;
+                break;
+            case ActionTypes_1.default.LOADING_STOP:
+                this._isLoading = false;
                 break;
             default:
                 return true;
@@ -294,11 +302,72 @@ exports.default = FluxUtils;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+var ActionTypes_1 = __webpack_require__(5);
+var Dispatcher_1 = __webpack_require__(9);
+/**
+ *      Action Creator - методы, как singleton - доступны из всего приложения
+ *  Все действия приложения, которые через диспетчера оповестят интересующихся
+ */
+var Actions;
+(function (Actions) {
+    /**
+     * Менеджер действий. Сообщает диспетчеру о новых событиях.
+     * - функции обернуты в класс, чтобы можно было их возвращать наследуемым объектам (для удобства использования), как в 'flux/View.tsx'.
+     */
+    var ActionCreator = (function () {
+        function ActionCreator() {
+        }
+        ActionCreator.prototype.log = function (msg) {
+            Dispatcher_1.default.dispatch(ActionTypes_1.default.LOG, msg);
+        };
+        ActionCreator.prototype.navigation = function (navIndex) {
+            Dispatcher_1.default.dispatch(ActionTypes_1.default.NAVIGATION, navIndex);
+        };
+        ActionCreator.prototype.loadInitData = function () {
+            Dispatcher_1.default.dispatch(ActionTypes_1.default.LOAD_INIT_DATA, null);
+        };
+        ActionCreator.prototype.loadingStart = function () {
+            Dispatcher_1.default.dispatch(ActionTypes_1.default.LOADING_START, null);
+        };
+        ActionCreator.prototype.loadingStop = function () {
+            Dispatcher_1.default.dispatch(ActionTypes_1.default.LOADING_STOP, null);
+        };
+        ActionCreator.prototype.loadAccounts = function () {
+            Dispatcher_1.default.dispatch(ActionTypes_1.default.ACCOUNTS_LOAD, null);
+        };
+        ActionCreator.prototype.loadTransactions = function () {
+            Dispatcher_1.default.dispatch(ActionTypes_1.default.TRANSACTIONS_LOAD, null);
+        };
+        ActionCreator.prototype.addItem = function (item) {
+            Dispatcher_1.default.dispatch(ActionTypes_1.default.ADD_ITEM, item);
+            this.log("добавление элемента: ..");
+        };
+        ActionCreator.prototype.deleteItem = function (id) {
+            Dispatcher_1.default.dispatch(ActionTypes_1.default.DELETE_ITEM, id);
+            this.log("удаление элемента: " + id);
+        };
+        return ActionCreator;
+    }());
+    Actions.ActionCreator = ActionCreator;
+})(Actions = exports.Actions || (exports.Actions = {}));
+//export default Actions;
+exports.default = new Actions.ActionCreator;
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
 var ActionTypes;
 (function (ActionTypes) {
     ActionTypes[ActionTypes["LOG"] = 1] = "LOG";
     ActionTypes[ActionTypes["NAVIGATION"] = 10] = "NAVIGATION";
     ActionTypes[ActionTypes["LOAD_INIT_DATA"] = 20] = "LOAD_INIT_DATA";
+    ActionTypes[ActionTypes["LOADING_START"] = 30] = "LOADING_START";
+    ActionTypes[ActionTypes["LOADING_STOP"] = 31] = "LOADING_STOP";
     ActionTypes[ActionTypes["ACCOUNTS_LOAD"] = 100] = "ACCOUNTS_LOAD";
     ActionTypes[ActionTypes["TRANSACTIONS_LOAD"] = 200] = "TRANSACTIONS_LOAD";
     ActionTypes[ActionTypes["ADD_ITEM"] = 950] = "ADD_ITEM";
@@ -309,7 +378,7 @@ exports.default = ActionTypes;
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -499,7 +568,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -516,7 +585,8 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var BaseStore_1 = __webpack_require__(10);
-var ActionTypes_1 = __webpack_require__(4);
+var ActionTypes_1 = __webpack_require__(5);
+var Actions_1 = __webpack_require__(4);
 var Transactions_1 = __webpack_require__(14);
 var Client_1 = __webpack_require__(32);
 /**
@@ -546,16 +616,14 @@ var TransactionStore = (function (_super) {
             _this._loadTransactionsAsync(function () {
                 // оповещаем
                 _this.emitChange();
+                Actions_1.default.loadingStop();
             });
         });
     };
     TransactionStore.prototype._loadAccountsAsync = function (callBack) {
         var _this = this;
-        //this.__accounts = Client.getAccounts();
         Client_1.default.getAccounts(function (s, m, acs) {
             _this.__accounts = acs;
-            // do next
-            //if (withEmit) this.emitChange();
             if (callBack != null)
                 callBack();
             if (!s)
@@ -564,7 +632,6 @@ var TransactionStore = (function (_super) {
     };
     TransactionStore.prototype._loadTransactionsAsync = function (callBack) {
         var _this = this;
-        //this.__transactions = Client.getTransactions(this.__transactionFilter);
         Client_1.default.getTransactions(this.__transactionFilter, function (s, m, trs) {
             _this.__transactions = trs;
             if (callBack != null)
@@ -578,7 +645,9 @@ var TransactionStore = (function (_super) {
     //
     TransactionStore.prototype._onLoadError = function (msg) {
         // TODO: заблокировать приложение и отобразить ошибку??
-        console.log("Ошибка в Store: " + msg);
+        var errMsg = "Ошибка в Store: " + msg;
+        console.log(errMsg);
+        Actions_1.default.log(errMsg);
     };
     /**
      * Обрабатываем сообщения от диспетчера.
@@ -610,63 +679,10 @@ exports.default = new TransactionStore;
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports) {
 
 module.exports = ReactDOM;
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var ActionTypes_1 = __webpack_require__(4);
-var Dispatcher_1 = __webpack_require__(9);
-/**
- *      Action Creator - методы, как singleton - доступны из всего приложения
- *  Все действия приложения, которые через диспетчера оповестят интересующихся
- */
-var Actions;
-(function (Actions) {
-    /**
-     * Менеджер действий. Сообщает диспетчеру о новых событиях.
-     * - функции обернуты в класс, чтобы можно было их возвращать наследуемым объектам (для удобства использования), как в 'flux/View.tsx'.
-     */
-    var ActionCreator = (function () {
-        function ActionCreator() {
-        }
-        ActionCreator.prototype.log = function (msg) {
-            Dispatcher_1.default.dispatch(ActionTypes_1.default.LOG, msg);
-        };
-        ActionCreator.prototype.navigation = function (navIndex) {
-            Dispatcher_1.default.dispatch(ActionTypes_1.default.NAVIGATION, navIndex);
-        };
-        ActionCreator.prototype.loadInitData = function () {
-            Dispatcher_1.default.dispatch(ActionTypes_1.default.LOAD_INIT_DATA, null);
-        };
-        ActionCreator.prototype.loadAccounts = function () {
-            Dispatcher_1.default.dispatch(ActionTypes_1.default.ACCOUNTS_LOAD, null);
-        };
-        ActionCreator.prototype.loadTransactions = function () {
-            Dispatcher_1.default.dispatch(ActionTypes_1.default.TRANSACTIONS_LOAD, null);
-        };
-        ActionCreator.prototype.addItem = function (item) {
-            Dispatcher_1.default.dispatch(ActionTypes_1.default.ADD_ITEM, item);
-            this.log("добавление элемента: ..");
-        };
-        ActionCreator.prototype.deleteItem = function (id) {
-            Dispatcher_1.default.dispatch(ActionTypes_1.default.DELETE_ITEM, id);
-            this.log("удаление элемента: " + id);
-        };
-        return ActionCreator;
-    }());
-    Actions.ActionCreator = ActionCreator;
-})(Actions = exports.Actions || (exports.Actions = {}));
-//export default Actions;
-exports.default = new Actions.ActionCreator;
-
 
 /***/ }),
 /* 9 */
@@ -894,7 +910,7 @@ function invariant(condition, format, a, b, c, d, e, f) {
 }
 
 module.exports = invariant;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)))
 
 /***/ }),
 /* 13 */
@@ -909,7 +925,7 @@ var TransactionActive_1 = __webpack_require__(31);
 var AccountActive_1 = __webpack_require__(36);
 // сторы
 var AppStore_1 = __webpack_require__(2);
-var TransactionStore_1 = __webpack_require__(6);
+var TransactionStore_1 = __webpack_require__(7);
 var AppData;
 (function (AppData) {
     /**
@@ -1052,7 +1068,7 @@ exports.ZeApp = ZeApp;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
-var ReactDOM = __webpack_require__(7);
+var ReactDOM = __webpack_require__(8);
 var ComDesc = __webpack_require__(18);
 /**
  * Виджет вывода описания приложения.
@@ -1128,7 +1144,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
-var ReactDOM = __webpack_require__(7);
+var ReactDOM = __webpack_require__(8);
 var BaseWidget_1 = __webpack_require__(20);
 var MainPanel_1 = __webpack_require__(21);
 var LogPanel_1 = __webpack_require__(38);
@@ -1168,7 +1184,7 @@ exports.default = MainAppWidget;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var Utils_1 = __webpack_require__(3);
-var Actions = __webpack_require__(8);
+var Actions = __webpack_require__(4);
 /**
  * Базовый виджет.
  */
@@ -1215,24 +1231,37 @@ var NavigationPanel_1 = __webpack_require__(22);
 var ActionPanel_1 = __webpack_require__(28);
 var ControlPanel_1 = __webpack_require__(29);
 var AppData_1 = __webpack_require__(13);
+var AppStore_1 = __webpack_require__(2);
 /**
  * Основная панель
  */
 var MainPanel = (function (_super) {
     __extends(MainPanel, _super);
     function MainPanel(props) {
-        return _super.call(this, props, []) || this;
+        return _super.call(this, props, [AppStore_1.default]) || this;
     }
     // Интересующие нас состояния (получаем их строго из Сторов)
     MainPanel.prototype.getState = function () {
-        return {};
+        return {
+            isLoading: AppStore_1.default.isLoading()
+        };
     };
     ///
     /// Render
     ///
+    MainPanel.prototype.renderLoading = function () {
+        if (!this.state.isLoading)
+            return null;
+        return React.createElement("div", { className: "LoadingPanel" },
+            React.createElement("div", { className: "Content" },
+                React.createElement("div", { className: "Pic" }),
+                React.createElement("div", { className: "Title" }, "\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430 \u0434\u0430\u043D\u043D\u044B\u0445..")));
+    };
     MainPanel.prototype.render = function () {
         var navs = AppData_1.default.getNavigations();
+        var loadingPanel = this.renderLoading();
         return React.createElement("div", { className: "MainPanel" },
+            loadingPanel,
             React.createElement(NavigationPanel_1.NavigationPanel, { navLines: navs }),
             React.createElement(ActionPanel_1.ActionPanel, { navLines: navs }),
             React.createElement(ControlPanel_1.ControlPanel, null));
@@ -1527,7 +1556,7 @@ var BaseEventEmitter = (function () {
 })();
 
 module.exports = BaseEventEmitter;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)))
 
 /***/ }),
 /* 25 */
@@ -1692,7 +1721,7 @@ var EventSubscriptionVendor = (function () {
 })();
 
 module.exports = EventSubscriptionVendor;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)))
 
 /***/ }),
 /* 27 */
@@ -1903,7 +1932,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
 var View_1 = __webpack_require__(1);
-var TransactionStore_1 = __webpack_require__(6);
+var TransactionStore_1 = __webpack_require__(7);
 var TransactionLine_1 = __webpack_require__(35);
 /**
  * Панель - транзакции.
@@ -1966,20 +1995,13 @@ var Client;
         ClientAccessor.prototype.getAccounts = function (callBack) {
             var isSuccess = true;
             var errorMsg = "";
-            callBack(isSuccess, errorMsg, MockData_1.default.getAccounts());
+            //callBack(isSuccess, errorMsg, Mock.getAccounts());
+            setTimeout(function () {
+                callBack(isSuccess, errorMsg, MockData_1.default.getAccounts());
+            }, 2000);
             //
-            /*Ajax.get("http://zedk.ru/sites/budget/fakes/accounts.json", {}, (data) => {
-                // TODO:
-                callBack(isSuccess, errorMsg, Mock.getAccounts());
-            });*/
-            /*jQuery.ajax({
-                type: 'GET',
-                url: "http://zedk.ru/sites/budget/fakes/accounts.json",
-                dataType: 'json',
-                success: function(data) {
-                    callBack(isSuccess, errorMsg, Mock.getAccounts());
-                },
-                async: true
+            /*Ajax.get("/public/fakes/accounts.json", {}, (data) => {
+                callBack(isSuccess, errorMsg, <Accounts.AccountLine[]>JSON.parse(data));
             });*/
         };
         /**
@@ -2144,7 +2166,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(0);
 var View_1 = __webpack_require__(1);
-var TransactionStore_1 = __webpack_require__(6);
+var TransactionStore_1 = __webpack_require__(7);
 var AccountLine_1 = __webpack_require__(37);
 /**
  * Панель - счета.

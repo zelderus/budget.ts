@@ -39,7 +39,7 @@ export namespace Ajax {
         if (method == 'POST') {
             x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         }
-        x.send(data)
+        x.send(data);
     };
 
     export function get (url: string, data: any, callback: (obj:any)=>void, async?: any): void {
@@ -50,13 +50,13 @@ export namespace Ajax {
         send(url + (query.length ? '?' + query.join('&') : ''), callback, 'GET', null, async)
     };
 
-    /*function post (url, data, callback, async): void {
+    function post (url: string, data: any, callback: (obj:any)=>void, async?: any): void {
         var query = [];
         for (var key in data) {
             query.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
         }
-        send(url, callback, 'POST', query.join('&'), async)
-    };*/
+        send(url, callback, 'POST', query.join('&'), async);
+    };
 
 }
 

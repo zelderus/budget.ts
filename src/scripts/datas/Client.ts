@@ -32,24 +32,17 @@ namespace Client {
             let isSuccess = true;
             let errorMsg = "";
 
-            callBack(isSuccess, errorMsg, Mock.getAccounts());
-            //
-            /*Ajax.get("http://zedk.ru/sites/budget/fakes/accounts.json", {}, (data) => {
-                // TODO:
-                callBack(isSuccess, errorMsg, Mock.getAccounts());
-            });*/
+            //callBack(isSuccess, errorMsg, Mock.getAccounts());
 
-            /*jQuery.ajax({
-                type: 'GET',
-                url: "http://zedk.ru/sites/budget/fakes/accounts.json",
-                dataType: 'json',
-                success: function(data) { 
-                    callBack(isSuccess, errorMsg, Mock.getAccounts());
-                },
-                async: true
-            });*/
+            setTimeout(function(){
+                callBack(isSuccess, errorMsg, Mock.getAccounts());
+            }, 2000);
 
             
+            //
+            /*Ajax.get("/public/fakes/accounts.json", {}, (data) => {
+                callBack(isSuccess, errorMsg, <Accounts.AccountLine[]>JSON.parse(data));
+            });*/
         }
 
         /**

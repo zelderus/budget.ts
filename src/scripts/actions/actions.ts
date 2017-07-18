@@ -33,6 +33,12 @@ export namespace Actions{
             Dispatcher.dispatch(ActionTypes.LOAD_INIT_DATA, null);
         }
 
+        loadingStart() {
+            Dispatcher.dispatch(ActionTypes.LOADING_START, null);
+        }
+        loadingStop() {
+            Dispatcher.dispatch(ActionTypes.LOADING_STOP, null);
+        }
 
         loadAccounts() {
             Dispatcher.dispatch(ActionTypes.ACCOUNTS_LOAD, null);
