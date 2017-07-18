@@ -2,8 +2,8 @@
     "success": true,
     "message": "",
     "data": [
-        { "id": "1", "date": "1968-11-16T00:00:00", "type": 1, "cost": 400, "currency": "rub" },
-        { "id": "2", "date": "1968-11-16T00:00:00", "type": 1, "cost": 700, "currency": "rub" },
-        { "id": "3", "date": "1968-11-16T00:00:00", "type": 2, "cost": 55000, "currency": "rub" }
+        { "id": "1", "date": "2017-07-18T12:30:00", "type": 1, "cost": 400, "currency": "rub" },
+        { "id": "2", "date": "2017-07-18T19:15:00", "type": 1, "cost": 700, "currency": "rub" },
+        { "id": "3", "date": "2017-07-05T09:23:00", "type": 2, "cost": 55000, "currency": "rub" }
     ]
 }

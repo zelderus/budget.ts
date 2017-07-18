@@ -24,13 +24,9 @@ namespace Client {
         /**
          * Счета.
          */
-        
-        /*getAccounts(callBack: ICbfGetAccounts): Accounts.AccountLine[] {       
-            return Mock.getAccounts();
-        }*/
         getAccounts(callBack: IClientResponse<Accounts.AccountLine[]>) {
             
-            //callBack(true, "", Mock.getAccounts());
+            callBack(true, "", Mock.getAccounts());
 
             /*setTimeout(function(){
                 callBack(false, "сервер не отвечает", null);
@@ -40,7 +36,7 @@ namespace Client {
                 callBack(true, "", Mock.getAccounts());
             }, 2000);*/
             
-            //
+            /*
             Ajax.get(
                 "public/fakes/accounts.json", 
                 {}, 
@@ -52,28 +48,38 @@ namespace Client {
                     callBack(false, errorMsg, null);
                 }
             );
+            */
         }
 
         /**
          * Транзакции.
          */
         getTransactions(filters: Transactions.TransactionFilters, callBack: IClientResponse<Transactions.TransactionLine[]>) : void {
-            // TODO: filters
-            //return data;
 
-            //callBack(true, "", Mock.getTransactions());
+            callBack(true, "", Mock.getTransactions());
 
+            /*
             Ajax.get(
                 "public/fakes/transactions.json", 
                 filters, 
                 (data) => {
-                    let dataModel = <IClientServerResponse<Transactions.TransactionLine[]>>JSON.parse(data);
-                    callBack(dataModel.success, dataModel.message, dataModel.data);
+                    let dataModel = <IClientServerResponse<any[]>>JSON.parse(data);
+                    // распарсиваем некоторые типы вручную
+                    let lines = dataModel.data || [];
+                    let models: Transactions.TransactionLine[] = [];
+                    lines.forEach((d) => {
+                        let model = new Transactions.TransactionLine();
+                        model.fromJson(d);
+                        models.push(model);
+                    });
+
+                    callBack(dataModel.success, dataModel.message, models);
                 },
                 (errorMsg) => {
                     callBack(false, errorMsg, null);
                 }
             );
+            */
         }
 
     }
