@@ -24,7 +24,9 @@ export namespace Actions{
         log(msg: string) {
             Dispatcher.dispatch(ActionTypes.LOG, msg);
         }
-
+        errorFatal(msg: string) {
+            Dispatcher.dispatch(ActionTypes.ERROR_FATAL, msg);
+        }
         navigation(navIndex: number) {
             Dispatcher.dispatch(ActionTypes.NAVIGATION, navIndex);
         }

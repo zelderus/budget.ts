@@ -202,8 +202,9 @@ var AppStore = (function (_super) {
     function AppStore() {
         var _this = _super.call(this) || this;
         _this._logTextValue = "";
+        _this._errorFatalTextValue = "";
         _this._navIndex = 1;
-        _this._isLoading = true;
+        _this._isLoading = false;
         return _this;
     }
     //
@@ -211,6 +212,7 @@ var AppStore = (function (_super) {
     // Эти данные для их состояний. При изменении которых, Вьюшки обновляются.
     //
     AppStore.prototype.getLogText = function () { return this._logTextValue; };
+    AppStore.prototype.getErrorFatalText = function () { return this._errorFatalTextValue; };
     AppStore.prototype.getNavigationIndex = function () { return this._navIndex; };
     AppStore.prototype.isLoading = function () { return this._isLoading; };
     /**
@@ -223,6 +225,9 @@ var AppStore = (function (_super) {
         switch (type) {
             case ActionTypes_1.default.LOG:
                 this._logTextValue = obj;
+                break;
+            case ActionTypes_1.default.ERROR_FATAL:
+                this._errorFatalTextValue = obj;
                 break;
             case ActionTypes_1.default.NAVIGATION:
                 this._navIndex = obj;
@@ -320,6 +325,9 @@ var Actions;
         ActionCreator.prototype.log = function (msg) {
             Dispatcher_1.default.dispatch(ActionTypes_1.default.LOG, msg);
         };
+        ActionCreator.prototype.errorFatal = function (msg) {
+            Dispatcher_1.default.dispatch(ActionTypes_1.default.ERROR_FATAL, msg);
+        };
         ActionCreator.prototype.navigation = function (navIndex) {
             Dispatcher_1.default.dispatch(ActionTypes_1.default.NAVIGATION, navIndex);
         };
@@ -368,6 +376,7 @@ var ActionTypes;
     ActionTypes[ActionTypes["LOAD_INIT_DATA"] = 20] = "LOAD_INIT_DATA";
     ActionTypes[ActionTypes["LOADING_START"] = 30] = "LOADING_START";
     ActionTypes[ActionTypes["LOADING_STOP"] = 31] = "LOADING_STOP";
+    ActionTypes[ActionTypes["ERROR_FATAL"] = 40] = "ERROR_FATAL";
     ActionTypes[ActionTypes["ACCOUNTS_LOAD"] = 100] = "ACCOUNTS_LOAD";
     ActionTypes[ActionTypes["TRANSACTIONS_LOAD"] = 200] = "TRANSACTIONS_LOAD";
     ActionTypes[ActionTypes["ADD_ITEM"] = 950] = "ADD_ITEM";
@@ -612,8 +621,19 @@ var TransactionStore = (function (_super) {
     //
     TransactionStore.prototype._loadInitDataAsync = function () {
         var _this = this;
-        this._loadAccountsAsync(function () {
-            _this._loadTransactionsAsync(function () {
+        Actions_1.default.loadingStart();
+        // счета
+        this._loadAccountsAsync(function (s, m) {
+            if (!s) {
+                _this._onFatalError(m);
+                return;
+            }
+            // транзакции
+            _this._loadTransactionsAsync(function (s, m) {
+                if (!s) {
+                    _this._onFatalError(m);
+                    return;
+                }
                 // оповещаем
                 _this.emitChange();
                 Actions_1.default.loadingStop();
@@ -625,9 +645,7 @@ var TransactionStore = (function (_super) {
         Client_1.default.getAccounts(function (s, m, acs) {
             _this.__accounts = acs;
             if (callBack != null)
-                callBack();
-            if (!s)
-                _this._onLoadError(m);
+                callBack(s, m);
         });
     };
     TransactionStore.prototype._loadTransactionsAsync = function (callBack) {
@@ -635,19 +653,18 @@ var TransactionStore = (function (_super) {
         Client_1.default.getTransactions(this.__transactionFilter, function (s, m, trs) {
             _this.__transactions = trs;
             if (callBack != null)
-                callBack();
-            if (!s)
-                _this._onLoadError(m);
+                callBack(s, m);
         });
     };
     //
     //
     //
-    TransactionStore.prototype._onLoadError = function (msg) {
-        // TODO: заблокировать приложение и отобразить ошибку??
-        var errMsg = "Ошибка в Store: " + msg;
-        console.log(errMsg);
-        Actions_1.default.log(errMsg);
+    TransactionStore.prototype._onError = function (msg) {
+        Actions_1.default.log("Ошибка: " + msg);
+    };
+    TransactionStore.prototype._onFatalError = function (msg) {
+        Actions_1.default.errorFatal(msg);
+        Actions_1.default.loadingStop(); // критическая ошибка выпадает при загрузках, значит тут всегда сами отключаем панель загрузки
     };
     /**
      * Обрабатываем сообщения от диспетчера.
@@ -662,11 +679,15 @@ var TransactionStore = (function (_super) {
                 this._loadInitDataAsync();
                 return true;
             case ActionTypes_1.default.ACCOUNTS_LOAD:
-                this._loadAccountsAsync(function () { _this.emitChange(); });
+                this._loadAccountsAsync(function (s, m) { if (!s) {
+                    _this._onError(m);
+                } _this.emitChange(); });
                 return true;
             //break;
             case ActionTypes_1.default.TRANSACTIONS_LOAD:
-                this._loadTransactionsAsync(function () { _this.emitChange(); });
+                this._loadTransactionsAsync(function (s, m) { if (!s) {
+                    _this._onError(m);
+                } _this.emitChange(); });
                 return true;
         }
         //this.emitChange();
@@ -1243,12 +1264,21 @@ var MainPanel = (function (_super) {
     // Интересующие нас состояния (получаем их строго из Сторов)
     MainPanel.prototype.getState = function () {
         return {
-            isLoading: AppStore_1.default.isLoading()
+            isLoading: AppStore_1.default.isLoading(),
+            fatalMsg: AppStore_1.default.getErrorFatalText()
         };
     };
     ///
     /// Render
     ///
+    MainPanel.prototype.renderFatal = function () {
+        if (this.state.fatalMsg == null || this.state.fatalMsg == "")
+            return null;
+        return React.createElement("div", { className: "FatalPanel" },
+            React.createElement("div", { className: "Content" },
+                React.createElement("div", { className: "Title" }, "\u041A\u0440\u0438\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u043E\u0448\u0438\u0431\u043A\u0430"),
+                React.createElement("div", { className: "Description" }, this.state.fatalMsg)));
+    };
     MainPanel.prototype.renderLoading = function () {
         if (!this.state.isLoading)
             return null;
@@ -1259,8 +1289,10 @@ var MainPanel = (function (_super) {
     };
     MainPanel.prototype.render = function () {
         var navs = AppData_1.default.getNavigations();
+        var fatalPanel = this.renderFatal();
         var loadingPanel = this.renderLoading();
         return React.createElement("div", { className: "MainPanel" },
+            fatalPanel,
             loadingPanel,
             React.createElement(NavigationPanel_1.NavigationPanel, { navLines: navs }),
             React.createElement(ActionPanel_1.ActionPanel, { navLines: navs }),
@@ -1995,10 +2027,10 @@ var Client;
         ClientAccessor.prototype.getAccounts = function (callBack) {
             var isSuccess = true;
             var errorMsg = "";
-            //callBack(isSuccess, errorMsg, Mock.getAccounts());
-            setTimeout(function () {
-                callBack(isSuccess, errorMsg, MockData_1.default.getAccounts());
-            }, 2000);
+            callBack(isSuccess, errorMsg, MockData_1.default.getAccounts());
+            /*setTimeout(function(){
+                callBack(isSuccess, errorMsg, Mock.getAccounts());
+            }, 2000);*/
             //
             /*Ajax.get("/public/fakes/accounts.json", {}, (data) => {
                 callBack(isSuccess, errorMsg, <Accounts.AccountLine[]>JSON.parse(data));

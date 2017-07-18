@@ -84,6 +84,13 @@
 .LoadingPanel .Content .Pic {  background: url("@{imageLoading}") repeat transparent; width: 120px; height: 120px; margin: 0 auto;}
 .LoadingPanel .Content .Title {}
 
+// критическая ошибка
+.FatalPanel { width: 100%; height: 100%; z-index: 999; position: absolute; background: url("@{imageBackSmall}") repeat transparent; }
+.FatalPanel .Content {padding: 10px; position: relative; top: 42%; max-width: 500px; margin: 0 auto; color:#801111; border: 1px dashed #AD1717; .roundBorder4; background-color: #F2DFDF; }
+.FatalPanel .Content .Title { font-weight: bold; margin: 0 0 5px 0; text-align: center;}
+.FatalPanel .Content .Description {}
+
+
 //
 // навигация (отображается вверху)
 //

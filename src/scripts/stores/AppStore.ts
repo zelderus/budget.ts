@@ -13,6 +13,7 @@ import ActionTypes from './../actions/ActionTypes';
 export class AppStore extends BaseStore {
 
     _logTextValue: string;
+    _errorFatalTextValue: string;
     _navIndex: number;
     _isLoading: boolean;
 
@@ -20,8 +21,9 @@ export class AppStore extends BaseStore {
         super();
 
         this._logTextValue = "";
+        this._errorFatalTextValue = "";
         this._navIndex = 1;
-        this._isLoading = true;
+        this._isLoading = false;
     }
 
 
@@ -31,6 +33,7 @@ export class AppStore extends BaseStore {
     //
 
     public getLogText() { return this._logTextValue; }
+    public getErrorFatalText() { return this._errorFatalTextValue; }
     public getNavigationIndex() { return this._navIndex; }
     public isLoading() { return this._isLoading; }
 
@@ -47,6 +50,9 @@ export class AppStore extends BaseStore {
         switch(type) {
             case ActionTypes.LOG:
                 this._logTextValue = obj;            
+                break;
+            case ActionTypes.ERROR_FATAL:
+                this._errorFatalTextValue = obj;            
                 break;
             case ActionTypes.NAVIGATION:
                 this._navIndex = obj;

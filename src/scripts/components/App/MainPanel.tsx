@@ -9,7 +9,7 @@ import AppData from './../../datas/AppData';
 import AppStore from './../../stores/AppStore';
 
 export interface IMainPanelProps { }
-export interface IMainPanelStates { isLoading: boolean;  }
+export interface IMainPanelStates { isLoading: boolean; fatalMsg: string;  }
 
 
 /**
@@ -26,7 +26,8 @@ export class MainPanel extends View<IMainPanelProps, IMainPanelStates> {
     // Интересующие нас состояния (получаем их строго из Сторов)
     protected getState() : IMainPanelStates {
         return {
-            isLoading: AppStore.isLoading()
+            isLoading: AppStore.isLoading(),
+            fatalMsg: AppStore.getErrorFatalText()
         };
     }
 
@@ -36,9 +37,18 @@ export class MainPanel extends View<IMainPanelProps, IMainPanelStates> {
     /// Render
     ///
 
+    renderFatal() {
+        if (this.state.fatalMsg == null || this.state.fatalMsg == "") return null;
+        return <div className="FatalPanel">
+            <div className="Content">
+                <div className="Title">Критическая ошибка</div>
+                <div className="Description">{this.state.fatalMsg}</div>
+            </div>
+        </div>
+    }
+
     renderLoading() {
         if (!this.state.isLoading) return null;
-        
         return <div className="LoadingPanel">
             <div className="Content">
                 <div className="Pic"></div>
@@ -49,9 +59,11 @@ export class MainPanel extends View<IMainPanelProps, IMainPanelStates> {
 
 	render(){
         let navs = AppData.getNavigations();
+        let fatalPanel = this.renderFatal();
         let loadingPanel = this.renderLoading();
 
 		return <div className="MainPanel">
+            {fatalPanel}
             {loadingPanel}
             <NavigationPanel navLines={navs} />
             <ActionPanel navLines={navs} />

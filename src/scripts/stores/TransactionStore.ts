@@ -41,8 +41,13 @@ export class TransactionStore extends BaseStore {
     //
 
     private _loadInitDataAsync() {
-        this._loadAccountsAsync(() => { // счета
-            this._loadTransactionsAsync(() => { // транзакции
+        Actions.loadingStart();
+        // счета
+        this._loadAccountsAsync((s,m) => { 
+            if (!s) { this._onFatalError(m); return;}
+            // транзакции
+            this._loadTransactionsAsync((s,m) => { 
+                if (!s) { this._onFatalError(m); return;}
                 // оповещаем
                 this.emitChange();
                 Actions.loadingStop();
@@ -50,19 +55,17 @@ export class TransactionStore extends BaseStore {
         });
     }
 
-    private _loadAccountsAsync(callBack?: () => void) {
+    private _loadAccountsAsync(callBack?: (success:boolean, errorMsg: string) => void) {
         Client.getAccounts((s, m, acs) => { 
             this.__accounts = acs;
-            if (callBack != null) callBack();
-            if (!s) this._onLoadError(m);
+            if (callBack != null) callBack(s,m);
         });
     }
 
-    private _loadTransactionsAsync(callBack?: () => void) {
+    private _loadTransactionsAsync(callBack?: (success:boolean, errorMsg: string) => void) {
         Client.getTransactions(this.__transactionFilter, (s, m, trs) => {
             this.__transactions = trs;
-            if (callBack != null) callBack();
-            if (!s) this._onLoadError(m);
+            if (callBack != null) callBack(s, m);
         });
     }
 
@@ -71,13 +74,13 @@ export class TransactionStore extends BaseStore {
     //
     //
 
-    private _onLoadError(msg: string): void {
-        // TODO: заблокировать приложение и отобразить ошибку??
-        let errMsg = "Ошибка в Store: " + msg;
-        console.log(errMsg);
-        Actions.log(errMsg);
+    private _onError(msg: string): void {
+        Actions.log("Ошибка: " + msg);
     }
-
+    private _onFatalError(msg: string): void {
+        Actions.errorFatal(msg);
+        Actions.loadingStop(); // критическая ошибка выпадает при загрузках, значит тут всегда сами отключаем панель загрузки
+    }
 
 
 
@@ -96,12 +99,12 @@ export class TransactionStore extends BaseStore {
                 return true;
 
             case ActionTypes.ACCOUNTS_LOAD:
-                this._loadAccountsAsync(() => { this.emitChange(); });
+                this._loadAccountsAsync((s,m) => { if (!s) { this._onError(m);} this.emitChange(); });
                 return true;
                 //break;
 
             case ActionTypes.TRANSACTIONS_LOAD:
-                this._loadTransactionsAsync(() => { this.emitChange(); });
+                this._loadTransactionsAsync((s,m) => { if (!s) { this._onError(m);} this.emitChange(); });
                 return true;
                 //break;
 

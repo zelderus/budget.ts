@@ -32,12 +32,11 @@ namespace Client {
             let isSuccess = true;
             let errorMsg = "";
 
-            //callBack(isSuccess, errorMsg, Mock.getAccounts());
+            callBack(isSuccess, errorMsg, Mock.getAccounts());
 
-            setTimeout(function(){
+            /*setTimeout(function(){
                 callBack(isSuccess, errorMsg, Mock.getAccounts());
-            }, 2000);
-
+            }, 2000);*/
             
             //
             /*Ajax.get("/public/fakes/accounts.json", {}, (data) => {
