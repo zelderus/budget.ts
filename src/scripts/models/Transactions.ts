@@ -45,16 +45,7 @@ namespace Transactions {
         constructor() {
         
         }
-
-        fromSome (id: string, date: Date, type: TransactionTypes, currency: string, cost: number ) : TransactionLine {
-            this.id = id;
-            this.date = date;
-            this.type = type;
-            this.currency = currency;
-            this.cost = cost;
-            return this;
-        }
-
+        
         fromJson (j: any): void {
             this.id = j.id;
             this.date = new Date(j.date);

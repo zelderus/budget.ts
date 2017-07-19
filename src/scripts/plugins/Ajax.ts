@@ -67,7 +67,7 @@ export namespace Ajax {
         send(url + (query.length ? '?' + query.join('&') : ''), callback, onerror, 'GET', null, async)
     };
 
-    function post (url: string, data: any, callback: (obj:any)=>void, onerror: (msg:string)=>void, async?: any): void {
+    export function post (url: string, data: any, callback: (obj:any)=>void, onerror: (msg:string)=>void, async?: any): void {
         var query = [];
         for (var key in data) {
             query.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));

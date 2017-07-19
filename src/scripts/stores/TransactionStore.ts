@@ -56,15 +56,15 @@ export class TransactionStore extends BaseStore {
     }
 
     private _loadAccountsAsync(callBack?: (success:boolean, errorMsg: string) => void) {
-        Client.getAccounts((s, m, acs) => { 
-            this.__accounts = acs;
+        Client.getAccounts((s, m, d) => { 
+            this.__accounts = d;
             if (callBack != null) callBack(s,m);
         });
     }
 
     private _loadTransactionsAsync(callBack?: (success:boolean, errorMsg: string) => void) {
-        Client.getTransactions(this.__transactionFilter, (s, m, trs) => {
-            this.__transactions = trs;
+        Client.getTransactions(this.__transactionFilter, (s, m, d) => {
+            this.__transactions = d;
             if (callBack != null) callBack(s, m);
         });
     }
