@@ -10,8 +10,10 @@ enum ActionTypes {
   
   ACCOUNTS_LOAD     = 100,
   
-  TRANSACTIONS_LOAD = 200,
-
+  TRANSACTIONS_LOAD         = 200,
+  TRANSACTIONS_EDIT_SHOW    = 210,
+  TRANSACTIONS_EDIT_CANCEL  = 211,
+  TRANSACTIONS_EDIT_DO      = 212,
   
   ADD_ITEM          = 950,
   DELETE_ITEM       = 951,

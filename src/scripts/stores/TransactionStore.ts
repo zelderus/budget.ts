@@ -20,10 +20,18 @@ export class TransactionStore extends BaseStore {
     __transactions: Transactions.TransactionLine[] = [];
     __transactionFilter: Transactions.TransactionFilters;
 
+    __isShowEditTransactionPanel: boolean;
+    __currentEditTransactionId: string;
+
+
+
     constructor() {
         super();
 
+        this.__isShowEditTransactionPanel = false;
+        this.__currentEditTransactionId = "";
         this.__transactionFilter = new Transactions.TransactionFilters();
+
     }
 
 
@@ -33,11 +41,14 @@ export class TransactionStore extends BaseStore {
     //
     public getAccounts(): Accounts.AccountLine[] { return this.__accounts; }
     public getTransactions(): Transactions.TransactionLine[] { return this.__transactions; }
+    public isShowEditTransactionPanel(): boolean { return this.__isShowEditTransactionPanel; }
+    public getCurrentEditTransactionId(): string { return this.__currentEditTransactionId; }
+
 
 
 
     //
-    //
+    // Datas
     //
 
     private _loadInitDataAsync() {
@@ -55,23 +66,23 @@ export class TransactionStore extends BaseStore {
         });
     }
 
-    private _loadAccountsAsync(callBack?: (success:boolean, errorMsg: string) => void) {
+    private _loadAccountsAsync(callBack: (success:boolean, errorMsg: string) => void) {
         Client.getAccounts((s, m, d) => { 
             this.__accounts = d;
-            if (callBack != null) callBack(s,m);
+            callBack(s,m);
         });
     }
 
-    private _loadTransactionsAsync(callBack?: (success:boolean, errorMsg: string) => void) {
+    private _loadTransactionsAsync(callBack: (success:boolean, errorMsg: string) => void) {
         Client.getTransactions(this.__transactionFilter, (s, m, d) => {
             this.__transactions = d;
-            if (callBack != null) callBack(s, m);
+            callBack(s, m);
         });
     }
 
 
     //
-    //
+    // Errors
     //
 
     private _onError(msg: string): void {
@@ -85,6 +96,45 @@ export class TransactionStore extends BaseStore {
 
 
 
+    //
+    //  UI
+    //
+
+
+    /**
+     * Сменилась навигация, очищаем вспомогательные данные в Активных панелях.
+     * @param obj 
+     */
+    private _onNavigationChange(obj: any): void {
+        // не отображаем панель редактирования транзакции
+        this._onEditTransactionCancel();
+
+    }
+
+
+    private _onEditTransactionShow(obj: any): void {
+        let isEdit = (obj !== undefined && obj != null);
+        let transactionId: string = isEdit ? <string>obj : "";
+        this.__currentEditTransactionId = transactionId;
+        this.__isShowEditTransactionPanel = true;
+    }
+    private _onEditTransactionCancel(): void {
+        this.__isShowEditTransactionPanel = false;
+    }
+    private _onEditTransactionDo(obj: any): void {
+        // TODO: get real Transaction, if edit (from obj data)
+        // TODO: add/edit data
+        // TODO: show optimistic data
+
+        this._onEditTransactionCancel(); // закрываем окно редактирования
+    }
+
+
+
+
+
+
+
     /**
      * Обрабатываем сообщения от диспетчера.
      * Обновляем модели данных, обращаемся к серверу.
@@ -94,6 +144,11 @@ export class TransactionStore extends BaseStore {
     onDispatch(type: number, obj: any):boolean {
         switch(type) {
 
+            case ActionTypes.NAVIGATION:
+                this._onNavigationChange(obj);
+                this.emitChange();
+                break;
+
             case ActionTypes.LOAD_INIT_DATA:
                 this._loadInitDataAsync();
                 return true;
@@ -101,12 +156,23 @@ export class TransactionStore extends BaseStore {
             case ActionTypes.ACCOUNTS_LOAD:
                 this._loadAccountsAsync((s,m) => { if (!s) { this._onError(m);} this.emitChange(); });
                 return true;
-                //break;
 
             case ActionTypes.TRANSACTIONS_LOAD:
                 this._loadTransactionsAsync((s,m) => { if (!s) { this._onError(m);} this.emitChange(); });
                 return true;
-                //break;
+
+            case ActionTypes.TRANSACTIONS_EDIT_SHOW:
+                this._onEditTransactionShow(obj);
+                this.emitChange();
+                return true;
+            case ActionTypes.TRANSACTIONS_EDIT_CANCEL:
+                this._onEditTransactionCancel();
+                this.emitChange();
+                return true;
+            case ActionTypes.TRANSACTIONS_EDIT_DO:
+                this._onEditTransactionDo(obj);
+                this.emitChange();
+                return true;
 
             // TODO: update transaction filters
 

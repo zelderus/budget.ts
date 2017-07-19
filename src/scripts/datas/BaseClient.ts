@@ -22,6 +22,9 @@ namespace Client {
 
         }
 
+        //
+        // Парсилки из JSON
+        //
 
         private _parseToModel<T extends IClientObjectResponse>(json: string, c: new()=>T) : IClientServerParsedModelResponse<T> {
             let dataModel = <IClientServerResponse>JSON.parse(json);

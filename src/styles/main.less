@@ -34,6 +34,10 @@
 }
 
 
+
+.sizeForActivePanel { height: @screenSizeY / 2;}
+
+
 /********************
 *
 *     helpers
@@ -42,8 +46,11 @@
 .roundBorder4 { -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; }
 .roundBorder6 { -webkit-border-radius: 6px; -moz-border-radius: 6px; border-radius: 6px; }
 .roundBorder8 { -webkit-border-radius: 8px; -moz-border-radius: 8px; border-radius: 8px; }
-.middle-vert { margin: auto; position: absolute; top: 0; left: 0; bottom: 0; right: 0; }
+.roundBorderTop4 { -webkit-border-top-left-radius: 4px;-webkit-border-top-right-radius: 4px;-moz-border-radius-topleft: 4px;-moz-border-radius-topright: 4px;border-top-left-radius: 4px;border-top-right-radius: 4px;}
+.roundBorderBottom4 { -webkit-border-bottom-right-radius: 4px;-webkit-border-bottom-left-radius: 4px;-moz-border-radius-bottomright: 4px;-moz-border-radius-bottomleft: 4px;border-bottom-right-radius: 4px;border-bottom-left-radius: 4px;}
 
+.middle-vert { margin: auto; position: absolute; top: 0; left: 0; bottom: 0; right: 0; }
+.list-vert {overflow-y: scroll; overflow-x: hidden;}
 
 /********************
 *
@@ -94,7 +101,7 @@
 //
 // навигация (отображается вверху)
 //
-.NavigationPanel { padding: 6px; background-color:#EBEBEB; border-top: 1px solid #EBEBEB; border-bottom: 1px solid #DEDEDE; clear: both;overflow: hidden;}
+.NavigationPanel { padding: 6px; background-color:#EBEBEB; border-top: 1px solid #EBEBEB; border-bottom: 1px solid #DEDEDE; clear: both;overflow: hidden; .roundBorderTop4; }
 .NavigationPanel .Button {float: left; margin: 6px; padding: 4px;text-align: center; cursor: pointer; color: #2B6499; border: 1px solid transparent;}
 .NavigationPanel .Button:hover {color: #042B4F;}
 .NavigationPanel .Button.Active {color: #042B4F; cursor: default; border: 1px solid #042B4F; .roundBorder4; }
@@ -102,7 +109,7 @@
 //
 // управление (отображается внизу приложения)
 //
-.ControlPanel { margin:0; padding: 4px; background-color:#EBEBEB; border-top: 1px solid #EBEBEB; border-bottom: 1px solid #DEDEDE; clear: both;overflow: hidden;}
+.ControlPanel { margin:0; padding: 4px; background-color:#EBEBEB; border-top: 1px solid #EBEBEB; border-bottom: 1px solid #DEDEDE; clear: both;overflow: hidden; .roundBorderBottom4; }
 .ControlPanel .Buttons {}
 .ControlPanel .Buttons .Button {float: left; margin: 6px; padding: 6px;text-align: center; border: 1px solid #da0; cursor: pointer; background-color: #da1;color: #fff;}
 .ControlPanel .Buttons .Button:hover {background-color: #d81;}
@@ -122,15 +129,48 @@
 
     // список с платежками
     .LinesPlace {
-        
+        .sizeForActivePanel;
+        .list-vert;
 
         .TransactionLine { 
-            display: block; margin: 5px; padding: 8px; border: 1px solid #aaa; color: #333; .roundBorder4; clear: both; overflow: hidden;
+            display: block; margin: 0px; padding: 12px; border: 1px solid transparent; border-bottom: 1px solid #ccc; color: #333; background-color: #FFF; clear: both; overflow: hidden;
 
-            .Date { color:#444; display: block; float: left; margin: 0 0 0 5px; font-size: 0.8em;}
+            .Date { color:#888; display: block; float: left; margin: 0 0 0 5px; font-size: 0.8em;}
             .Time { color:#888; font-style: italic; display: block; float: left; margin: 0 0 0 5px; font-size: 0.75em;}
             .Title { font-weight: bold; color:#000; display: block; float: left; margin: 0 0 0 5px;}
+            .Cost { 
+                .Value { .roundBorder4; padding: 2px 4px; margin: 0 0 0 10px; }
+                .Currency {margin: 0 0 0 2px;}
+            }
+            .Cost.Profit { 
+                .Value { border: 1px solid #468847; background-color: #468847; color:#FFF; }
+                .Currency {color:#468847;}
+            }
+            .Cost.Spend { 
+                .Value { border: 1px solid #953B39; background-color: #953B39; color:#FFF; }
+                .Currency {color:#953B39;}
+            }
+            .Cost.Transfer { 
+                .Value { border: 1px solid #326D83; background-color: #326D83; color:#FFF; }
+                .Currency {color:#326D83;}
+            }   
+
+            .Button { display: none; float: right; background-color: #aaa; border: 1px solid #666; padding: 2px 6px; margin: 0; max-height: 10px; font-size: 10px;  cursor: pointer;}
+            .Button:hover {background-color: #777;}
         }
+        .TransactionLine:hover {
+            background-color: #f6f6f6;
+
+            .Button { display: block; }
+        }
+    }
+
+    // окно редактирования транзакции
+    .TransactionEditWnd {
+        display: block;
+
+        .Button { display: block; float: right; background-color: #aaa; border: 1px solid #666; padding: 2px 6px; margin: 0; max-height: 10px; font-size: 10px;  cursor: pointer;}
+        .Button:hover {background-color: #777;}
     }
 }
 
@@ -143,10 +183,14 @@
 
     // список со счетами
     .LinesPlace {
+        .sizeForActivePanel;
+        .list-vert;
         
-
         .AccountLine { 
-            display: block; margin: 5px; padding: 8px; border: 1px solid #aaa; color: #333; .roundBorder4;
+            display: block; margin: 0px; padding: 12px; border: 1px solid transparent; border-bottom: 1px solid #ccc; color: #333; background-color: #FFF; clear: both; overflow: hidden;
+        }
+        .AccountLine:hover {
+            background-color: #f6f6f6;
         }
     }
 }

@@ -51,6 +51,19 @@ export namespace Actions{
         }
 
 
+        editTransactionShow(id: string) {
+            Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_SHOW, id);
+        }
+        editTransactionCancel() {
+            Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_CANCEL, null);
+        }
+        editTransactionDo(obj: any) { // TODO: fix type of the obj
+            Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_DO, obj);
+        }
+
+
+
+
 
 
         addItem(item: any){ // TODO: item cast to Type

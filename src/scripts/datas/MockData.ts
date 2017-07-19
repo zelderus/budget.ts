@@ -33,7 +33,18 @@ namespace Mock {
                 { "id": 2, "date": "2017-07-18T19:15:00", "type": 1, "cost": 700, "currency": "rub" },
                 { "id": 3, "date": "2017-07-05T09:23:00", "type": 2, "cost": 55000, "currency": "rub" },
                 { "id": 4, "date": "2017-07-19T08:48:00", "type": 1, "cost": 320, "currency": "rub" },
-                { "id": 5, "date": "2017-07-19T11:20:00", "type": 2, "cost": 28500, "currency": "rub" }
+                { "id": 5, "date": "2017-07-19T11:20:00", "type": 2, "cost": 28500, "currency": "rub" },
+                { "id": 6, "date": "2017-07-17T12:30:00", "type": 1, "cost": 400, "currency": "rub" },
+                { "id": 7, "date": "2017-07-16T12:30:00", "type": 1, "cost": 400, "currency": "rub" },
+                { "id": 8, "date": "2017-07-15T12:30:00", "type": 1, "cost": 400, "currency": "rub" },
+                { "id": 9, "date": "2017-07-14T12:30:00", "type": 1, "cost": 400, "currency": "rub" },
+                { "id": 10, "date": "2017-07-13T12:30:00", "type": 1, "cost": 400, "currency": "rub" },
+                { "id": 11, "date": "2017-07-12T12:30:00", "type": 1, "cost": 400, "currency": "rub" },
+                { "id": 12, "date": "2017-07-11T12:30:00", "type": 1, "cost": 400, "currency": "rub" },
+                { "id": 13, "date": "2017-07-10T12:30:00", "type": 1, "cost": 400, "currency": "rub" },
+                { "id": 14, "date": "2017-07-09T12:30:00", "type": 1, "cost": 400, "currency": "rub" },
+                { "id": 15, "date": "2017-07-08T12:30:00", "type": 1, "cost": 400, "currency": "rub" },
+                { "id": 16, "date": "2017-07-07T12:30:00", "type": 1, "cost": 400, "currency": "rub" },
             ]
         };
     }

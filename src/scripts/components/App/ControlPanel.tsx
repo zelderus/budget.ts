@@ -33,7 +33,7 @@ export class ControlPanel extends View<IControlPanelProps, IControlPanelStates> 
     ///
 
     private onButtonAdd(){
-        this.getActionCreator().addItem({t:'bebebeee'});
+        this.getActionCreator().editTransactionShow(null);
     }
     private onButtonDelete(){
         this.getActionCreator().deleteItem(null);
