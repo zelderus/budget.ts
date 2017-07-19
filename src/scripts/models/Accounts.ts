@@ -6,18 +6,23 @@ namespace Accounts {
     /**
      * Счет.
      */
-    export class AccountLine {
+    export class AccountLine implements IClientObjectResponse {
         id: string;
         title: string;
         order: number;
 
 
+        constructor () {
 
-        constructor (id: string, title: string, order: number ) {
-            this.id = id;
-            this.title = title;
-            this.order = order;
         }
+
+
+        fromJson (j: any): void {
+            this.id = j.id;
+            this.title = j.title;
+            this.order = j.order;
+        }
+
     }
 
 

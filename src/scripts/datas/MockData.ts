@@ -1,34 +1,41 @@
 
 
-import Accounts from './../models/Accounts';
+//import {IClientServerResponse} from './../interfaces/data';
+
+//import Accounts from './../models/Accounts';
 import Transactions from './../models/Transactions';
 
 
 namespace Mock {
 
-    function _getDate(year: number, month: number, day: number, hours: number, minutes: number, seconds: number): Date {
-        return new Date(year, month, day, hours, minutes, seconds, 0);
+
+    function _getAccounts() : IClientServerResponse {
+        return {
+            "success": true,
+            "message": "",
+            "data": [
+                { "id": 1, "title": "Кошелек", "summ": 12000, "order": 1 },
+                { "id": 2, "title": "Кредитка", "summ": 100, "order": 3 },
+                { "id": 3, "title": "Вклад", "summ": 5000, "order": 2 }
+            ]
+        };
     }
+    export function getAccountsJson() : string { return JSON.stringify(_getAccounts()); }
 
 
-    export function getAccounts() : Accounts.AccountLine[] {
-        return [
-            new Accounts.AccountLine('1', 'Кошелек', 1),
-            new Accounts.AccountLine('2', 'Кредитка', 2)
-        ];
+
+    export function _getTransactions() : IClientServerResponse {
+        return {
+            "success": true,
+            "message": "",
+            "data": [
+                { "id": 1, "date": "2017-07-18T12:30:00", "type": 1, "cost": 400, "currency": "rub" },
+                { "id": 2, "date": "2017-07-18T19:15:00", "type": 1, "cost": 700, "currency": "rub" },
+                { "id": 3, "date": "2017-07-05T09:23:00", "type": 2, "cost": 55000, "currency": "rub" }
+            ]
+        };
     }
-
-
-    export function getTransactions() : Transactions.TransactionLine[] {
-        return [
-            new Transactions.TransactionLine().fromSome('1', _getDate(2017, 5, 10, 13, 20, 0), Transactions.TransactionTypes.Spend, "rub", 400),
-            new Transactions.TransactionLine().fromSome('2', _getDate(2017, 5, 10, 20, 40, 0), Transactions.TransactionTypes.Spend, "rub", 2400),
-            new Transactions.TransactionLine().fromSome('3', _getDate(2017, 5, 11, 10, 15, 0), Transactions.TransactionTypes.Profit, "rub", 55000),
-            new Transactions.TransactionLine().fromSome('4', _getDate(2017, 5, 11, 19, 50, 0), Transactions.TransactionTypes.Spend, "rub", 1850),
-            new Transactions.TransactionLine().fromSome('5', _getDate(2017, 5, 12, 13, 10, 0), Transactions.TransactionTypes.Spend, "rub", 400),
-        ];
-    }
-
+    export function getTransactionsJson() : string { return JSON.stringify(_getTransactions()); }
 
 }
 

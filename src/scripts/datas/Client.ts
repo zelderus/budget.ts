@@ -10,7 +10,7 @@ import Ajax from './../plugins/Ajax';
 namespace Client {
 
     export interface IClientResponse<T> { (success:boolean, msg: string, val: T): void }
-    export interface IClientServerResponse<T> { success:boolean, message: string, data: T } // формат каждого ответа с сервера
+    //export interface IClientServerResponse<T> { success:boolean, message: string, data: T } // формат каждого ответа с сервера
 
     /**
      * Запрос к данным.
@@ -21,59 +21,85 @@ namespace Client {
 
         }
 
+
+        _parseModel<T extends IClientObjectResponse>(j: any, c: new()=>T): T {
+            let model = new c();
+            model.fromJson(j);
+            return model;
+        }
+        _parseModels<T extends IClientObjectResponse>(data: any, c: new()=>T): T[] {
+            let lines = <any[]>data || [];
+            let models = new Array<T>();
+            lines.forEach((d) => {
+                let model = new c();
+                model.fromJson(d);
+                models.push(model);
+            });
+            return models;
+        }
+        _parseToModel<T extends IClientObjectResponse>(json: string, c: new()=>T) : IClientServerParsedModelResponse<T> {
+            let dataModel = <IClientServerResponse>JSON.parse(json);
+            let models = this._parseModel(dataModel.data, c);
+            return { success: dataModel.success, message: dataModel.message, data: models };
+        }
+        _parseToModels<T extends IClientObjectResponse>(json: string, c: new()=>T) : IClientServerParsedModelsResponse<T> {
+            let dataModel = <IClientServerResponse>JSON.parse(json);
+            let models = this._parseModels(dataModel.data, c);
+            return { success: dataModel.success, message: dataModel.message, data: models };
+        }
+
+
+
         /**
          * Счета.
          */
         getAccounts(callBack: IClientResponse<Accounts.AccountLine[]>) {
-            
-            callBack(true, "", Mock.getAccounts());
+            let self = this;
+
+            let resp = self._parseToModels(Mock.getAccountsJson(), Accounts.AccountLine);
+            callBack(resp.success, resp.message, resp.data);
 
             /*setTimeout(function(){
-                callBack(false, "сервер не отвечает", null);
+                let resp = self._parseToModels(Mock.getAccountsJson(), Accounts.AccountLine);
+                callBack(resp.success, resp.message, resp.data);
             }, 5000);*/
 
             /*setTimeout(function(){
-                callBack(true, "", Mock.getAccounts());
+                let resp = self._parseToModels(Mock.getAccountsJson(), Accounts.AccountLine);
+                callBack(false, "ошибочка вышла", resp.data);
             }, 2000);*/
             
-            /*
-            Ajax.get(
+            
+            /*Ajax.get(
                 "public/fakes/accounts.json", 
                 {}, 
                 (data) => {
-                    let dataModel = <IClientServerResponse<Accounts.AccountLine[]>>JSON.parse(data);
-                    callBack(dataModel.success, dataModel.message, dataModel.data);
+                    let resp = self._parseToModels(data, Accounts.AccountLine);
+                    callBack(resp.success, resp.message, resp.data);
                 },
                 (errorMsg) => {
                     callBack(false, errorMsg, null);
                 }
-            );
-            */
+            );*/
         }
+        
 
         /**
          * Транзакции.
          */
         getTransactions(filters: Transactions.TransactionFilters, callBack: IClientResponse<Transactions.TransactionLine[]>) : void {
+            let self = this;
 
-            callBack(true, "", Mock.getTransactions());
+            let resp = self._parseToModels(Mock.getTransactionsJson(), Transactions.TransactionLine);
+            callBack(resp.success, resp.message, resp.data);
 
             /*
             Ajax.get(
                 "public/fakes/transactions.json", 
                 filters, 
                 (data) => {
-                    let dataModel = <IClientServerResponse<any[]>>JSON.parse(data);
-                    // распарсиваем некоторые типы вручную
-                    let lines = dataModel.data || [];
-                    let models: Transactions.TransactionLine[] = [];
-                    lines.forEach((d) => {
-                        let model = new Transactions.TransactionLine();
-                        model.fromJson(d);
-                        models.push(model);
-                    });
-
-                    callBack(dataModel.success, dataModel.message, models);
+                    let resp = self._parseToModels(Mock.getTransactionsJson(), Transactions.TransactionLine);
+                    callBack(resp.success, resp.message, resp.data);
                 },
                 (errorMsg) => {
                     callBack(false, errorMsg, null);
