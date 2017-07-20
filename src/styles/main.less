@@ -61,6 +61,8 @@
 .ViewErrorBlock { margin: 2px; padding: 4px; text-align: center; font-weight: bold; color: #801111; background-color: #F2DFDF; border: 1px dashed #801111;}
 // Не найдена активная Вьюшка
 .ActiveViewError {margin: 2px; padding: 4px; text-align: center; font-weight: bold; color: #801111; background-color: #F2DFDF; border: 1px dashed #801111;}
+// Не найдена Вьюшка от контролов
+.ControlViewError {margin: 2px; padding: 4px; text-align: center; font-weight: bold; color: #801111; background-color: #F2DFDF; border: 1px dashed #801111;}
 
 /********************
 *
@@ -75,12 +77,15 @@
 .MainDomNotYet { padding: 8px 12px; text-align: center; color:#801111; border: 1px dashed #AD1717; .roundBorder4; background-color: #F2DFDF;}
 // логи
 .LogPanel { overflow: hidden;margin: 10px 0; padding: 4px 12px; border: 1px dashed #aaa; .roundBorder4; background-color: #EBF0DD; color: #111; font-size: 10px; }
+.LogPanel .Text { font-weight: bold;}
+.LogPanel .Text.Normal { color:#111;}
+.LogPanel .Text.Error {color:#F00;}
 
-/********************
+/*************************************************
 *
-*   основная часть приложения
+* основная часть приложения
 *
-*******************/
+**************************************************/
 // основная часть приложения
 .MainPanel { .appSize; margin: 0; padding: 0; position: relative; border: 1px dashed #aaa; .roundBorder4; }
 
@@ -93,32 +98,32 @@
 
 // критическая ошибка
 .FatalPanel { width: 100%; height: 100%; z-index: 999; position: absolute; background: url("@{imageBackSmall}") repeat transparent; }
+.FatalPanel .CloseButton { margin: 5px; padding: 9px; cursor: pointer; color:#0E346A; border: 1px solid #0E346A; background-color: #D2E4E9; .roundBorder4;position: absolute; right: 20px; top: 20px;}
+.FatalPanel .CloseButton:hover {background-color: #8DBAC8;}
 .FatalPanel .Content {padding: 10px; position: relative; top: 42%; max-width: 500px; margin: 0 auto; color:#801111; border: 1px dashed #AD1717; .roundBorder4; background-color: #F2DFDF; }
 .FatalPanel .Content .Title { font-weight: bold; margin: 0 0 5px 0; text-align: center;}
 .FatalPanel .Content .Description {}
 
 
-//
-// навигация (отображается вверху)
-//
+
+/*************************************************
+*
+* навигация (отображается вверху)
+*
+**************************************************/
 .NavigationPanel { padding: 6px; background-color:#EBEBEB; border-top: 1px solid #EBEBEB; border-bottom: 1px solid #DEDEDE; clear: both;overflow: hidden; .roundBorderTop4; }
 .NavigationPanel .Button {float: left; margin: 6px; padding: 4px;text-align: center; cursor: pointer; color: #2B6499; border: 1px solid transparent;}
 .NavigationPanel .Button:hover {color: #042B4F;}
 .NavigationPanel .Button.Active {color: #042B4F; cursor: default; border: 1px solid #042B4F; .roundBorder4; }
 
-//
-// управление (отображается внизу приложения)
-//
-.ControlPanel { margin:0; padding: 4px; background-color:#EBEBEB; border-top: 1px solid #EBEBEB; border-bottom: 1px solid #DEDEDE; clear: both;overflow: hidden; .roundBorderBottom4; }
-.ControlPanel .Buttons {}
-.ControlPanel .Buttons .Button {float: left; margin: 6px; padding: 6px;text-align: center; border: 1px solid #da0; cursor: pointer; background-color: #da1;color: #fff;}
-.ControlPanel .Buttons .Button:hover {background-color: #d81;}
 
-//
-// основная часть приложения (центральная часть)
-//
+
+/*************************************************
+*
+* основная часть приложения (центральная часть)
+*
+**************************************************/
 .ActionPanel { .actionPanelSize; clear: both; overflow: hidden; }
-
 
 
 //
@@ -200,7 +205,35 @@
 
 
 
+/*************************************************
+*
+* управление (отображается внизу приложения)
+*
+**************************************************/
 
+.ControlPanel { margin:0; padding: 4px; background-color:#EBEBEB; border-top: 1px solid #EBEBEB; border-bottom: 1px solid #DEDEDE; clear: both;overflow: hidden; .roundBorderBottom4; 
+    
+    .Button {float: left; margin: 6px; padding: 6px;text-align: center; border: 1px solid #da0; cursor: pointer; background-color: #da1;color: #fff;}
+    .Button:hover {background-color: #d81;}
+}
+
+
+//
+// Транзакции
+//
+.TransactionControls {
+
+}
+
+
+
+
+//
+// Счета
+//
+.AccountControls {
+
+}
 
 
 

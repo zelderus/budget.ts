@@ -7,11 +7,13 @@ namespace Navigation {
         navIndex: number;
         title: string;
         viewRef: any;
+        cmdRef: any;
 
-        constructor (navIndex: number, title: string, viewRef: any) {
+        constructor (navIndex: number, title: string, viewRef: any, cmdRef: any) {
             this.navIndex = navIndex;
             this.title = title;
             this.viewRef = viewRef;
+            this.cmdRef = cmdRef;
         }
     }
 

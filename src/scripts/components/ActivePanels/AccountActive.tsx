@@ -3,20 +3,21 @@
 import * as React from "react";
 import View from './../../flux/View';
 import TransactionStore from './../../stores/TransactionStore';
+import {BaseActive, IBaseActiveProps} from './BaseActive';
 
 import Accounts from './../../models/Accounts';
 import AccountLine from './../Partials/AccountLine';
 
 
 
-export interface IAccountActiveProps {  }
+export interface IAccountActiveProps extends IBaseActiveProps {  }
 export interface IAccountActiveStates { accounts: Accounts.AccountLine[]; }
 
 
 /**
  * Панель - счета.
  */
-export class AccountActive extends View<IAccountActiveProps, IAccountActiveStates> {
+export class AccountActive extends BaseActive<IAccountActiveProps, IAccountActiveStates> {
 
     constructor(props: any){
         super(props, [TransactionStore]);

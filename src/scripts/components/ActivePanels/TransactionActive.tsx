@@ -3,19 +3,39 @@
 import * as React from "react";
 import View from './../../flux/View';
 import TransactionStore from './../../stores/TransactionStore';
+import {BaseActive, IBaseActiveProps} from './BaseActive';
 
 import Transactions from './../../models/Transactions';
 import TransactionLine from './../Partials/TransactionLine';
 
 
-export interface ITransactionActiveProps {  }
-export interface ITransactionActiveStates { transactions: Transactions.TransactionLine[]; isEdit: boolean; editId: string }
+export interface ITransactionActiveProps extends IBaseActiveProps {  }
+export interface ITransactionActiveStates { 
+    transactions: Transactions.TransactionLine[]; 
+    isEdit: boolean; 
+    editId: string; 
+
+    formId: string;
+    formTitle: string;
+}
+
+
+
+/**
+ * События от контрола.
+ */
+export enum TransactionCmdEvents {
+    FORM_SAVE = 1
+}
+
 
 
 /**
  * Панель - транзакции.
  */
-export class TransactionActive extends View<ITransactionActiveProps, ITransactionActiveStates> {
+export class TransactionActive extends BaseActive<ITransactionActiveProps, ITransactionActiveStates> {
+
+    __formModel: any = null; // TODO: to type !!!
 
     constructor(props: any){
         super(props, [TransactionStore]);
@@ -27,12 +47,75 @@ export class TransactionActive extends View<ITransactionActiveProps, ITransactio
 
     // Интересующие нас состояния (получаем их строго из Сторов)
     protected getState() : ITransactionActiveStates {
+
+        // модель транзакции
+        let formModel: any = this._getCurrentFormModel();
+
+
         return {
             transactions: TransactionStore.getTransactions(),
             isEdit: TransactionStore.isShowEditTransactionPanel(),
-            editId: TransactionStore.getCurrentEditTransactionId()
+            editId: TransactionStore.getCurrentEditTransactionId(),
+
+            formId: formModel.id,
+            formTitle: formModel.title
         };
     }
+
+
+
+    //
+    //
+    //
+
+    private _getCurrentFormModel(): any {
+        //if (this.__formModel != null) return this.__formModel;
+
+        let currentTransactionId = TransactionStore.getCurrentEditTransactionId();
+        this.__formModel = {};
+        let transaction = TransactionStore.getTransactionById(currentTransactionId);
+        if (transaction != null) {
+            this.__formModel.id = transaction.id;
+            this.__formModel.title = transaction.cost;
+
+        }
+        
+        return this.__formModel;
+    }
+
+
+
+
+
+    /**
+     * Получили событие от управления.
+     * @param eventName 
+     */
+    public onEventFromControls(eventId: number): void {
+        let event = eventId as TransactionCmdEvents;
+        switch(eventId) {
+            case TransactionCmdEvents.FORM_SAVE:
+                this._onEditSave();
+                break;
+
+        }
+    }
+
+
+
+
+
+    //
+    // Logic
+    //
+
+    private _onEditSave(): void {
+        this.getActionCreator().log("Сохранение транзакции..");
+        let model = this.__formModel;
+        this.getActionCreator().editTransactionDo(model);
+    }
+
+
 
 
 
@@ -40,16 +123,10 @@ export class TransactionActive extends View<ITransactionActiveProps, ITransactio
     /// User interactions
     ///
 
-    private _onEditCancel(): void {
-        this.getActionCreator().editTransactionCancel();
+    private _onFormChangeTitle(e: any): void {
+        this.setState({formTitle: e.target.value});
     }
 
-    private _onEditSave(): void {
-        let model = {};
-        // TODO: collect data from the form
-
-        this.getActionCreator().editTransactionDo(model);
-    }
 
 
 
@@ -74,14 +151,14 @@ export class TransactionActive extends View<ITransactionActiveProps, ITransactio
 
     private renderEditTransaction() {
         if (!this.state.isEdit) return null;
-        let transactionId = this.state.editId;
-
-        // TODO: get real Transaction (by transactionId)
 
         return <div className="TransactionEditWnd">
-            <div>ediiiiit '{transactionId}'</div>
-            <div className="Button" onClick={e => this._onEditCancel()} >cancel</div>
-            <div className="Button" onClick={e => this._onEditSave()}>save</div>
+            <div>ediiiiit '{this.state.formId}'</div>
+            <div>
+                <input name="title" value={this.state.formTitle} onChange={e => this._onFormChangeTitle(e)} />
+            </div>
+            {/*<div className="Button" onClick={e => this._onEditCancel()} >cancel</div>
+            <div className="Button" onClick={e => this._onEditSave()}>save</div>*/}
         </div>
     }
 

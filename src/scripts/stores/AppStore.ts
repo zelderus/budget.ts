@@ -13,6 +13,7 @@ import ActionTypes from './../actions/ActionTypes';
 export class AppStore extends BaseStore {
 
     _logTextValue: string;
+    _logIsError: boolean;
     _errorFatalTextValue: string;
     _navIndex: number;
     _isLoading: boolean;
@@ -21,6 +22,7 @@ export class AppStore extends BaseStore {
         super();
 
         this._logTextValue = "";
+        this._logIsError = false;
         this._errorFatalTextValue = "";
         this._navIndex = 1;
         this._isLoading = false;
@@ -32,10 +34,11 @@ export class AppStore extends BaseStore {
     // Эти данные для их состояний. При изменении которых, Вьюшки обновляются.
     //
 
-    public getLogText() { return this._logTextValue; }
-    public getErrorFatalText() { return this._errorFatalTextValue; }
-    public getNavigationIndex() { return this._navIndex; }
-    public isLoading() { return this._isLoading; }
+    public getLogText(): string { return this._logTextValue; }
+    public getLogIsError(): boolean { return this._logIsError; }
+    public getErrorFatalText(): string { return this._errorFatalTextValue; }
+    public getNavigationIndex(): number { return this._navIndex; }
+    public isLoading(): boolean { return this._isLoading; }
 
 
 
@@ -51,10 +54,14 @@ export class AppStore extends BaseStore {
     onDispatch(type: number, obj: any):boolean {
         switch(type) {
             case ActionTypes.LOG:
-                this._logTextValue = obj;            
+                this._logTextValue = obj.text;
+                this._logIsError = obj.isError;            
                 break;
             case ActionTypes.ERROR_FATAL:
                 this._errorFatalTextValue = obj;            
+                break;
+            case ActionTypes.ERROR_FATAL_CLOSE:
+                this._errorFatalTextValue = "";            
                 break;
             case ActionTypes.NAVIGATION:
                 this._navIndex = obj;

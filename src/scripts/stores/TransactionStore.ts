@@ -20,15 +20,14 @@ export class TransactionStore extends BaseStore {
     __transactions: Transactions.TransactionLine[] = [];
     __transactionFilter: Transactions.TransactionFilters;
 
-    __isShowEditTransactionPanel: boolean;
+    __isEditTransactionWndShow: boolean;
     __currentEditTransactionId: string;
-
 
 
     constructor() {
         super();
 
-        this.__isShowEditTransactionPanel = false;
+        this.__isEditTransactionWndShow = false;
         this.__currentEditTransactionId = "";
         this.__transactionFilter = new Transactions.TransactionFilters();
 
@@ -41,9 +40,9 @@ export class TransactionStore extends BaseStore {
     //
     public getAccounts(): Accounts.AccountLine[] { return this.__accounts; }
     public getTransactions(): Transactions.TransactionLine[] { return this.__transactions; }
-    public isShowEditTransactionPanel(): boolean { return this.__isShowEditTransactionPanel; }
+    public getTransactionById(id: string): Transactions.TransactionLine { if (id === undefined || id == null || id === "") return null; return this.__transactions.filter(f => f.id == id)[0]; }
+    public isShowEditTransactionPanel(): boolean { return this.__isEditTransactionWndShow; }
     public getCurrentEditTransactionId(): string { return this.__currentEditTransactionId; }
-
 
 
 
@@ -90,7 +89,6 @@ export class TransactionStore extends BaseStore {
     }
     private _onFatalError(msg: string): void {
         Actions.errorFatal(msg);
-        Actions.loadingStop(); // критическая ошибка выпадает при загрузках, значит тут всегда сами отключаем панель загрузки
     }
 
 
@@ -116,17 +114,27 @@ export class TransactionStore extends BaseStore {
         let isEdit = (obj !== undefined && obj != null);
         let transactionId: string = isEdit ? <string>obj : "";
         this.__currentEditTransactionId = transactionId;
-        this.__isShowEditTransactionPanel = true;
+        this.__isEditTransactionWndShow = true;
     }
     private _onEditTransactionCancel(): void {
-        this.__isShowEditTransactionPanel = false;
+        this.__isEditTransactionWndShow = false;
+        this.__currentEditTransactionId = "";
     }
     private _onEditTransactionDo(obj: any): void {
+        let self = this;
+        Actions.loadingStart();
         // TODO: get real Transaction, if edit (from obj data)
-        // TODO: add/edit data
-        // TODO: show optimistic data
+        // TODO: add/edit data to the site
+        // TODO: show optimistic data ??
+
+        setTimeout(function(){
+                self._onFatalError("не реализовано");
+        }, 2000);
+        
 
         this._onEditTransactionCancel(); // закрываем окно редактирования
+
+        //Actions.loadingStop();
     }
 
 
@@ -147,7 +155,7 @@ export class TransactionStore extends BaseStore {
             case ActionTypes.NAVIGATION:
                 this._onNavigationChange(obj);
                 this.emitChange();
-                break;
+                return true;
 
             case ActionTypes.LOAD_INIT_DATA:
                 this._loadInitDataAsync();

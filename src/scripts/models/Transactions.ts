@@ -30,7 +30,7 @@ namespace Transactions {
     /**
      * Вывод транзакции.
      */
-    export class TransactionLine {
+    export class TransactionLine implements IClientObjectResponse {
         id: string;
         date: Date;
         type: TransactionTypes;
@@ -45,7 +45,7 @@ namespace Transactions {
         constructor() {
         
         }
-        
+
         fromJson (j: any): void {
             this.id = j.id;
             this.date = new Date(j.date);

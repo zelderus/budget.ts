@@ -21,11 +21,16 @@ export namespace Actions{
         }
 
         
-        log(msg: string) {
-            Dispatcher.dispatch(ActionTypes.LOG, msg);
+        log(msg: string, isError: boolean = false) {
+            let logModel: any = { text: msg, isError: isError};
+            Dispatcher.dispatch(ActionTypes.LOG, logModel);
         }
         errorFatal(msg: string) {
             Dispatcher.dispatch(ActionTypes.ERROR_FATAL, msg);
+            Dispatcher.dispatch(ActionTypes.LOADING_STOP, null); // критическая ошибка выпадает при загрузках, значит тут всегда сами отключаем панель загрузки
+        }
+        errorFatalClose() {
+            Dispatcher.dispatch(ActionTypes.ERROR_FATAL_CLOSE, null);
         }
         navigation(navIndex: number) {
             Dispatcher.dispatch(ActionTypes.NAVIGATION, navIndex);

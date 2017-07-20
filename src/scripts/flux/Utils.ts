@@ -4,7 +4,7 @@
 namespace FluxUtils{
 
     /**
-     * Имя класса.
+     * Имя класса (типа).
      */
     export function getClassName (obj: any) : string { 
         var funcNameRegex = /function (.{1,})\(/;

@@ -4,7 +4,7 @@ import AppStore from './../../stores/AppStore';
 import View from './../../flux/View';
 
 export interface ILogPanelProps {  }
-export interface ILogPanelStates { logText: string  }
+export interface ILogPanelStates { logText: string; isError: boolean;  }
 
 
 /**
@@ -20,7 +20,8 @@ export class LogPanel extends View<ILogPanelProps, ILogPanelStates> {
     // Интересующие нас состояния (получаем их строго из Сторов)
     protected getState() : ILogPanelStates {
         return {
-            logText: AppStore.getLogText()
+            logText: AppStore.getLogText(),
+            isError: AppStore.getLogIsError()
         };
     }
 
@@ -29,8 +30,10 @@ export class LogPanel extends View<ILogPanelProps, ILogPanelStates> {
     /// Render
     ///
 	render(){
+        let textStyle = this.state.isError ? "Error" : "Normal";
+
 		return <div className="LogPanel">
-            <span>лог: <b>{this.state.logText}</b></span>
+            <span>лог: <span className={"Text " + textStyle}>{this.state.logText}</span></span>
         </div>;
 	}
 

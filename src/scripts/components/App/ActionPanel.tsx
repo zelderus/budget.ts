@@ -4,7 +4,8 @@ import * as React from "react";
 import View from './../../flux/View';
 import AppStore from './../../stores/AppStore';
 import Navigation from './../../models/Navigation';
-
+import {IBaseActive} from './../ActivePanels/BaseActive';
+import FluxUtils from './../../flux/Utils';
 
 export interface IActionPanelProps { navLines: Navigation.NavigationLine[]; }
 export interface IActionPanelStates { navIndex: number; }
@@ -18,6 +19,9 @@ export interface IActionPanelStates { navIndex: number; }
  */
 export class ActionPanel extends View<IActionPanelProps, IActionPanelStates> {
 
+
+    __activePanel: IBaseActive;
+
     constructor(props: any){
         super(props, [AppStore]);
 
@@ -30,6 +34,28 @@ export class ActionPanel extends View<IActionPanelProps, IActionPanelStates> {
             navIndex: AppStore.getNavigationIndex()
         };
     }
+
+
+
+
+    //
+    //
+    //
+
+    // подцепляем текущую Активную панель
+    private _setActivePanelCallbackToControls(activePanel: IBaseActive): void {
+        if (activePanel == null || activePanel === undefined) {
+            this.__activePanel = null;
+            return;
+        }
+        this.__activePanel = activePanel;
+    }
+
+    // Панель управления послала событие к Активной панели
+    private _onSendEventFromControlToActive(eventId: number): void {
+        if (this.__activePanel != null) this.__activePanel.onEventFromControls(eventId);
+    }
+
 
 
 
@@ -60,9 +86,17 @@ export class ActionPanel extends View<IActionPanelProps, IActionPanelStates> {
 
         // динамически определяем компонент (активную вьюшку) и рендерим ее
         let PanelViewName = curLine.viewRef;
-		return <div className="ActionPanel">
-            <PanelViewName />
-        </div>;
+        // динамически определяем компонент (контролы) и рендерим ее
+        let ControlViewName = curLine.cmdRef;
+
+		return <div>
+            <div className="ActionPanel">
+                <PanelViewName ref={ (inp:any) => { this._setActivePanelCallbackToControls(inp);} } />
+            </div>
+            <div className="ControlPanel">
+                <ControlViewName onEventToActive={ (eventId:number) => {this._onSendEventFromControlToActive(eventId); }} />
+            </div>
+        </div>
 	}
 
 

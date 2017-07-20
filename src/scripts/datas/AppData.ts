@@ -6,6 +6,10 @@ import Navigation from './../models/Navigation';
 import {TransactionActive} from "./../components/ActivePanels/TransactionActive";
 import {AccountActive} from "./../components/ActivePanels/AccountActive";
 
+// панели управлений
+import {TransactionControls} from "./../components/ControlPanels/TransactionControls";
+import {AccountControls} from "./../components/ControlPanels/AccountControls";
+
 // сторы
 import AppStore from './../stores/AppStore';
 import TransactionStore from './../stores/TransactionStore';
@@ -23,8 +27,8 @@ namespace AppData {
     export function getNavigations(): Navigation.NavigationLine[] {
         let ind = 1;
         return [
-            new Navigation.NavigationLine(ind++, "Транзакции", TransactionActive),
-            new Navigation.NavigationLine(ind++, "Счета", AccountActive)
+            new Navigation.NavigationLine(ind++, "Транзакции", TransactionActive, TransactionControls),
+            new Navigation.NavigationLine(ind++, "Счета", AccountActive, AccountControls)
         ];
     }
 

@@ -32,6 +32,16 @@ export class MainPanel extends View<IMainPanelProps, IMainPanelStates> {
     }
 
 
+    //
+    // UI interactions
+    //
+
+    private _onCloseError(): void {
+        this.getActionCreator().errorFatalClose();
+    }
+
+
+
 
     ///
     /// Render
@@ -40,6 +50,7 @@ export class MainPanel extends View<IMainPanelProps, IMainPanelStates> {
     renderFatal() {
         if (this.state.fatalMsg == null || this.state.fatalMsg == "") return null;
         return <div className="FatalPanel">
+            <div className="CloseButton" onClick={e => this._onCloseError()}>X</div>
             <div className="Content">
                 <div className="Title">Критическая ошибка</div>
                 <div className="Description">{this.state.fatalMsg}</div>
@@ -52,7 +63,7 @@ export class MainPanel extends View<IMainPanelProps, IMainPanelStates> {
         return <div className="LoadingPanel">
             <div className="Content">
                 <div className="Pic"></div>
-                <div className="Title">Загрузка данных..</div>
+                <div className="Title">обновление данных..</div>
             </div>
         </div>
     }
@@ -67,7 +78,7 @@ export class MainPanel extends View<IMainPanelProps, IMainPanelStates> {
             {loadingPanel}
             <NavigationPanel navLines={navs} />
             <ActionPanel navLines={navs} />
-            <ControlPanel />
+            {/*<ControlPanel navLines={navs} />*/}
         </div>;
 	}
 
