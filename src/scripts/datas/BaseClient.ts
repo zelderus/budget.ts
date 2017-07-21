@@ -28,8 +28,9 @@ namespace Client {
 
         private _parseToModel<T extends IClientObjectResponse>(json: string, c: new()=>T) : IClientServerParsedModelResponse<T> {
             let dataModel = <IClientServerResponse>JSON.parse(json);
+            let d = <any>dataModel.data || {};
             let model = new c();
-            model.fromJson(json);
+            model.fromJson(d);
             return { success: dataModel.success, message: dataModel.message, data: model };
         }
         private _parseToModels<T extends IClientObjectResponse>(json: string, c: new()=>T) : IClientServerParsedModelsResponse<T> {

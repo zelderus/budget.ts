@@ -3,6 +3,7 @@ import BClient from './../BaseClient';
 import Mock from './../MockData';
 import {IClient} from './../ClientManager';
 
+import Authentication from './../../models/Authentication';
 import Accounts from './../../models/Accounts';
 import Transactions from './../../models/Transactions';
 
@@ -21,6 +22,17 @@ namespace Client {
         constructor() {
             super();
         }
+
+        /**
+         * Авторизация.
+         * @param userName 
+         * @param userPass 
+         * @param callBack 
+         */
+        authentication(userName: string, userPass: string, callBack: BClient.IClientResponse<Authentication.AuthenticationData>): void {
+            this.getFromJsonModel(Mock.getUserJson(), Authentication.AuthenticationData, callBack);
+        }
+
 
         /**
          * Счета.

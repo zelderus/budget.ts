@@ -8,6 +8,21 @@ import Transactions from './../models/Transactions';
 
 namespace Mock {
 
+    function _getUser() : IClientServerResponse {
+        return {
+            "success": true,
+            "message": "",
+            "data": { 
+                userKey: "demo_session_key_" + (new Date()).getUTCDate() + "_end_key",
+                isAuth: true,
+                name: "demo user"
+            }
+        };
+    }
+    export function getUserJson() : string { return JSON.stringify(_getUser()); }
+
+
+
 
     function _getAccounts() : IClientServerResponse {
         return {

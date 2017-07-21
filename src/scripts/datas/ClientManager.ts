@@ -5,6 +5,7 @@ import Actions from './../actions/Actions';
 import ClientLocalStorage from './Clients/ClientLocalStorage';
 import ClientSite from './Clients/ClientSite';
 
+import Authentication from './../models/Authentication';
 import Accounts from './../models/Accounts';
 import Transactions from './../models/Transactions';
 
@@ -13,6 +14,7 @@ import Transactions from './../models/Transactions';
  * Интерфейс клиента.
  */
 export interface IClient {
+    authentication(userName: string, userPass: string, callBack: BClient.IClientResponse<Authentication.AuthenticationData>): void;
     getAccounts(callBack: BClient.IClientResponse<Accounts.AccountLine[]>): void;
     getTransactions(filters: Transactions.TransactionFilters, callBack: BClient.IClientResponse<Transactions.TransactionLine[]>) : void;
 }

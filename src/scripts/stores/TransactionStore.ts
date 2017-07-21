@@ -1,4 +1,5 @@
 
+import Life from './../Life';
 
 import StoreFlux from './../flux/store';
 import BaseStore from './../flux/BaseStore';
@@ -56,19 +57,38 @@ export class TransactionStore extends BaseStore {
      */
     private _loadInitDataAsync() {
         Actions.loadingStart();
-        // счета
-        this._loadAccountsAsync((s,m) => { 
+
+        // инициализация пользователя
+        this._authUserAsync((s,m) => {
             if (!s) { this._onFatalError(m); return;}
-            // транзакции
-            this._loadTransactionsAsync((s,m) => { 
+            if (Life.getUser().isAuth() == false) { this._onFatalError("пользователь не авторизован"); return; }
+            Actions.log("вход выполнен пользователем: " + Life.getUser().getName(), false);
+
+            // счета
+            this._loadAccountsAsync((s,m) => { 
                 if (!s) { this._onFatalError(m); return;}
-                // оповещаем
-                this.emitChange();
-                Actions.loadingStop();
+
+                // транзакции
+                this._loadTransactionsAsync((s,m) => { 
+                    if (!s) { this._onFatalError(m); return;}
+
+                    // оповещаем
+                    this.emitChange();
+                    Actions.loadingStop();
+                });
             });
-        });
+        })
     }
 
+
+
+
+    private _authUserAsync(callBack: (success:boolean, errorMsg: string) => void) {
+        Client.getClient().authentication("username", "pass", (s, m, d) => {    // TODO: !!!!! имя и пароль от ввода пользователя
+            Life.setUserAuth(d);
+            callBack(s,m);
+        });
+    }
 
 
     private _loadAccountsAsync(callBack: (success:boolean, errorMsg: string) => void) {
