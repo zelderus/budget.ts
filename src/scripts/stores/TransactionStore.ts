@@ -8,7 +8,7 @@ import Actions from './../actions/Actions';
 import Accounts from './../models/Accounts';
 import Transactions from './../models/Transactions';
 
-import Client from './../datas/Client';
+import Client from './../datas/ClientManager';
 
 
 /**
@@ -16,12 +16,12 @@ import Client from './../datas/Client';
  */
 export class TransactionStore extends BaseStore {
 
-    __accounts: Accounts.AccountLine[] = [];
-    __transactions: Transactions.TransactionLine[] = [];
-    __transactionFilter: Transactions.TransactionFilters;
+    private __accounts: Accounts.AccountLine[] = [];
+    private __transactions: Transactions.TransactionLine[] = [];
+    private __transactionFilter: Transactions.TransactionFilters;
 
-    __isEditTransactionWndShow: boolean;
-    __currentEditTransactionId: string;
+    private __isEditTransactionWndShow: boolean;
+    private __currentEditTransactionId: string;
 
 
     constructor() {
@@ -50,6 +50,10 @@ export class TransactionStore extends BaseStore {
     // Datas
     //
 
+
+    /**
+     * Первый запрос при запуске приложения. Получаем данные инициализации - на все приложение, и какие-то начальные транзакции.
+     */
     private _loadInitDataAsync() {
         Actions.loadingStart();
         // счета
@@ -65,15 +69,17 @@ export class TransactionStore extends BaseStore {
         });
     }
 
+
+
     private _loadAccountsAsync(callBack: (success:boolean, errorMsg: string) => void) {
-        Client.getAccounts((s, m, d) => { 
+        Client.getClient().getAccounts((s, m, d) => { 
             this.__accounts = d;
             callBack(s,m);
         });
     }
 
     private _loadTransactionsAsync(callBack: (success:boolean, errorMsg: string) => void) {
-        Client.getTransactions(this.__transactionFilter, (s, m, d) => {
+        Client.getClient().getTransactions(this.__transactionFilter, (s, m, d) => {
             this.__transactions = d;
             callBack(s, m);
         });
@@ -120,21 +126,43 @@ export class TransactionStore extends BaseStore {
         this.__isEditTransactionWndShow = false;
         this.__currentEditTransactionId = "";
     }
-    private _onEditTransactionDo(obj: any): void {
+    private _onEditTransactionDo(obj: any): void { // сохранение формы редактирования транзакции
         let self = this;
         Actions.loadingStart();
-        // TODO: get real Transaction, if edit (from obj data)
-        // TODO: add/edit data to the site
-        // TODO: show optimistic data ??
 
-        setTimeout(function(){
-                self._onFatalError("не реализовано");
-        }, 2000);
+        let transaction = <Transactions.TransactionEntity>obj;
+
+        // TODO: 1. отправка данных на сервер
+
+        // TODO: 2. если критическая ошибка - конец
+
+        // 3. если в ответе (в моделе данных) есть ошибки валидации - обновляем модель формы (добавляем ошибки) - конец
+        let hasFormError = false;
+        if (hasFormError) {
+            // TODO: добавляем в модель формы ошибки валидации
+
+            // прячем загрузку и оповещаем об изменениях
+            Actions.loadingStop();
+            this.emitChange();
+            return;
+        }
         
+        // TODO: 4. если это редактирование и есть такая запись - обновляем ее (иначе добавляем)
+        let exist = this.__transactions.filter(f => f.id == transaction.id)[0];
+        if (exist != null) {
+            exist.cost = transaction.cost;
+        }
+        // добавляем новую запись
+        else {
+            
+        }
 
-        this._onEditTransactionCancel(); // закрываем окно редактирования
-
-        //Actions.loadingStop();
+        
+        // закрываем окно редактирования
+        this._onEditTransactionCancel(); 
+        // прячем загрузку и оповещаем об изменениях
+        Actions.loadingStop();
+        this.emitChange();
     }
 
 
@@ -179,7 +207,6 @@ export class TransactionStore extends BaseStore {
                 return true;
             case ActionTypes.TRANSACTIONS_EDIT_DO:
                 this._onEditTransactionDo(obj);
-                this.emitChange();
                 return true;
 
             // TODO: update transaction filters

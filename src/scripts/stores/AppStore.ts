@@ -12,11 +12,11 @@ import ActionTypes from './../actions/ActionTypes';
  */
 export class AppStore extends BaseStore {
 
-    _logTextValue: string;
-    _logIsError: boolean;
-    _errorFatalTextValue: string;
-    _navIndex: number;
-    _isLoading: boolean;
+    private _logTextValue: string;
+    private _logIsError: boolean;
+    private _errorFatalTextValue: string;
+    private _navIndex: number;
+    private _isLoading: boolean;
 
     constructor() {
         super();

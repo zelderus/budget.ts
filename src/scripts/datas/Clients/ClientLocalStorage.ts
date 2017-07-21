@@ -1,8 +1,10 @@
-import BClient from './BaseClient';
-import Mock from './MockData';
 
-import Accounts from './../models/Accounts';
-import Transactions from './../models/Transactions';
+import BClient from './../BaseClient';
+import Mock from './../MockData';
+import {IClient} from './../ClientManager';
+
+import Accounts from './../../models/Accounts';
+import Transactions from './../../models/Transactions';
 
 
 
@@ -12,9 +14,9 @@ namespace Client {
 
 
     /**
-     * Запрос к данным.
+     * Клиент с локальным хранилищем в браузере.
      */
-    export class ClientAccessor extends BClient.BaseClient {
+    export class ClientLocalStorage extends BClient.BaseClient implements IClient {
 
         constructor() {
             super();
@@ -23,7 +25,7 @@ namespace Client {
         /**
          * Счета.
          */
-        getAccounts(callBack: BClient.IClientResponse<Accounts.AccountLine[]>) {
+        getAccounts(callBack: BClient.IClientResponse<Accounts.AccountLine[]>): void {
             let self = this;
 
             self.getFromJsonModels(Mock.getAccountsJson(), Accounts.AccountLine, callBack);
@@ -52,4 +54,5 @@ namespace Client {
 
 }
 
-export default new Client.ClientAccessor;
+//export default new Client.ClientLocalStorage;
+export default Client.ClientLocalStorage;

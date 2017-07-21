@@ -4,7 +4,8 @@ import * as ReactDOM from "react-dom";
 import {BaseWidget} from "./BaseWidget";
 import {MainPanel} from "./../components/App/MainPanel";
 import {LogPanel} from "./../components/App/LogPanel";
-
+import ClientManager from './../datas/ClientManager';
+import {ClientTypes} from './../datas/ClientManager';
 
 
 /**
@@ -24,8 +25,12 @@ export class MainAppWidget extends BaseWidget {
         this._logDiv = document.createElement('div');
         place.appendChild(this._logDiv);
 
-        // загружаем начальные данные !!!
+
+        // устанавливаем клиента
+        ClientManager.setClient(ClientTypes.LOCAL_STORAGE);
+        // загружаем начальные данные
         this.getActionCreator().loadInitData();
+        
     }
 
 

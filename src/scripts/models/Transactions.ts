@@ -27,31 +27,55 @@ namespace Transactions {
         Transfer    = 3     // перевод на другой счет
     }
 
+
     /**
-     * Вывод транзакции.
+     * Сущность транзакции.
      */
-    export class TransactionLine implements IClientObjectResponse {
+    export class TransactionEntity implements IClientObjectResponse {
         id: string;
         date: Date;
         type: TransactionTypes;
         cost: number;
-
-        // TODO: !!!
-        currency: string;
-        fromAccount: any; 
-        toAccount?: any; 
+        accountFromId: string;
+        accountToId?: string;
+        comment: string;
 
 
         constructor() {
-        
+            this.id = "";
+            this.date = new Date();
         }
 
         fromJson (j: any): void {
             this.id = j.id;
             this.date = new Date(j.date);
             this.type = <Transactions.TransactionTypes>j.type;
-            this.currency = j.currency;
             this.cost = j.cost;
+            this.comment = j.comment;
+            this.accountFromId = j.accountFromId;
+            this.accountToId = j.accountToId;
+        }
+
+    }
+
+
+
+
+    /**
+     * Транзакция с данными для вывода.
+     */
+    export class TransactionLine extends TransactionEntity implements IClientObjectResponse {
+
+        currency: string;
+
+        constructor() {
+            super();
+        }
+
+        fromJson (j: any): void {
+            super.fromJson(j);
+            this.currency = j.currency;
+
         }
 
 

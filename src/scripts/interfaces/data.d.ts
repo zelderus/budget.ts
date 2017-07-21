@@ -9,3 +9,5 @@ interface IClientServerParsedModelResponse<T> { success:boolean, message: string
 interface IClientServerParsedModelsResponse<T> { success:boolean, message: string, data: T[] }
 
 interface IClientObjectResponse { fromJson (j: any): void }
+
+

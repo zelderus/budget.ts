@@ -14,9 +14,7 @@ export interface ITransactionActiveStates {
     transactions: Transactions.TransactionLine[]; 
     isEdit: boolean; 
     editId: string; 
-
-    formId: string;
-    formTitle: string;
+    formModel: Transactions.TransactionEntity;
 }
 
 
@@ -35,7 +33,7 @@ export enum TransactionCmdEvents {
  */
 export class TransactionActive extends BaseActive<ITransactionActiveProps, ITransactionActiveStates> {
 
-    __formModel: any = null; // TODO: to type !!!
+    __formModel: Transactions.TransactionEntity = null;
 
     constructor(props: any){
         super(props, [TransactionStore]);
@@ -47,18 +45,11 @@ export class TransactionActive extends BaseActive<ITransactionActiveProps, ITran
 
     // Интересующие нас состояния (получаем их строго из Сторов)
     protected getState() : ITransactionActiveStates {
-
-        // модель транзакции
-        let formModel: any = this._getCurrentFormModel();
-
-
         return {
             transactions: TransactionStore.getTransactions(),
             isEdit: TransactionStore.isShowEditTransactionPanel(),
             editId: TransactionStore.getCurrentEditTransactionId(),
-
-            formId: formModel.id,
-            formTitle: formModel.title
+            formModel: this._getCurrentFormModel()
         };
     }
 
@@ -68,18 +59,12 @@ export class TransactionActive extends BaseActive<ITransactionActiveProps, ITran
     //
     //
 
+    // выбранная транзакция для редактирования
     private _getCurrentFormModel(): any {
-        //if (this.__formModel != null) return this.__formModel;
-
         let currentTransactionId = TransactionStore.getCurrentEditTransactionId();
-        this.__formModel = {};
         let transaction = TransactionStore.getTransactionById(currentTransactionId);
-        if (transaction != null) {
-            this.__formModel.id = transaction.id;
-            this.__formModel.title = transaction.cost;
-
-        }
-        
+        if (transaction != null) this.__formModel = transaction;
+        else this.__formModel = new Transactions.TransactionEntity();
         return this.__formModel;
     }
 
@@ -109,9 +94,14 @@ export class TransactionActive extends BaseActive<ITransactionActiveProps, ITran
     // Logic
     //
 
+
+    // сохраняем форму
     private _onEditSave(): void {
         this.getActionCreator().log("Сохранение транзакции..");
         let model = this.__formModel;
+        // TODO: клиентская валидация формы
+        
+        // отправляем
         this.getActionCreator().editTransactionDo(model);
     }
 
@@ -123,8 +113,11 @@ export class TransactionActive extends BaseActive<ITransactionActiveProps, ITran
     /// User interactions
     ///
 
-    private _onFormChangeTitle(e: any): void {
-        this.setState({formTitle: e.target.value});
+    private _onFormChangeCost(e: any): void {
+        this.__formModel.cost = e.target.value;
+        // TODO: check number, sum, etc..
+
+        this.setState({formModel: this.__formModel});
     }
 
 
@@ -153,9 +146,9 @@ export class TransactionActive extends BaseActive<ITransactionActiveProps, ITran
         if (!this.state.isEdit) return null;
 
         return <div className="TransactionEditWnd">
-            <div>ediiiiit '{this.state.formId}'</div>
+            <div>ediiiiit '{this.state.formModel.id}'</div>
             <div>
-                <input name="title" value={this.state.formTitle} onChange={e => this._onFormChangeTitle(e)} />
+                <input name="cost" value={this.state.formModel.cost} onChange={e => this._onFormChangeCost(e)} />
             </div>
             {/*<div className="Button" onClick={e => this._onEditCancel()} >cancel</div>
             <div className="Button" onClick={e => this._onEditSave()}>save</div>*/}

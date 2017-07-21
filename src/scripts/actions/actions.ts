@@ -4,6 +4,10 @@ import ActionTypes from './ActionTypes';
 import Dispatcher from './../flux/Dispatcher';
 
 
+import Transactions from './../models/Transactions';
+
+
+
 /**
  *      Action Creator - методы, как singleton - доступны из всего приложения
  *  Все действия приложения, которые через диспетчера оповестят интересующихся
@@ -62,7 +66,7 @@ export namespace Actions{
         editTransactionCancel() {
             Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_CANCEL, null);
         }
-        editTransactionDo(obj: any) { // TODO: fix type of the obj
+        editTransactionDo(obj: Transactions.TransactionEntity) {
             Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_DO, obj);
         }
 
