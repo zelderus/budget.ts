@@ -69,6 +69,7 @@ export class MainPanel extends View<IMainPanelProps, IMainPanelStates> {
     }
 
 	render(){
+        let tabs = AppData.getTabs();
         let navs = AppData.getNavigations();
         let fatalPanel = this.renderFatal();
         let loadingPanel = this.renderLoading();
@@ -76,7 +77,7 @@ export class MainPanel extends View<IMainPanelProps, IMainPanelStates> {
 		return <div className="MainPanel">
             {fatalPanel}
             {loadingPanel}
-            <NavigationPanel navLines={navs} />
+            <NavigationPanel tabLines={tabs} />
             <ActionPanel navLines={navs} />
             {/*<ControlPanel navLines={navs} />*/}
         </div>;

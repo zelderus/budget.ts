@@ -2,7 +2,7 @@
 
 import ActionTypes from './ActionTypes';
 import Dispatcher from './../flux/Dispatcher';
-
+import AppData from './../datas/AppData';
 
 import Transactions from './../models/Transactions';
 
@@ -36,8 +36,16 @@ export namespace Actions{
         errorFatalClose() {
             Dispatcher.dispatch(ActionTypes.ERROR_FATAL_CLOSE, null);
         }
-        navigation(navIndex: number) {
-            Dispatcher.dispatch(ActionTypes.NAVIGATION, navIndex);
+        navigationTab(tabIndex: number, navIndex: number) {
+            let tabNavTuple: [number, number];
+            tabNavTuple = [tabIndex, navIndex];
+            Dispatcher.dispatch(ActionTypes.NAVIGATION_TAB, tabNavTuple);
+        }
+        private navigationPage(navIndex: AppData.NavigationActivePages) { // навигация между Активными панелями (напрямую не используем, ниже конкретизация со своими моделями для передачи)
+            Dispatcher.dispatch(ActionTypes.NAVIGATION_PAGE, navIndex);
+        }
+        navigationBack() {
+            Dispatcher.dispatch(ActionTypes.NAVIGATION_BACK, null);
         }
 
         loadInitData() {
@@ -60,11 +68,11 @@ export namespace Actions{
         }
 
 
+
+
         editTransactionShow(id: string) {
             Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_SHOW, id);
-        }
-        editTransactionCancel() {
-            Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_CANCEL, null);
+            this.navigationPage(AppData.NavigationActivePages.TRANSACTION_EDIT); // index из AppSata.getNavigations()
         }
         editTransactionDo(obj: Transactions.TransactionEntity) {
             Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_DO, obj);

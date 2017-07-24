@@ -21,14 +21,12 @@ export class TransactionStore extends BaseStore {
     private __transactions: Transactions.TransactionLine[] = [];
     private __transactionFilter: Transactions.TransactionFilters;
 
-    private __isEditTransactionWndShow: boolean;
     private __currentEditTransactionId: string;
 
 
     constructor() {
         super();
 
-        this.__isEditTransactionWndShow = false;
         this.__currentEditTransactionId = "";
         this.__transactionFilter = new Transactions.TransactionFilters();
 
@@ -42,7 +40,6 @@ export class TransactionStore extends BaseStore {
     public getAccounts(): Accounts.AccountLine[] { return this.__accounts; }
     public getTransactions(): Transactions.TransactionLine[] { return this.__transactions; }
     public getTransactionById(id: string): Transactions.TransactionLine { if (id === undefined || id == null || id === "") return null; return this.__transactions.filter(f => f.id == id)[0]; }
-    public isShowEditTransactionPanel(): boolean { return this.__isEditTransactionWndShow; }
     public getCurrentEditTransactionId(): string { return this.__currentEditTransactionId; }
 
 
@@ -125,26 +122,13 @@ export class TransactionStore extends BaseStore {
     //
 
 
-    /**
-     * Сменилась навигация, очищаем вспомогательные данные в Активных панелях.
-     * @param obj 
-     */
-    private _onNavigationChange(obj: any): void {
-        // не отображаем панель редактирования транзакции
-        this._onEditTransactionCancel();
 
-    }
 
 
     private _onEditTransactionShow(obj: any): void {
         let isEdit = (obj !== undefined && obj != null);
         let transactionId: string = isEdit ? <string>obj : "";
         this.__currentEditTransactionId = transactionId;
-        this.__isEditTransactionWndShow = true;
-    }
-    private _onEditTransactionCancel(): void {
-        this.__isEditTransactionWndShow = false;
-        this.__currentEditTransactionId = "";
     }
     private _onEditTransactionDo(obj: any): void { // сохранение формы редактирования транзакции
         let self = this;
@@ -179,7 +163,8 @@ export class TransactionStore extends BaseStore {
 
         
         // закрываем окно редактирования
-        this._onEditTransactionCancel(); 
+        //this._onEditTransactionCancel(); 
+        Actions.navigationBack();
         // прячем загрузку и оповещаем об изменениях
         Actions.loadingStop();
         this.emitChange();
@@ -200,10 +185,6 @@ export class TransactionStore extends BaseStore {
     onDispatch(type: number, obj: any):boolean {
         switch(type) {
 
-            case ActionTypes.NAVIGATION:
-                this._onNavigationChange(obj);
-                this.emitChange();
-                return true;
 
             case ActionTypes.LOAD_INIT_DATA:
                 this._loadInitDataAsync();
@@ -217,12 +198,9 @@ export class TransactionStore extends BaseStore {
                 this._loadTransactionsAsync((s,m) => { if (!s) { this._onError(m);} this.emitChange(); });
                 return true;
 
+
             case ActionTypes.TRANSACTIONS_EDIT_SHOW:
                 this._onEditTransactionShow(obj);
-                this.emitChange();
-                return true;
-            case ActionTypes.TRANSACTIONS_EDIT_CANCEL:
-                this._onEditTransactionCancel();
                 this.emitChange();
                 return true;
             case ActionTypes.TRANSACTIONS_EDIT_DO:

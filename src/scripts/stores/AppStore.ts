@@ -16,6 +16,8 @@ export class AppStore extends BaseStore {
     private _logIsError: boolean;
     private _errorFatalTextValue: string;
     private _navIndex: number;
+    private _tabIndex: number;
+    private _navHistory: number[];
     private _isLoading: boolean;
 
     constructor() {
@@ -25,6 +27,8 @@ export class AppStore extends BaseStore {
         this._logIsError = false;
         this._errorFatalTextValue = "";
         this._navIndex = 1;
+        this._tabIndex = 1;
+        this._navHistory = [1];
         this._isLoading = false;
     }
 
@@ -38,10 +42,35 @@ export class AppStore extends BaseStore {
     public getLogIsError(): boolean { return this._logIsError; }
     public getErrorFatalText(): string { return this._errorFatalTextValue; }
     public getNavigationIndex(): number { return this._navIndex; }
+    public getTabIndex(): number { return this._tabIndex; }
     public isLoading(): boolean { return this._isLoading; }
 
 
 
+
+    //
+    //
+    //
+
+    private onNavigationTab(obj: any): void {
+        let tabNavTuple: [number, number] = obj;
+
+        this._tabIndex = tabNavTuple[0]; // меняем вкладку
+        this.onNavigationClear(); // очищаем историю навигации
+        this.onNavigationPage(tabNavTuple[1]); // обновляем навигацию
+    }
+    private onNavigationClear(): void {
+        this._navHistory = [];
+    }
+    private onNavigationPage(obj: any): void {
+        let navIndex = <number>obj;
+        this._navIndex = navIndex;
+        this._navHistory.push(navIndex);
+    }
+    private onNavigationBack(): void {
+        this._navHistory.pop();
+        this._navIndex = this._navHistory[this._navHistory.length-1];
+    }
 
 
 
@@ -63,8 +92,14 @@ export class AppStore extends BaseStore {
             case ActionTypes.ERROR_FATAL_CLOSE:
                 this._errorFatalTextValue = "";            
                 break;
-            case ActionTypes.NAVIGATION:
-                this._navIndex = obj;
+            case ActionTypes.NAVIGATION_TAB:
+                this.onNavigationTab(obj);
+                break;
+            case ActionTypes.NAVIGATION_PAGE:
+                this.onNavigationPage(obj);
+                break;
+            case ActionTypes.NAVIGATION_BACK:
+                this.onNavigationBack();
                 break;
             case ActionTypes.LOADING_START:
                 this._isLoading = true;

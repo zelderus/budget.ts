@@ -44,10 +44,7 @@ export class ActionPanel extends View<IActionPanelProps, IActionPanelStates> {
 
     // подцепляем текущую Активную панель
     private _setActivePanelCallbackToControls(activePanel: IBaseActive): void {
-        if (activePanel == null || activePanel === undefined) {
-            this.__activePanel = null;
-            return;
-        }
+        if (activePanel == null || activePanel === undefined) { this.__activePanel = null; return; }
         this.__activePanel = activePanel;
     }
 

@@ -5,8 +5,8 @@ import View from './../../flux/View';
 import AppStore from './../../stores/AppStore';
 import Navigation from './../../models/Navigation';
 
-export interface INavigationPanelProps { navLines: Navigation.NavigationLine[]; }
-export interface INavigationPanelStates { navIndex: number;  }
+export interface INavigationPanelProps { tabLines: Navigation.TabLine[]; }
+export interface INavigationPanelStates { tabIndex: number;  }
 
 
 /**
@@ -23,7 +23,7 @@ export class NavigationPanel extends View<INavigationPanelProps, INavigationPane
     // Интересующие нас состояния (получаем их строго из Сторов)
     protected getState() : INavigationPanelStates {
         return {
-            navIndex: AppStore.getNavigationIndex()
+            tabIndex: AppStore.getTabIndex()
         };
     }
 
@@ -33,9 +33,11 @@ export class NavigationPanel extends View<INavigationPanelProps, INavigationPane
     /// User interactions
     ///
 
-    private onNavClick(navIndex: number) {
-        if (navIndex == this.state.navIndex) return false; // хоть и ничего не обновится, если не изменилось, все же поможем ничего не делать (расслабим React)
-        this.getActionCreator().navigation(navIndex);
+    private onNavClick(tabIndex: number, navIndex: number) {
+        // TODO: если текущая вкладка, и текущая Активка, то не работаем
+
+        // меняем вкладку и Активку
+        this.getActionCreator().navigationTab(tabIndex, navIndex);
     }
 
 
@@ -44,21 +46,21 @@ export class NavigationPanel extends View<INavigationPanelProps, INavigationPane
     ///
 
     // контент кнопки
-    renderButtonLine(navLine: Navigation.NavigationLine) {
-        let activeNavIndex = this.state.navIndex; // текущая вкладка (меняется через диспетчера)
-        let classNameExt = activeNavIndex==navLine.navIndex ? 'Active' : '';
+    renderButtonLine(navLine: Navigation.TabLine) {
+        let activeTabIndex = this.state.tabIndex; // текущая вкладка (меняется через диспетчера)
+        let classNameExt = activeTabIndex==navLine.tabIndex ? 'Active' : '';
         let classNameFull = "Button " + classNameExt;
         // разница с привязкой обработчиков
-        if (navLine.navIndex == this.state.navIndex) // по текущей вкладке тыкать незачем
+        if (navLine.tabIndex == activeTabIndex) // по текущей вкладке тыкать незачем
             return <div className={classNameFull} >{navLine.title}</div>;
         else 
-            return <div className={classNameFull} onClick={e => this.onNavClick(navLine.navIndex) }>{navLine.title}</div>;
+            return <div className={classNameFull} onClick={e => this.onNavClick(navLine.tabIndex, navLine.navIndex) }>{navLine.title}</div>;
     }
 
 
 	render() {
         // все кнопки
-        let lines = this.props.navLines.map(line => { return this.renderButtonLine(line) });
+        let lines = this.props.tabLines.map(line => { return this.renderButtonLine(line) });
 
 		return <div className="NavigationPanel">
             {lines}

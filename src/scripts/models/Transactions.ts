@@ -56,6 +56,11 @@ namespace Transactions {
             this.accountToId = j.accountToId;
         }
 
+
+        clone():TransactionEntity  {
+            return Object.create(this);
+        }
+
     }
 
 
