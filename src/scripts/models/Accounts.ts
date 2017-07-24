@@ -6,7 +6,7 @@ namespace Accounts {
     /**
      * Счет.
      */
-    export class AccountLine implements IClientObjectResponse {
+    export class AccountEntity implements IClientObjectResponse {
         id: string;
         title: string;
         order: number;
@@ -30,6 +30,25 @@ namespace Accounts {
                 order: this.order
             };
             return json;
+        }
+
+    }
+
+
+    /**
+     * Валидация формы счета.
+     */
+    export class AccountFormValidation {
+
+        private _hasError: boolean;        
+
+        constructor(hasError: boolean) {
+            this._hasError = hasError;
+        }
+
+
+        public hasError(): boolean {
+            return this._hasError;
         }
 
     }

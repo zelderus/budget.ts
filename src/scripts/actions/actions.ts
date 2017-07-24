@@ -72,7 +72,7 @@ export namespace Actions{
 
         editTransactionShow(id: string) {
             Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_SHOW, id);
-            this.navigationPage(AppData.Pages.TRANSACTION_EDIT); // index из AppSata.getNavigations()
+            this.navigationPage(AppData.Pages.TRANSACTION_EDIT);
         }
         editTransactionDo(obj: Transactions.TransactionEntity) {
             Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_DO, obj);

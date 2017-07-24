@@ -7,7 +7,7 @@ import View from './../../flux/View';
 import Accounts from './../../models/Accounts';
 
 
-export interface IAccountLineProps { account: Accounts.AccountLine  }
+export interface IAccountLineProps { account: Accounts.AccountEntity  }
 export interface IAccountLineStates {  }
 
 

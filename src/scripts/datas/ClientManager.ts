@@ -16,8 +16,10 @@ import Transactions from './../models/Transactions';
  */
 export interface IClient {
     authentication(userName: string, userPass: string, callBack: BClient.IClientResponse<Authentication.AuthenticationData>): void;
-    getAccounts(callBack: BClient.IClientResponse<Accounts.AccountLine[]>): void;
-    getTransactions(filters: Transactions.TransactionFilters, callBack: BClient.IClientResponse<Transactions.TransactionLine[]>) : void;
+    getAccounts(callBack: BClient.IClientResponse<Accounts.AccountEntity[]>): void;
+    editAccount(account: Accounts.AccountEntity, callBack: BClient.IClientResponse<Accounts.AccountFormValidation>): void;
+    getTransactions(filters: Transactions.TransactionFilters, callBack: BClient.IClientResponse<Transactions.TransactionEntity[]>) : void;
+    editTransaction(transaction: Transactions.TransactionEntity, callBack: BClient.IClientResponse<Transactions.TransactionFormValidation>): void;
 }
 
 

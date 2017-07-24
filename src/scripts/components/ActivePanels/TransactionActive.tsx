@@ -11,7 +11,7 @@ import TransactionLine from './../Partials/TransactionLine';
 
 export interface ITransactionActiveProps extends IBaseActiveProps {  }
 export interface ITransactionActiveStates { 
-    transactions: Transactions.TransactionLine[]; 
+    transactions: Transactions.TransactionEntity[]; 
 }
 
 
@@ -38,25 +38,6 @@ export class TransactionActive extends BaseActive<ITransactionActiveProps, ITran
             transactions: TransactionStore.getTransactions(),
         };
     }
-
-
-
-    //
-    //
-    //
-
-
-
-
-
-
-
-
-    //
-    // Logic
-    //
-
-
 
 
 

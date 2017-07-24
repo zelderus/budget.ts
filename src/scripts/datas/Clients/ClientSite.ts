@@ -41,21 +41,48 @@ namespace Client {
         /**
          * Счета.
          */
-        getAccounts(callBack: BClient.IClientResponse<Accounts.AccountLine[]>): void {
+        getAccounts(callBack: BClient.IClientResponse<Accounts.AccountEntity[]>): void {
             let self = this;
 
-            self.getModels("public/fakes/accounts.json", {}, Accounts.AccountLine, callBack);
+            self.getModels("public/fakes/accounts.json", {}, Accounts.AccountEntity, callBack);
+        }
+
+        /**
+         * Редактирование счета.
+         */
+        editAccount(account: Accounts.AccountEntity, callBack: BClient.IClientResponse<Accounts.AccountFormValidation>): void {
+            let self = this;
+            // TODO:
+
+            // оповещаем
+            let validation = new Accounts.AccountFormValidation(false);
+            callBack(false, "редактирование счета не реализованно в этом клиенте", validation);
         }
 
 
         /**
          * Транзакции.
          */
-        getTransactions(filters: Transactions.TransactionFilters, callBack: BClient.IClientResponse<Transactions.TransactionLine[]>) : void {
+        getTransactions(filters: Transactions.TransactionFilters, callBack: BClient.IClientResponse<Transactions.TransactionEntity[]>) : void {
             let self = this;
 
-            self.getModels("public/fakes/transactions.json", filters, Transactions.TransactionLine, callBack);
+            self.getModels("public/fakes/transactions.json", filters, Transactions.TransactionEntity, callBack);
         }
+
+        /**
+         * Редактирование транзакции.
+         */
+        editTransaction(transaction: Transactions.TransactionEntity, callBack: BClient.IClientResponse<Transactions.TransactionFormValidation>): void {
+            let self = this;
+            // TODO:
+
+            // оповещаем
+            let validation = new Transactions.TransactionFormValidation(false);
+            callBack(false, "редактирование транзакции не реализованно в этом клиенте", validation);
+        }
+
+
+        
 
     }
 

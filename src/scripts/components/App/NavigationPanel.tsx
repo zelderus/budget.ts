@@ -6,7 +6,7 @@ import AppStore from './../../stores/AppStore';
 import Navigation from './../../models/Navigation';
 
 export interface INavigationPanelProps { tabLines: Navigation.TabLine[]; }
-export interface INavigationPanelStates { tabIndex: number;  }
+export interface INavigationPanelStates { tabIndex: number; navIndex: number;  }
 
 
 /**
@@ -23,7 +23,8 @@ export class NavigationPanel extends View<INavigationPanelProps, INavigationPane
     // Интересующие нас состояния (получаем их строго из Сторов)
     protected getState() : INavigationPanelStates {
         return {
-            tabIndex: AppStore.getTabIndex()
+            tabIndex: AppStore.getTabIndex(),
+            navIndex: AppStore.getNavigationIndex()
         };
     }
 
@@ -48,11 +49,18 @@ export class NavigationPanel extends View<INavigationPanelProps, INavigationPane
     // контент кнопки
     renderButtonLine(navLine: Navigation.TabLine) {
         let activeTabIndex = this.state.tabIndex; // текущая вкладка (меняется через диспетчера)
-        let classNameExt = activeTabIndex==navLine.tabIndex ? 'Active' : '';
-        let classNameFull = "Button " + classNameExt;
+        let activeNavIndex = this.state.navIndex; // текущая Активная панель (меняется через диспетчера)
+
+        let classNameFull = "Button ";
         // разница с привязкой обработчиков
-        if (navLine.tabIndex == activeTabIndex) // по текущей вкладке тыкать незачем
-            return <div className={classNameFull} >{navLine.title}</div>;
+        if (navLine.tabIndex == activeTabIndex && navLine.navIndex == activeNavIndex) { // по текущей вкладке тыкать незачем
+            let classNameExt = "Active";
+            return <div className={classNameFull + classNameExt} >{navLine.title}</div>;
+        }
+        else if (navLine.tabIndex == activeTabIndex) { // текущая вкладка, но не Активная панель
+            let classNameExt = "Active NotPanel";
+            return <div className={classNameFull + classNameExt} onClick={e => this.onNavClick(navLine.tabIndex, navLine.navIndex) }>{navLine.title}</div>;
+        }
         else 
             return <div className={classNameFull} onClick={e => this.onNavClick(navLine.tabIndex, navLine.navIndex) }>{navLine.title}</div>;
     }

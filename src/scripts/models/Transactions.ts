@@ -28,6 +28,27 @@ namespace Transactions {
     }
 
 
+
+    /**
+     * Валидация формы транзакции.
+     */
+    export class TransactionFormValidation {
+
+        private _hasError: boolean;        
+
+        constructor(hasError: boolean) {
+            this._hasError = hasError;
+        }
+
+
+        public hasError(): boolean {
+            return this._hasError;
+        }
+
+    }
+
+
+
     /**
      * Сущность транзакции.
      */
@@ -44,6 +65,7 @@ namespace Transactions {
         constructor() {
             this.id = "";
             this.date = new Date();
+            this.type = Transactions.TransactionTypes.Spend;
         }
 
         fromJson (j: any): void {
@@ -79,31 +101,7 @@ namespace Transactions {
 
 
 
-    /**
-     * Транзакция с данными для вывода.
-     */
-    export class TransactionLine extends TransactionEntity implements IClientObjectResponse {
 
-        currency: string;
-
-        constructor() {
-            super();
-        }
-
-        fromJson (j: any): void {
-            super.fromJson(j);
-            this.currency = j.currency;
-        }
-
-        toJson(): any {
-            let json = super.toJson();
-            json.currency = this.currency
-            
-            return json;
-        }
-
-
-    }
 
 
 }

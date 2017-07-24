@@ -17,8 +17,8 @@ import Client from './../datas/ClientManager';
  */
 export class TransactionStore extends BaseStore {
 
-    private __accounts: Accounts.AccountLine[] = [];
-    private __transactions: Transactions.TransactionLine[] = [];
+    private __accounts: Accounts.AccountEntity[] = [];
+    private __transactions: Transactions.TransactionEntity[] = [];
     private __transactionFilter: Transactions.TransactionFilters;
 
     private __currentEditTransactionId: string;
@@ -37,9 +37,9 @@ export class TransactionStore extends BaseStore {
     // Функции интерфейсы для Вьюшек.
     // Эти данные для их состояний. При изменении которых, Вьюшки обновляются.
     //
-    public getAccounts(): Accounts.AccountLine[] { return this.__accounts; }
-    public getTransactions(): Transactions.TransactionLine[] { return this.__transactions; }
-    public getTransactionById(id: string): Transactions.TransactionLine { if (id === undefined || id == null || id === "") return null; return this.__transactions.filter(f => f.id == id)[0]; }
+    public getAccounts(): Accounts.AccountEntity[] { return this.__accounts; }
+    public getTransactions(): Transactions.TransactionEntity[] { return this.__transactions; }
+    public getTransactionById(id: string): Transactions.TransactionEntity { if (id === undefined || id == null || id === "") return null; return this.__transactions.filter(f => f.id == id)[0]; }
     public getCurrentEditTransactionId(): string { return this.__currentEditTransactionId; }
 
 
@@ -54,7 +54,7 @@ export class TransactionStore extends BaseStore {
      */
     private _loadInitDataAsync() {
         Actions.loadingStart();
-        //localStorage.clear();
+        localStorage.clear();
 
         // инициализация пользователя
         this._authUserAsync((s,m) => {
@@ -137,38 +137,40 @@ export class TransactionStore extends BaseStore {
 
         let transaction = <Transactions.TransactionEntity>obj;
 
-        // TODO: 1. отправка данных на сервер
+        // 1. отправка данных на сервер
+        Client.getClient().editTransaction(transaction, function(s, m, validationForm){
+            // 2. если критическая ошибка - конец
+            if (!s) { self._onFatalError(m); self.emitChange(); return; }
+            // 3. если в ответе (в моделе данных) есть ошибки валидации - обновляем модель формы (добавляем ошибки) - конец
+            let hasFormError = validationForm.hasError();
+            if (hasFormError) {
+                // TODO: добавляем в модель формы ошибки валидации
 
-        // TODO: 2. если критическая ошибка - конец
+                // прячем загрузку и оповещаем об изменениях
+                Actions.loadingStop();
+                self.emitChange();
+                return;
+            }
+            
+            // 4. если это редактирование и есть такая запись - обновляем ее (иначе добавляем)
+            let exist = self.__transactions.filter(f => f.id == transaction.id)[0];
+            if (exist != null) {
+                exist = transaction;
+            }
+            // добавляем новую запись
+            else {
+                self.__transactions.push(transaction);
+            }
 
-        // 3. если в ответе (в моделе данных) есть ошибки валидации - обновляем модель формы (добавляем ошибки) - конец
-        let hasFormError = false;
-        if (hasFormError) {
-            // TODO: добавляем в модель формы ошибки валидации
-
+            
+            // закрываем окно редактирования
+            //this._onEditTransactionCancel(); 
+            Actions.navigationBack();
             // прячем загрузку и оповещаем об изменениях
             Actions.loadingStop();
-            this.emitChange();
-            return;
-        }
-        
-        // TODO: 4. если это редактирование и есть такая запись - обновляем ее (иначе добавляем)
-        let exist = this.__transactions.filter(f => f.id == transaction.id)[0];
-        if (exist != null) {
-            exist.cost = transaction.cost;
-        }
-        // добавляем новую запись
-        else {
-            
-        }
+            self.emitChange();
 
-        
-        // закрываем окно редактирования
-        //this._onEditTransactionCancel(); 
-        Actions.navigationBack();
-        // прячем загрузку и оповещаем об изменениях
-        Actions.loadingStop();
-        this.emitChange();
+        });
     }
 
 
