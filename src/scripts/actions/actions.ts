@@ -41,7 +41,7 @@ export namespace Actions{
             tabNavTuple = [tabIndex, navIndex];
             Dispatcher.dispatch(ActionTypes.NAVIGATION_TAB, tabNavTuple);
         }
-        private navigationPage(navIndex: AppData.NavigationActivePages) { // навигация между Активными панелями (напрямую не используем, ниже конкретизация со своими моделями для передачи)
+        private navigationPage(navIndex: AppData.Pages) { // навигация между Активными панелями (напрямую не используем, ниже конкретизация со своими моделями для передачи)
             Dispatcher.dispatch(ActionTypes.NAVIGATION_PAGE, navIndex);
         }
         navigationBack() {
@@ -72,7 +72,7 @@ export namespace Actions{
 
         editTransactionShow(id: string) {
             Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_SHOW, id);
-            this.navigationPage(AppData.NavigationActivePages.TRANSACTION_EDIT); // index из AppSata.getNavigations()
+            this.navigationPage(AppData.Pages.TRANSACTION_EDIT); // index из AppSata.getNavigations()
         }
         editTransactionDo(obj: Transactions.TransactionEntity) {
             Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_DO, obj);

@@ -1,6 +1,7 @@
 import BClient from './BaseClient';
 import FluxUtils from './../flux/Utils';
 import Actions from './../actions/Actions';
+import Life from './../Life';
 
 import ClientLocalStorage from './Clients/ClientLocalStorage';
 import ClientSite from './Clients/ClientSite';

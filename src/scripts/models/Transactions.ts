@@ -56,6 +56,19 @@ namespace Transactions {
             this.accountToId = j.accountToId;
         }
 
+        toJson(): any {
+            let json = {
+                id: this.id,
+                date: this.date,
+                type: this.type,
+                cost: this.cost,
+                comment: this.comment,
+                accountFromId: this.accountFromId,
+                accountToId: this.accountToId
+            };
+            return json;
+        }
+
 
         clone():TransactionEntity  {
             return Object.create(this);
@@ -80,7 +93,13 @@ namespace Transactions {
         fromJson (j: any): void {
             super.fromJson(j);
             this.currency = j.currency;
+        }
 
+        toJson(): any {
+            let json = super.toJson();
+            json.currency = this.currency
+            
+            return json;
         }
 
 

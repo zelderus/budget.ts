@@ -90,18 +90,32 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveProp
     // Logic
     //
 
+    private _validateForm(): boolean {
+        let hasError = false;
+        let model = this.__formModel;
+        // TODO: 1. check form
+        // TODO: 2. if any error - Dispatch about errors - модель валидации в Сторе
+
+        return hasError;
+    }
+    private _checkAndUpdateState(): void {
+        this._validateForm();
+        this.setState({formModel: this.__formModel});
+    }
+
 
     // сохраняем форму
     private _onEditSave(): void {
         this.getActionCreator().log("Сохранение транзакции..");
         let model = this.__formModel;
-        // TODO: клиентская валидация формы
-
+        // клиентская валидация формы
+        if (this._validateForm()) return; // при ошибке, ничего далее не делаем
         // отправляем
         this.getActionCreator().editTransactionDo(model);
     }
 
 
+    
 
 
 
@@ -109,12 +123,12 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveProp
     /// User interactions
     ///
 
+    
     private _onFormChangeCost(e: any): void {
         this.__formModel.cost = e.target.value;
-        // TODO: check number, sum, etc..
-
-        this.setState({formModel: this.__formModel});
+        this._checkAndUpdateState();
     }
+
 
 
 
@@ -125,6 +139,8 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveProp
 
 
 	render() {
+        // TODO: на основе модели валидации из Стора (state), подсвечиваем ошибки
+
 		return <div className="TransactionActive">
             <div className="TransactionEditWnd">
                 <div>ediiiiit '{this.state.formModel.id}'</div>

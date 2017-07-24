@@ -2,6 +2,7 @@
 import BClient from './../BaseClient';
 import Mock from './../MockData';
 import {IClient} from './../ClientManager';
+import Life from './../../Life';
 
 import Authentication from './../../models/Authentication';
 import Accounts from './../../models/Accounts';
@@ -23,6 +24,24 @@ namespace Client {
             super();
         }
 
+
+        private _getDataJson(key: string): string {
+            let storageStr = localStorage.getItem(key);
+            return storageStr;
+        }
+        private _setData(key: string, obj: IClientObjectResponse): void {
+            let storageStr = JSON.stringify(obj.toJson());
+            localStorage.setItem(key, storageStr);
+        }
+        private _wrapData(data: any, isSuccess: boolean = true, errMsg: string = ""): string {
+            return JSON.stringify({success:isSuccess, message: errMsg, data: data});
+        }
+        private _getDataResponse(key: string) {
+            let dataJson = JSON.parse(this._getDataJson(key));
+            return this._wrapData(dataJson);
+        }
+
+
         /**
          * Авторизация.
          * @param userName 
@@ -30,7 +49,23 @@ namespace Client {
          * @param callBack 
          */
         authentication(userName: string, userPass: string, callBack: BClient.IClientResponse<Authentication.AuthenticationData>): void {
-            this.getFromJsonModel(Mock.getUserJson(), Authentication.AuthenticationData, callBack);
+            let self = this;
+            let userJson = this._getDataJson("user");
+            if (userJson == null) {
+                // сразу создаем
+                self.getFromJsonModel(Mock.getUserJson(), Authentication.AuthenticationData, function(s,m,d){
+                    let user = d;
+                    user.setName(user.getName() + " " + (new Date).getSeconds().toString());
+                    // записываем
+                    self._setData("user", user);
+                    // отвечаем
+                    callBack(s, m, user);
+                });
+            }
+            else {
+                // отвечаем
+                self.getFromJsonModel(self._getDataResponse("user"), Authentication.AuthenticationData, callBack);
+            }
         }
 
 
@@ -40,13 +75,12 @@ namespace Client {
         getAccounts(callBack: BClient.IClientResponse<Accounts.AccountLine[]>): void {
             let self = this;
 
-            self.getFromJsonModels(Mock.getAccountsJson(), Accounts.AccountLine, callBack);
-
-            /*setTimeout(function(){
+            if (Life.getUser().isNewUser()) {
                 self.getFromJsonModels(Mock.getAccountsJson(), Accounts.AccountLine, callBack);
-            }, 5000);*/
-            
-            //self.getModels("public/fakes/accounts.json", {}, Accounts.AccountLine, callBack);
+            }
+            else {
+                self.getFromJsonModels(self._getDataResponse("accounts"), Accounts.AccountLine, callBack);
+            }
         }
 
 
@@ -55,11 +89,16 @@ namespace Client {
          */
         getTransactions(filters: Transactions.TransactionFilters, callBack: BClient.IClientResponse<Transactions.TransactionLine[]>) : void {
             let self = this;
+            self.getFromJsonModels(self._getDataResponse("transactions"), Transactions.TransactionLine, function(s,m,d){
+                let transactions = d;
+                // TODO: filter
 
-            self.getFromJsonModels(Mock.getTransactionsJson(), Transactions.TransactionLine, callBack);
-
-            //self.getModels("public/fakes/transactions.json", filters, Transactions.TransactionLine, callBack);
+                // отвечаем
+                callBack(s, m, transactions);
+            });
         }
+
+        
 
     }
 

@@ -25,7 +25,7 @@ namespace AppData {
     /**
      * Индексы Активных панелей.
      */
-    export enum NavigationActivePages {
+    export enum Pages {
         TRANSACTIONS        = 1,
         ACCOUNTS            = 2,
 
@@ -41,10 +41,10 @@ namespace AppData {
      */
     export function getNavigations(): Navigation.NavigationLine[] {
         return [
-            new Navigation.NavigationLine(NavigationActivePages.TRANSACTIONS, "Транзакции", TransactionActive, TransactionControls),
-            new Navigation.NavigationLine(NavigationActivePages.ACCOUNTS, "Счета", AccountActive, AccountControls),
+            new Navigation.NavigationLine(Pages.TRANSACTIONS, "Транзакции", TransactionActive, TransactionControls),
+            new Navigation.NavigationLine(Pages.ACCOUNTS, "Счета", AccountActive, AccountControls),
 
-            new Navigation.NavigationLine(NavigationActivePages.TRANSACTION_EDIT, "Редактирование транзакции", TransactionEditActive, TransactionEditControls)
+            new Navigation.NavigationLine(Pages.TRANSACTION_EDIT, "Редактирование транзакции", TransactionEditActive, TransactionEditControls)
         ];
     }
 
@@ -55,8 +55,8 @@ namespace AppData {
     export function getTabs(): Navigation.TabLine[] {
         let ind = 1;
         return [
-            new Navigation.TabLine(ind++, "Транзакции", NavigationActivePages.TRANSACTIONS),
-            new Navigation.TabLine(ind++, "Счета", NavigationActivePages.ACCOUNTS)
+            new Navigation.TabLine(ind++, "Транзакции", Pages.TRANSACTIONS),
+            new Navigation.TabLine(ind++, "Счета", Pages.ACCOUNTS)
         ];
     }
 

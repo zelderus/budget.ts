@@ -13,9 +13,10 @@ namespace Mock {
             "success": true,
             "message": "",
             "data": { 
-                userKey: "demo_session_key_" + (new Date()).getUTCDate() + "_end_key",
+                userKey: "demo_session_key_" + (new Date()).getSeconds() + "_end_key",
                 isAuth: true,
-                name: "demo user"
+                name: "demo user",
+                isNew: true
             }
         };
     }
@@ -29,9 +30,7 @@ namespace Mock {
             "success": true,
             "message": "",
             "data": [
-                { "id": 1, "title": "Кошелек", "summ": 12000, "order": 1 },
-                { "id": 2, "title": "Кредитка", "summ": 100, "order": 3 },
-                { "id": 3, "title": "Вклад", "summ": 5000, "order": 2 }
+                { "id": 1, "title": "Кошелек", "summ": 12000, "order": 1 }
             ]
         };
     }

@@ -23,6 +23,15 @@ namespace Accounts {
             this.order = j.order;
         }
 
+        toJson(): any {
+            let json = {
+                id: this.id,
+                title: this.title,
+                order: this.order
+            };
+            return json;
+        }
+
     }
 
 

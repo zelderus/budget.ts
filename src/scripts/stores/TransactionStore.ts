@@ -54,6 +54,7 @@ export class TransactionStore extends BaseStore {
      */
     private _loadInitDataAsync() {
         Actions.loadingStart();
+        //localStorage.clear();
 
         // инициализация пользователя
         this._authUserAsync((s,m) => {
