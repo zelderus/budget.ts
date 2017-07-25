@@ -8,7 +8,7 @@ import {BaseControls, IBaseControlsProps} from './BaseControls';
 
 
 export interface ITransactionEditControlsProps extends IBaseControlsProps {  }
-export interface ITransactionEditControlsStates {  }
+export interface ITransactionEditControlsStates { editId: string;  }
 
 
 /**
@@ -19,7 +19,7 @@ export class TransactionEditControls extends BaseControls<ITransactionEditContro
 
 
     constructor(props: any){
-        super(props, []);
+        super(props, [TransactionStore]);
 
     }
 
@@ -29,7 +29,7 @@ export class TransactionEditControls extends BaseControls<ITransactionEditContro
     // Интересующие нас состояния (получаем их строго из Сторов)
     protected getState() : ITransactionEditControlsStates {
         return {
-
+            editId: TransactionStore.getCurrentEditTransactionId(),
         };
     }
 
@@ -45,7 +45,9 @@ export class TransactionEditControls extends BaseControls<ITransactionEditContro
     private onButtonSave(){
         this.sendEventToActivePanel(TransactionEditCmdEvents.FORM_SAVE);
     }
-
+    private onButtonDelete(){
+        this.sendEventToActivePanel(TransactionEditCmdEvents.FORM_DELETE);
+    }
 
     private onLogTest(){
         this.getActionCreator().log("test");
@@ -58,10 +60,15 @@ export class TransactionEditControls extends BaseControls<ITransactionEditContro
     ///
 
 	render() {
+        let isNewItem = this.state.editId == null || this.state.editId === '';
+
+        let deleteButtonRender = isNewItem ? null : <div className="Button Alert" onClick={e => this.onButtonDelete()}>удалить</div>;
+
 		return <div className="TransactionControls">
             <div className="Buttons">
                 <div className="Button Success" onClick={e => this.onButtonSave()}>сохранить</div>
                 <div className="Button Normal" onClick={e => this.onButtonCancel()}>отмена</div>
+                {deleteButtonRender}
                 <div className="Button Normal" onClick={e => this.onLogTest()}>лог</div>
             </div>
         </div>

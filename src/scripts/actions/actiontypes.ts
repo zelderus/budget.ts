@@ -2,6 +2,8 @@
 
 enum ActionTypes {
   LOG               = 1,
+  USER_AUTH         = 2,
+  USER_REGISTRATION = 3,
   NAVIGATION_PAGE   = 10,
   NAVIGATION_TAB    = 11,
   NAVIGATION_BACK   = 12,
@@ -16,6 +18,7 @@ enum ActionTypes {
   TRANSACTIONS_LOAD         = 200,
   TRANSACTIONS_EDIT_SHOW    = 210,
   TRANSACTIONS_EDIT_DO      = 211,
+  TRANSACTIONS_EDIT_DELETE  = 212,
   
   ADD_ITEM          = 950,
   DELETE_ITEM       = 951,

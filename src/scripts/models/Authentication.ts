@@ -10,12 +10,10 @@ namespace Authentication {
         private __userSessionKey: string;
         private __isAuth: boolean;
         private __name: string;
-        private __isNewUser: boolean;
-
+ 
 
         constructor () {
             this.__isAuth = false;
-            this.__isNewUser = true;
         }
 
         /**
@@ -28,10 +26,6 @@ namespace Authentication {
          */
         public isAuth(): boolean { return this.__isAuth; }
 
-        /**
-         * Пользователь только зарегистрировался. Как правило, получит стартовый набор данных.
-         */
-        public isNewUser(): boolean { return this.__isNewUser; }
 
         /**
          * Имя.
@@ -53,15 +47,13 @@ namespace Authentication {
             this.__userSessionKey = j.userKey;
             this.__isAuth = j.isAuth;
             this.__name = j.name;
-            this.__isNewUser = j.isNew;
         }
 
         toJson(): any {
             let json = {
                 userKey: this.__userSessionKey,
                 isAuth: this.__isAuth,
-                name: this.__name,
-                isNew: this.__isNewUser
+                name: this.__name
             };
             return json;
         }

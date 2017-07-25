@@ -37,7 +37,6 @@ namespace Client {
         }
         private _setDatas(key: string, obj: IClientObjectResponse[]): void {
             let dataInLine: ILocalStorageArrayInDataBase = { data: [] };
-            console.log(obj);
             if (obj != null) obj.forEach(o => dataInLine.data.push(o.toJson()));
             let storageStr = JSON.stringify(dataInLine);
             localStorage.setItem(key, storageStr);
@@ -56,30 +55,64 @@ namespace Client {
         }
 
 
+
+
+        /**
+         * Начальные данные для нового пользователя.
+         */
+        private _initIdleData(callBack: BClient.IClientResponse<any>): void {
+            let self = this;
+            let responseModel: any = null;
+            // счета
+            self.getFromJsonModels(Mock.getAccountsJson(), Accounts.AccountEntity, function(c1,m1,d1){
+                // сохраняем
+                d1.forEach(a => {
+                    self.editAccount(a, function(ss,mm,v){ 
+                        if (!ss || v.hasError()) { callBack(ss, mm, responseModel); return; }
+                    });
+                });
+                // TODO: другие данные
+
+
+                // успешный ответ
+                callBack(true, "", responseModel);
+            });
+        }
+
+
+
+        /**
+         * Регистрация пользователя.
+         */
+        registration(userName: string, userPass: string, callBack: BClient.IClientResponse<Authentication.AuthenticationData>): void {
+            let self = this;
+            // в локальном клиенте (в браузере), не проверяем на наличие в "базе" и прочее
+            self.getFromJsonModel(Mock.getUserJson(), Authentication.AuthenticationData, function(s,m,d){
+                if (!s) { callBack(s,m,d); return; }
+                // создаем и сохраняем пользователя
+                let user = d;
+                user.setName(user.getName() + " " + (new Date).getSeconds().toString());
+                self._setData("user", user);
+                // генерируем начальные данные
+                self._initIdleData(function(s2, m2, d2){
+                    // отвечаем
+                    callBack(s2, m2, user);
+                });
+            });
+        }
+
         /**
          * Авторизация.
-         * @param userName 
-         * @param userPass 
-         * @param callBack 
          */
         authentication(userName: string, userPass: string, callBack: BClient.IClientResponse<Authentication.AuthenticationData>): void {
             let self = this;
-            let userJson = this._getDataJson("user");
-            if (userJson == null) {
-                // сразу создаем
-                self.getFromJsonModel(Mock.getUserJson(), Authentication.AuthenticationData, function(s,m,d){
-                    let user = d;
-                    user.setName(user.getName() + " " + (new Date).getSeconds().toString());
-                    // записываем
-                    self._setData("user", user);
-                    // отвечаем
-                    callBack(s, m, user);
-                });
-            }
-            else {
-                // отвечаем
-                self.getFromJsonModel(self._getDataResponse("user"), Authentication.AuthenticationData, callBack);
-            }
+            self.getFromJsonModel(self._getDataResponse("user"), Authentication.AuthenticationData, function(s,m,d){
+                if (d == null || d.isAuth() != true) {
+                    callBack(false, "неверный логин или пароль", null); 
+                    return;
+                }
+                callBack(s, m, d);
+            });
         }
 
 
@@ -88,26 +121,7 @@ namespace Client {
          */
         getAccounts(callBack: BClient.IClientResponse<Accounts.AccountEntity[]>): void {
             let self = this;
-
-            if (Life.getUser().isNewUser()) {
-                self.getFromJsonModels(Mock.getAccountsJson(), Accounts.AccountEntity, function(c,m,d){
-                    let accounts = d;
-                    // сразу сохраняем
-                    accounts.forEach(a => {
-                        self.editAccount(a, function(ss,mm,v){ 
-                            // обрабатываем ошибку при добавлении
-                            if (v.hasError()) {
-                                callBack(ss, mm, null);
-                                return;
-                            }
-                        });
-                    });
-                    callBack(c, m, accounts);
-                });
-            }
-            else {
-                self.getFromJsonModels(self._getDatasResponse("accounts"), Accounts.AccountEntity, callBack);
-            }
+            self.getFromJsonModels(self._getDatasResponse("accounts"), Accounts.AccountEntity, callBack);
         }
 
         /**
@@ -116,32 +130,59 @@ namespace Client {
         editAccount(account: Accounts.AccountEntity, callBack: BClient.IClientResponse<Accounts.AccountFormValidation>): void {
             let self = this;
             // достаем все
-            let data = <Accounts.AccountEntity[]>(JSON.parse(self._getDatasResponse("accounts")));
-            // добавляем
-            if (account.id == null || account.id === "") {
-                account.id = FluxUtils.guidGenerator();
-                data.push(account);
-            }
-            // редактируем
-            else {
-                if (data == null || data.length == 0) { // видимо, пытаемся добавить начальные данные (при первом запуске)
-                    data = [];
+            self.getFromJsonModels(self._getDatasResponse("accounts"), Accounts.AccountEntity, function(s,m,d){
+                let data = d;
+                if (data == null || data.length == 0) data = [];
+                // TODO: серверная проверка валидации
+                let validation = new Accounts.AccountFormValidation(false);
+                if (validation.hasError()){
+                    callBack(s, m, validation);
+                    return;
+                }
+                // добавляем
+                if (account.id == null || account.id === "") {
+                    account.id = FluxUtils.guidGenerator();
                     data.push(account);
                 }
+                // редактируем
                 else {
-                    for (let existAccount of data) {
-                        if (existAccount.id == account.id) { 
-                            existAccount = account; 
-                            break;
-                        }
-                    }
+                    let exists = data.filter(e => e.id == account.id)[0];
+                    if (exists != null) exists.fill(account);
+                    else data.push(account);
                 }
-            }
-            // сохраняем
-            self._setDatas("accounts", data);
-            // оповещаем
-            let validation = new Accounts.AccountFormValidation(false);
-            callBack(true, "", validation);
+                // сохраняем
+                self._setDatas("accounts", data);
+                // оповещаем
+                callBack(s, m, validation);
+            });
+        }
+
+        // зависимое обновление счета (редактирование/удаление транзакции)
+        private _updateAccountByTransactionEdit(transaction: Transactions.TransactionEntity, oldTransaction: Transactions.TransactionEntity, isDelete: boolean): void {
+            if (transaction == null) return;
+            let self = this;
+            self.getFromJsonModels(self._getDatasResponse("accounts"), Accounts.AccountEntity, function(s,m,accounts){
+                if (!s) return;
+                // сумма для вычитаний
+                let cost = transaction.cost;
+                if (oldTransaction != null) cost = (oldTransaction.cost - transaction.cost) * -1; // было 500, стало 300, разница: -200 (надо вычесть разницу)
+
+                // 1. account from
+                let accountFrom = accounts.filter(f => f.id == transaction.accountFromId)[0];
+                if (accountFrom != null) {
+                    let dif = (transaction.type == Transactions.TransactionTypes.Profit ? 1 : -1); // Spend и Change это вывод средств, идут в минус
+                    if (isDelete) dif *= -1; // при удалении, обратное
+                    accountFrom.sum += cost * dif;
+                }
+                // 2. account to
+                let accountTo = accounts.filter(f => f.id == transaction.accountToId)[0];
+                if (accountTo != null) {
+                    accountTo.sum -= cost; // сюда был перевод, значит только вычитаем
+                }
+                // 3. save accounts
+                self._setDatas("accounts", accounts);
+
+            });
         }
 
 
@@ -162,29 +203,62 @@ namespace Client {
         /**
          * Редактирование транзакции.
          */
-        editTransaction(transaction: Transactions.TransactionEntity, callBack: BClient.IClientResponse<Transactions.TransactionFormValidation>): void {
+        editTransaction(transaction: Transactions.TransactionEntity, withRecalculateAccounts: boolean, callBack: BClient.IClientResponse<Transactions.TransactionFormValidation>): void {
+            let self = this;
+            let isNewTransaction = transaction.id == null || transaction.id === "";
+            // достаем все
+            self.getFromJsonModels(self._getDatasResponse("transactions"), Transactions.TransactionEntity, function(s,m,d){
+                let data = d;
+                if (data == null || data.length == 0) data = [];
+                // TODO: серверная проверка валидации
+                let validation = new Transactions.TransactionFormValidation(false);
+                if (validation.hasError()){
+                    callBack(s, m, validation);
+                    return;
+                }
+                // прошлая запись
+                let exists = isNewTransaction ? null : data.filter(e => e.id == transaction.id)[0];
+                // перерасчет счетов (суммы)
+                if (withRecalculateAccounts) {
+                    self._updateAccountByTransactionEdit(transaction, exists, false);
+                }
+                // добавляем
+                if (isNewTransaction) {
+                    transaction.id = FluxUtils.guidGenerator();
+                    data.push(transaction);
+                }
+                // редактируем
+                else {
+                    //let exists = data.filter(e => e.id == transaction.id)[0];
+                    if (exists != null) exists.fill(transaction);
+                    else data.push(transaction);
+                }
+                // сохраняем
+                self._setDatas("transactions", data);
+                // оповещаем
+                callBack(s, m, validation);
+            });
+        }
+
+        /**
+         * Удаление транзакции.
+         */
+        deleteTransaction(transactionId: string, withRecalculateAccounts: boolean, callBack: BClient.IClientResponse<any>) : void {
             let self = this;
             // достаем все
-            let data = <Transactions.TransactionEntity[]>(JSON.parse(self._getDatasResponse("transactions")));
-            // добавляем
-            if (transaction.id == null || transaction.id === "") {
-                transaction.id = FluxUtils.guidGenerator();
-                data.push(transaction);
-            }
-            // редактируем
-            else {
-                for (let exists of data) {
-                    if (exists.id == transaction.id) { 
-                        exists = transaction; 
-                        break;
-                    }
+            self.getFromJsonModels(self._getDatasResponse("transactions"), Transactions.TransactionEntity, function(s,m,d){
+                let data = d;
+                // перерасчет счетов (суммы)
+                if (withRecalculateAccounts) {
+                    let transaction = data.filter(t => t.id == transactionId)[0];
+                    self._updateAccountByTransactionEdit(transaction, null, true);
                 }
-            }
-            // сохраняем
-            self._setDatas("transactions", data);
-            // оповещаем
-            let validation = new Transactions.TransactionFormValidation(false);
-            callBack(true, "", validation);
+                // удаляем
+                data = data.filter(t => t.id != transactionId);
+                self._setDatas("transactions", data);
+                // оповещаем
+                callBack(s, m, null);
+            });
         }
 
 

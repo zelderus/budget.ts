@@ -27,6 +27,14 @@ namespace Client {
         }
 
 
+
+        /**
+         * Регистрация пользователя.
+         */
+        registration(userName: string, userPass: string, callBack: BClient.IClientResponse<Authentication.AuthenticationData>): void {
+            this.getFromJsonModel(Mock.getUserJson(), Authentication.AuthenticationData, callBack);
+        }
+
         /**
          * Авторизация.
          * @param userName 
@@ -52,7 +60,7 @@ namespace Client {
          */
         editAccount(account: Accounts.AccountEntity, callBack: BClient.IClientResponse<Accounts.AccountFormValidation>): void {
             let self = this;
-            // TODO:
+            // TODO: Редактирование счета
 
             // оповещаем
             let validation = new Accounts.AccountFormValidation(false);
@@ -72,13 +80,23 @@ namespace Client {
         /**
          * Редактирование транзакции.
          */
-        editTransaction(transaction: Transactions.TransactionEntity, callBack: BClient.IClientResponse<Transactions.TransactionFormValidation>): void {
+        editTransaction(transaction: Transactions.TransactionEntity, withRecalculateAccounts: boolean, callBack: BClient.IClientResponse<Transactions.TransactionFormValidation>): void {
             let self = this;
-            // TODO:
+            // TODO: Редактирование транзакции
 
             // оповещаем
             let validation = new Transactions.TransactionFormValidation(false);
             callBack(false, "редактирование транзакции не реализованно в этом клиенте", validation);
+        }
+
+        /**
+         * Удаление транзакции.
+         */
+        deleteTransaction(transactionId: string, withRecalculateAccounts: boolean, callBack: BClient.IClientResponse<any>) : void {
+            let self = this;
+            // TODO: Удаление транзакции
+
+            callBack(false, "удаление транзакции не реализованно в этом клиенте", null);
         }
 
 

@@ -1,8 +1,12 @@
-
+import Life from './../Life';
+import Client from './../datas/ClientManager';
+import Actions from './../actions/Actions';
 
 import StoreFlux from './../flux/store';
 import BaseStore from './../flux/BaseStore';
 import ActionTypes from './../actions/ActionTypes';
+
+
 
 
 /**
@@ -46,6 +50,80 @@ export class AppStore extends BaseStore {
     public isLoading(): boolean { return this._isLoading; }
 
 
+    //
+    //  Helpers
+    //
+
+    // останавливаем анимацию загрузки, оповещаем всех, и навигация назад
+    private updateEnd(navBack: boolean = true): void {
+        if (navBack) Actions.navigationBack();
+        Actions.loadingStop();
+        this.emitChange();
+    }
+    private _onError(msg: string): void {
+        Actions.log("Ошибка: " + msg);
+    }
+    private _onFatalError(msg: string): void {
+        Actions.errorFatal(msg);
+    }
+
+
+
+
+    //
+    // Auth
+    //
+
+    private _registrationUserAsync(obj: any) {
+        let self = this;
+        let userData: [string, string] = obj;
+        let userName = userData[0];
+        let userPass = userData[1];
+        Actions.loadingStart();
+        // если уже зарегистрированы // TODO: когда будет реализована панель регистрации и входа, тут убрать эту проверку
+        Client.getClient().authentication(userName, userPass, (s, m, d) => {
+            Life.setUserAuth(d);
+            // проверка
+            if (Life.getUser().isAuth() == true) { 
+                Actions.log("пользователь уже зарегистрирован: " + Life.getUser().getName(), false);
+                self.updateEnd(false);
+                // сразу грузим начальные данные свои
+                Actions.loadInitData();
+                return;
+            }
+            
+            // регистрация // TODO: оставить только эту логику
+            Client.getClient().registration(userName, userPass, (s, m, d) => {
+                Life.setUserAuth(d);
+                // проверка
+                if (Life.getUser().isAuth() != true) { self._onFatalError("пользователь не зарегистрирован"); return; }
+                Actions.log("зарегистрирован пользователь: " + Life.getUser().getName(), false);
+                self.updateEnd(false);
+                // сразу грузим начальные данные свои
+                Actions.loadInitData();
+            });
+            
+        });
+    }
+
+    private _authUserAsync(obj: any) {
+        let self = this;
+        let userData: [string, string] = obj;
+        let userName = userData[0];
+        let userPass = userData[1];
+        Actions.loadingStart();
+        Client.getClient().authentication(userName, userPass, (s, m, d) => {
+            Life.setUserAuth(d);
+            // проверка
+            if (Life.getUser().isAuth() != true) { self._onFatalError("пользователь не авторизован"); return; }
+            Actions.log("вход выполнен пользователем: " + Life.getUser().getName(), false);
+            self.updateEnd(false);
+            // сразу грузим начальные данные свои
+            Actions.loadInitData();
+        });
+    }
+
+
 
 
     //
@@ -74,6 +152,12 @@ export class AppStore extends BaseStore {
 
 
 
+
+
+
+
+
+
     /**
      * Обрабатываем сообщения от диспетчера.
      * Обновляем модели данных, обращаемся к серверу.
@@ -82,9 +166,10 @@ export class AppStore extends BaseStore {
      */
     onDispatch(type: number, obj: any):boolean {
         switch(type) {
+
             case ActionTypes.LOG:
                 this._logTextValue = obj.text;
-                this._logIsError = obj.isError;            
+                this._logIsError = obj.isError;  
                 break;
             case ActionTypes.ERROR_FATAL:
                 this._errorFatalTextValue = obj;            
@@ -92,6 +177,12 @@ export class AppStore extends BaseStore {
             case ActionTypes.ERROR_FATAL_CLOSE:
                 this._errorFatalTextValue = "";            
                 break;
+            case ActionTypes.USER_REGISTRATION:
+                this._registrationUserAsync(obj);
+                return true;
+            case ActionTypes.USER_AUTH:
+                this._authUserAsync(obj);
+                return true;
             case ActionTypes.NAVIGATION_TAB:
                 this.onNavigationTab(obj);
                 break;
@@ -108,10 +199,11 @@ export class AppStore extends BaseStore {
                 this._isLoading = false;
                 break;
 
+
             default:
                 return true;
         }
-        this.emitChange();
+        this.emitChange(); // ВНИМАНИЕ: если break, то сразу отправка подписчикам
         return true;
     }
     

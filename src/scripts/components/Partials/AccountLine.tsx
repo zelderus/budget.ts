@@ -44,9 +44,18 @@ export class AccountLine extends View<IAccountLineProps, IAccountLineStates> {
 
 
 	render() {
+        let sum = this.props.account.sum == null ? 0 : this.props.account.sum;
+        let typeClass = sum > 0 ? "Profit" : sum == 0 ? "Zero" :  "Debt";
+
+
+        // TODO: тянем связанные данные
+        let currency = "rub";
 
 		return <div className="AccountLine">
             {this.props.account.title}
+            <span className={"Sum " + typeClass}>
+                <span className="Value">{sum}</span><span className="Currency">{currency}</span>
+            </span>
         </div>;
 	}
 

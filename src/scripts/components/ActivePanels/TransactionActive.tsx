@@ -9,7 +9,7 @@ import Transactions from './../../models/Transactions';
 import TransactionLine from './../Partials/TransactionLine';
 
 
-export interface ITransactionActiveProps extends IBaseActiveProps {  }
+//export interface ITransactionActiveProps extends IBaseActiveProps {  }
 export interface ITransactionActiveStates { 
     transactions: Transactions.TransactionEntity[]; 
 }
@@ -21,7 +21,7 @@ export interface ITransactionActiveStates {
 /**
  * Панель - транзакции.
  */
-export class TransactionActive extends BaseActive<ITransactionActiveProps, ITransactionActiveStates> {
+export class TransactionActive extends BaseActive<ITransactionActiveStates> {
 
 
     constructor(props: any){

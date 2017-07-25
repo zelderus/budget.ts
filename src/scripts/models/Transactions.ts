@@ -92,8 +92,25 @@ namespace Transactions {
         }
 
 
-        clone():TransactionEntity  {
-            return Object.create(this);
+        private _clonig(toNew: boolean = true, from: TransactionEntity = null):TransactionEntity  {
+            let objTo = toNew ? new TransactionEntity() : this;
+            let objFrom = from == null ? this : from;
+            //objTo = Object.create(objFrom);
+
+            objTo.id = objFrom.id;
+            objTo.date = objFrom.date;
+            objTo.type = objFrom.type;
+            objTo.cost = objFrom.cost;
+            objTo.comment = objFrom.comment;
+            objTo.accountFromId = objFrom.accountFromId;
+            objTo.accountToId = objFrom.accountToId;
+            return objTo;
+        }
+        clone(): TransactionEntity {
+            return this._clonig(true, null);
+        }
+        fill(from: TransactionEntity): void {
+            this._clonig(false, from);
         }
 
     }

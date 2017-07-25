@@ -28,8 +28,8 @@ export class MainAppWidget extends BaseWidget {
 
         // устанавливаем клиента
         ClientManager.setClient(ClientTypes.LOCAL_STORAGE);
-        // загружаем начальные данные
-        this.getActionCreator().loadInitData();
+        // авторизация (и оттуда загрузка своих данных начальных)
+        this.getActionCreator().userRegistration("someName", "pass"); // TODO: использовать реальные данные
         
     }
 

@@ -193,6 +193,23 @@
         
         .AccountLine { 
             display: block; margin: 0px; padding: 12px; border: 1px solid transparent; border-bottom: 1px solid #ccc; color: #333; background-color: #FFF; clear: both; overflow: hidden;
+
+            .Sum { 
+                .Value { .roundBorder4; padding: 2px 4px; margin: 0 0 0 10px; }
+                .Currency {margin: 0 0 0 2px;}
+            }
+            .Sum.Profit { 
+                .Value { border: 1px solid #468847; background-color: #468847; color:#FFF; }
+                .Currency {color:#468847;}
+            }
+            .Sum.Debt { 
+                .Value { border: 1px solid #953B39; background-color: #953B39; color:#FFF; }
+                .Currency {color:#953B39;}
+            }
+            .Sum.Zero { 
+                .Value { border: 1px solid #326D83; background-color: #326D83; color:#FFF; }
+                .Currency {color:#326D83;}
+            }   
         }
         .AccountLine:hover {
             background-color: #f6f6f6;

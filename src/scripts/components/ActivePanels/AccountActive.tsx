@@ -10,14 +10,14 @@ import AccountLine from './../Partials/AccountLine';
 
 
 
-export interface IAccountActiveProps extends IBaseActiveProps {  }
+//export interface IAccountActiveProps extends IBaseActiveProps {  }
 export interface IAccountActiveStates { accounts: Accounts.AccountEntity[]; }
 
 
 /**
  * Панель - счета.
  */
-export class AccountActive extends BaseActive<IAccountActiveProps, IAccountActiveStates> {
+export class AccountActive extends BaseActive<IAccountActiveStates> {
 
     constructor(props: any){
         super(props, [TransactionStore]);

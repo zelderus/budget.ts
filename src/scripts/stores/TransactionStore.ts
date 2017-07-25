@@ -44,70 +44,17 @@ export class TransactionStore extends BaseStore {
 
 
 
-    //
-    // Datas
-    //
-
-
-    /**
-     * Первый запрос при запуске приложения. Получаем данные инициализации - на все приложение, и какие-то начальные транзакции.
-     */
-    private _loadInitDataAsync() {
-        Actions.loadingStart();
-        localStorage.clear();
-
-        // инициализация пользователя
-        this._authUserAsync((s,m) => {
-            if (!s) { this._onFatalError(m); return;}
-            if (Life.getUser().isAuth() == false) { this._onFatalError("пользователь не авторизован"); return; }
-            Actions.log("вход выполнен пользователем: " + Life.getUser().getName(), false);
-
-            // счета
-            this._loadAccountsAsync((s,m) => { 
-                if (!s) { this._onFatalError(m); return;}
-
-                // транзакции
-                this._loadTransactionsAsync((s,m) => { 
-                    if (!s) { this._onFatalError(m); return;}
-
-                    // оповещаем
-                    this.emitChange();
-                    Actions.loadingStop();
-                });
-            });
-        })
-    }
-
-
-
-
-    private _authUserAsync(callBack: (success:boolean, errorMsg: string) => void) {
-        Client.getClient().authentication("username", "pass", (s, m, d) => {    // TODO: !!!!! имя и пароль от ввода пользователя
-            Life.setUserAuth(d);
-            callBack(s,m);
-        });
-    }
-
-
-    private _loadAccountsAsync(callBack: (success:boolean, errorMsg: string) => void) {
-        Client.getClient().getAccounts((s, m, d) => { 
-            this.__accounts = d;
-            callBack(s,m);
-        });
-    }
-
-    private _loadTransactionsAsync(callBack: (success:boolean, errorMsg: string) => void) {
-        Client.getClient().getTransactions(this.__transactionFilter, (s, m, d) => {
-            this.__transactions = d;
-            callBack(s, m);
-        });
-    }
-
 
     //
-    // Errors
+    //  Helpers
     //
 
+    // останавливаем анимацию загрузки, оповещаем всех, и навигация назад
+    private updateEnd(navBack: boolean = true): void {
+        if (navBack) Actions.navigationBack();
+        Actions.loadingStop();
+        this.emitChange();
+    }
     private _onError(msg: string): void {
         Actions.log("Ошибка: " + msg);
     }
@@ -119,11 +66,57 @@ export class TransactionStore extends BaseStore {
 
 
     //
-    //  UI
+    // Datas
     //
 
 
+    /**
+     * Первый запрос при запуске приложения. Получаем данные инициализации - на все приложение, и какие-то начальные транзакции.
+     */
+    private _loadInitDataAsync() {
+        let self = this;
+        Actions.loadingStart();
+        // TODO: загрузка валют, категорий
+        // счета
+        self._loadAccountsAsync((s2,m2) => { 
+            if (!s2) { self._onFatalError(m2); return;}
+            // транзакции
+            self._loadTransactionsAsync((s3,m3) => { 
+                if (!s3) { self._onFatalError(m3); return;}
+                // оповещаем
+                self.updateEnd(false);
+            });
+        });
+    }
 
+
+
+
+
+    private _loadAccountsAsync(callBack: (success:boolean, errorMsg: string) => void) {
+        let self = this;
+        Client.getClient().getAccounts((s, m, d) => { 
+            self.__accounts = d;
+            callBack(s,m);
+        });
+    }
+
+    private _loadTransactionsAsync(callBack: (success:boolean, errorMsg: string) => void) {
+        let self = this;
+        Client.getClient().getTransactions(self.__transactionFilter, (s, m, d) => {
+            self.__transactions = d;
+            callBack(s, m);
+        });
+    }
+
+
+
+
+
+
+    //
+    //  UI
+    //
 
 
     private _onEditTransactionShow(obj: any): void {
@@ -131,14 +124,34 @@ export class TransactionStore extends BaseStore {
         let transactionId: string = isEdit ? <string>obj : "";
         this.__currentEditTransactionId = transactionId;
     }
+    private _onEditTransactionDelete(obj: any): void {
+        let self = this;
+        let editData: [Transactions.TransactionEntity, boolean] = obj;
+        let transaction = editData[0];
+        let withRecalculateAccounts = editData[1];
+        // удаляем
+        Client.getClient().deleteTransaction(transaction.id, withRecalculateAccounts, function(s,m,d){
+            if (!s) { self._onFatalError(m); self.emitChange(); return; }
+            // обновление данных в приложении (просто загружаем заново данные) - эту часть можно не обновляя обновить локально
+            self._loadTransactionsAsync((ss,mm) => { 
+                if (!ss) { self._onFatalError(mm); return;}
+                // закончили
+                self.updateEnd(true);
+                // обновляем счета
+                if (withRecalculateAccounts) Actions.loadAccounts();
+            });
+        });
+    }
     private _onEditTransactionDo(obj: any): void { // сохранение формы редактирования транзакции
         let self = this;
         Actions.loadingStart();
 
-        let transaction = <Transactions.TransactionEntity>obj;
+        let editData: [Transactions.TransactionEntity, boolean] = obj;
+        let transaction = editData[0];
+        let withRecalculateAccounts = editData[1];
 
         // 1. отправка данных на сервер
-        Client.getClient().editTransaction(transaction, function(s, m, validationForm){
+        Client.getClient().editTransaction(transaction, withRecalculateAccounts, function(s, m, validationForm){
             // 2. если критическая ошибка - конец
             if (!s) { self._onFatalError(m); self.emitChange(); return; }
             // 3. если в ответе (в моделе данных) есть ошибки валидации - обновляем модель формы (добавляем ошибки) - конец
@@ -146,30 +159,18 @@ export class TransactionStore extends BaseStore {
             if (hasFormError) {
                 // TODO: добавляем в модель формы ошибки валидации
 
-                // прячем загрузку и оповещаем об изменениях
-                Actions.loadingStop();
-                self.emitChange();
+                // закончили
+                self.updateEnd(false);
                 return;
             }
-            
-            // 4. если это редактирование и есть такая запись - обновляем ее (иначе добавляем)
-            let exist = self.__transactions.filter(f => f.id == transaction.id)[0];
-            if (exist != null) {
-                exist = transaction;
-            }
-            // добавляем новую запись
-            else {
-                self.__transactions.push(transaction);
-            }
-
-            
-            // закрываем окно редактирования
-            //this._onEditTransactionCancel(); 
-            Actions.navigationBack();
-            // прячем загрузку и оповещаем об изменениях
-            Actions.loadingStop();
-            self.emitChange();
-
+            // 4. обновление данных в приложении (просто загружаем заново данные) - эту часть можно не обновляя обновить локально
+            self._loadTransactionsAsync((ss,mm) => { 
+                if (!ss) { self._onFatalError(mm); return;}
+                // закончили
+                self.updateEnd(true);
+                // обновляем счета
+                if (withRecalculateAccounts) Actions.loadAccounts();
+            });
         });
     }
 
@@ -209,6 +210,10 @@ export class TransactionStore extends BaseStore {
             case ActionTypes.TRANSACTIONS_EDIT_DO:
                 this._onEditTransactionDo(obj);
                 return true;
+            case ActionTypes.TRANSACTIONS_EDIT_DELETE:
+                this._onEditTransactionDelete(obj);
+                return true;
+
 
             // TODO: update transaction filters
 

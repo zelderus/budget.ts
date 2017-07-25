@@ -5,14 +5,19 @@ import View from './../../flux/View';
 import TransactionStore from './../../stores/TransactionStore';
 import {BaseActive, IBaseActiveProps} from './BaseActive';
 
+import Accounts from './../../models/Accounts';
 import Transactions from './../../models/Transactions';
 import TransactionLine from './../Partials/TransactionLine';
 
+import Select from './../Partials/Controls/Select';
 
-export interface ITransactionEditActiveProps extends IBaseActiveProps {  }
+
+//export interface ITransactionEditActiveProps extends IBaseActiveProps { }
 export interface ITransactionEditActiveStates { 
     editId: string; 
     formModel: Transactions.TransactionEntity;
+    accounts: Accounts.AccountEntity[];
+    withRecalc: boolean;
 }
 
 
@@ -21,7 +26,8 @@ export interface ITransactionEditActiveStates {
  * События от контрола.
  */
 export enum TransactionEditCmdEvents {
-    FORM_SAVE = 1
+    FORM_SAVE       = 1,
+    FORM_DELETE     = 2
 }
 
 
@@ -29,9 +35,10 @@ export enum TransactionEditCmdEvents {
 /**
  * Панель - редактирование транзакции.
  */
-export class TransactionEditActive extends BaseActive<ITransactionEditActiveProps, ITransactionEditActiveStates> {
+export class TransactionEditActive extends BaseActive<ITransactionEditActiveStates> {
 
     __formModel: Transactions.TransactionEntity; // не инициализируем тут модель, т.к. в базовом типе в конструкторе присвоится через getState (иначе, тут обнулится все)
+    //__withRecalc: boolean;
 
     constructor(props: any){
         super(props, [TransactionStore]);
@@ -45,7 +52,9 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveProp
     protected getState() : ITransactionEditActiveStates {
         return {
             editId: TransactionStore.getCurrentEditTransactionId(),
-            formModel: this._getCurrentFormModel()
+            formModel: this._getCurrentFormModel(),
+            accounts: TransactionStore.getAccounts(),
+            withRecalc: true
         };
     }
 
@@ -54,6 +63,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveProp
     //
     //
     //
+
 
     // выбранная транзакция для редактирования
     private _getCurrentFormModel(): any {
@@ -78,7 +88,9 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveProp
             case TransactionEditCmdEvents.FORM_SAVE:
                 this._onEditSave();
                 break;
-
+            case TransactionEditCmdEvents.FORM_DELETE:
+                this._onEditDelete();
+                break;
         }
     }
 
@@ -108,12 +120,20 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveProp
     private _onEditSave(): void {
         this.getActionCreator().log("Сохранение транзакции..");
         let model = this.__formModel;
+        let recalculateAccounts = this.state.withRecalc;
         // клиентская валидация формы
         if (this._validateForm()) return; // при ошибке, ничего далее не делаем
         // отправляем
-        this.getActionCreator().editTransactionDo(model);
+        this.getActionCreator().editTransactionDo(model, recalculateAccounts);
     }
 
+    // удаляем транзакцию
+    private _onEditDelete(): void {
+        this.getActionCreator().log("Удаление транзакции..");
+        let model = this.__formModel;
+        let recalculateAccounts = this.state.withRecalc;
+        this.getActionCreator().editTransactionDelete(model, recalculateAccounts);
+    }
 
     
 
@@ -123,13 +143,25 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveProp
     /// User interactions
     ///
 
-    
+    private _onFormChangeRecalc(e: any): void {
+        //this.__withRecalc = !this.__withRecalc;
+        //this.setState({withRecalc: this.__withRecalc});
+        this.setState({withRecalc: !this.state.withRecalc});
+    }
+
     private _onFormChangeCost(e: any): void {
         this.__formModel.cost = e.target.value;
         this._checkAndUpdateState();
     }
 
-
+    private _onFormChangeAccountFrom(val: string): void {
+        this.__formModel.accountFromId = val;
+        this._checkAndUpdateState();
+    }
+    private _onFormChangeAccountTo(val: string): void {
+        this.__formModel.accountToId = val;
+        this._checkAndUpdateState();
+    }
 
 
 
@@ -137,18 +169,54 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveProp
     /// Render
     ///
 
+    renderAccountsFromList() {
+        return <Select 
+            name="accountFrom" 
+            currentKey={this.state.formModel.accountFromId}
+            list={this.state.accounts.filter(f => f.id != this.state.formModel.accountToId)}
+            objKey="id"
+            objText="title"
+            default={ {key:"", text:"- без счета -"} }
+            onChange={ e=> this._onFormChangeAccountFrom(e) }
+            emptyText="нет других счетов"
+        />
+    }
+    renderAccountsToList() {
+        return <Select 
+            name="accountFrom" 
+            currentKey={this.state.formModel.accountToId}
+            list={this.state.accounts.filter(f => f.id != this.state.formModel.accountFromId)}
+            objKey="id"
+            objText="title"
+            onChange={ e=> this._onFormChangeAccountTo(e) }
+            emptyText="нет других счетов"
+        />
+    }
+
 
 	render() {
         // TODO: на основе модели валидации из Стора (state), подсвечиваем ошибки
 
+        // TODO: учесть тип выбранной транзакции (если не перевод, скрыть счет зачисления..)
+
 		return <div className="TransactionActive">
             <div className="TransactionEditWnd">
-                <div>ediiiiit '{this.state.formModel.id}'</div>
                 <div>
+                    <span>перерасчитать счета:</span>
+                    <input name="recalc" type="checkbox" value="Recalc" checked={this.state.withRecalc} onChange={e => this._onFormChangeRecalc(e)} />
+                </div>
+                <div>
+                    <span>счет списания:</span>
+                    {this.renderAccountsFromList()}
+                </div>
+                <div>
+                    <span>счет зачисления:</span>
+                    {this.renderAccountsToList()}
+                </div>
+                <div>
+                    <span>сумма:</span>
                     <input name="cost" value={this.state.formModel.cost} onChange={e => this._onFormChangeCost(e)} />
                 </div>
-                {/*<div className="Button" onClick={e => this._onEditCancel()} >cancel</div>
-                <div className="Button" onClick={e => this._onEditSave()}>save</div>*/}
             </div>
         </div>;
 	}

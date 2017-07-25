@@ -13,9 +13,14 @@ export interface IBaseActive { onEventFromControls(eventId: number): void;  }
 export interface IBaseActiveProps { }
 
 /**
- * Панель - базовая.
+ * Активная панель - базовая.
  */
-export class BaseActive<P extends IBaseActiveProps,S> extends View<P, S> implements IBaseActive {
+export class BaseActive<S> extends View<IBaseActiveProps, S> implements IBaseActive {
+
+    // !!!
+    // теперь нет смысла передавать props - Активные панели создаются в ActionPanel и передача свойств строго в нем (своих личных иметь не могут Активки)
+    // !!!
+    //export class BaseActive<P extends IBaseActiveProps,S> extends View<P, S> implements IBaseActive {
 
     constructor(props: any, stores: FluxStore.IStore[]){
         super(props, stores);

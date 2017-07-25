@@ -21,7 +21,8 @@ namespace Life {
         }
 
         public setUserAuth(user: Authentication.AuthenticationData): void {
-            this.__user = user;
+            if (user == null || user === undefined) this.__user = new Authentication.AuthenticationData();
+            else this.__user = user;
         }
 
         /**

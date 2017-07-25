@@ -48,6 +48,15 @@ export namespace Actions{
             Dispatcher.dispatch(ActionTypes.NAVIGATION_BACK, null);
         }
 
+        userRegistration(userName: string, userPass: string): void {
+            let userData: [string, string] = [userName, userPass];
+            Dispatcher.dispatch(ActionTypes.USER_REGISTRATION, userData);
+        }
+        userAuthorization(userName: string, userPass: string): void {
+            let userData: [string, string] = [userName, userPass];
+            Dispatcher.dispatch(ActionTypes.USER_AUTH, userData);
+        }
+
         loadInitData() {
             Dispatcher.dispatch(ActionTypes.LOAD_INIT_DATA, null);
         }
@@ -74,10 +83,14 @@ export namespace Actions{
             Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_SHOW, id);
             this.navigationPage(AppData.Pages.TRANSACTION_EDIT);
         }
-        editTransactionDo(obj: Transactions.TransactionEntity) {
-            Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_DO, obj);
+        editTransactionDo(obj: Transactions.TransactionEntity, withCalculateAccounts: boolean) {
+            let model: [Transactions.TransactionEntity, boolean] = [obj, withCalculateAccounts];
+            Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_DO, model);
         }
-
+        editTransactionDelete(obj: Transactions.TransactionEntity, withCalculateAccounts: boolean) {
+            let model: [Transactions.TransactionEntity, boolean] = [ obj, withCalculateAccounts];
+            Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_DELETE, model);
+        }
 
 
 
