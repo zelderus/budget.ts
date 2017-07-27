@@ -68,6 +68,7 @@ export namespace Actions{
             Dispatcher.dispatch(ActionTypes.LOADING_STOP, null);
         }
 
+
         loadAccounts() {
             Dispatcher.dispatch(ActionTypes.ACCOUNTS_LOAD, null);
         }
@@ -96,15 +97,6 @@ export namespace Actions{
 
 
 
-        addItem(item: any){ // TODO: item cast to Type
-            Dispatcher.dispatch(ActionTypes.ADD_ITEM, item);
-            this.log("добавление элемента: ..");
-        }
-
-        deleteItem(id: AAGUID){
-            Dispatcher.dispatch(ActionTypes.DELETE_ITEM, id);
-            this.log("удаление элемента: " + id);
-        }
 
     }
 

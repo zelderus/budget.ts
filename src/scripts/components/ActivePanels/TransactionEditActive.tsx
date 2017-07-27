@@ -3,6 +3,7 @@
 import * as React from "react";
 import View from './../../flux/View';
 import TransactionStore from './../../stores/TransactionStore';
+import AccountStore from './../../stores/AccountStore';
 import {BaseActive, IBaseActiveProps} from './BaseActive';
 
 import Accounts from './../../models/Accounts';
@@ -41,7 +42,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
     //__withRecalc: boolean;
 
     constructor(props: any){
-        super(props, [TransactionStore]);
+        super(props, [TransactionStore, AccountStore]);
 
     }
 
@@ -53,7 +54,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
         return {
             editId: TransactionStore.getCurrentEditTransactionId(),
             formModel: this._getCurrentFormModel(),
-            accounts: TransactionStore.getAccounts(),
+            accounts: AccountStore.getAccounts(),
             withRecalc: true
         };
     }
@@ -169,7 +170,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
     /// Render
     ///
 
-    renderAccountsFromList() {
+    renderSelectAccountsFrom() {
         return <Select 
             name="accountFrom" 
             currentKey={this.state.formModel.accountFromId}
@@ -181,7 +182,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
             emptyText="нет других счетов"
         />
     }
-    renderAccountsToList() {
+    renderSelectAccountsTo() {
         return <Select 
             name="accountFrom" 
             currentKey={this.state.formModel.accountToId}
@@ -207,11 +208,11 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
                 </div>
                 <div>
                     <span>счет списания:</span>
-                    {this.renderAccountsFromList()}
+                    {this.renderSelectAccountsFrom()}
                 </div>
                 <div>
                     <span>счет зачисления:</span>
-                    {this.renderAccountsToList()}
+                    {this.renderSelectAccountsTo()}
                 </div>
                 <div>
                     <span>сумма:</span>

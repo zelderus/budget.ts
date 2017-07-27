@@ -26,7 +26,7 @@ namespace Flux {
          * - меняем состояния, модели объектов, обращаемся на сервер и прочее
          * - посылаем событие Change
          */
-        onDispatch(type: number, obj: any):boolean;
+        onDispatch(type: number, obj: any, callBack?: (success:boolean, errorMessage:String)=>void):boolean;
     }
 
     

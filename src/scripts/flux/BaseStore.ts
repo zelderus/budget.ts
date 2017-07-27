@@ -52,7 +52,7 @@ export class BaseStore implements StoreFlux.IStore {
      * @param type 
      * @param obj 
      */
-    public onDispatch(type: number, obj: any):boolean {
+    public onDispatch(type: number, obj: any, callBack?: (success:boolean)=>void):boolean {
         FluxUtils.logError("'" + this.__myName + "' не переопределил метод 'onDispatch' из базового BaseStore");
         return false;
         /*

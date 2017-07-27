@@ -6,6 +6,8 @@ import StoreFlux from './../flux/store';
 import BaseStore from './../flux/BaseStore';
 import ActionTypes from './../actions/ActionTypes';
 
+import AccountStore from './AccountStore';
+import TransactionStore from './TransactionStore';
 
 
 
@@ -48,6 +50,7 @@ export class AppStore extends BaseStore {
     public getNavigationIndex(): number { return this._navIndex; }
     public getTabIndex(): number { return this._tabIndex; }
     public isLoading(): boolean { return this._isLoading; }
+
 
 
     //
@@ -124,6 +127,28 @@ export class AppStore extends BaseStore {
     }
 
 
+    /**
+     * Первый запрос при запуске приложения. Получаем данные инициализации - на все приложение, и какие-то начальные транзакции.
+     */
+    private _loadInitDataAsync() {
+        let self = this;
+        Actions.loadingStart();
+        // TODO: загрузка валют, категорий
+        // счета
+        Actions.loadAccounts();
+        
+        AccountStore.loadAccountsAsync((s2,m2) => { 
+            if (!s2) { self._onFatalError(m2); return;}
+            // транзакции
+            TransactionStore.loadTransactionsAsync((s3,m3) => { 
+                if (!s3) { self._onFatalError(m3); return;}
+                // оповещаем
+                self.updateEnd(false);
+            });
+        });
+    }
+
+
 
 
     //
@@ -151,6 +176,8 @@ export class AppStore extends BaseStore {
     }
 
 
+    
+
 
 
 
@@ -164,7 +191,7 @@ export class AppStore extends BaseStore {
      * @param type 
      * @param obj 
      */
-    onDispatch(type: number, obj: any):boolean {
+    onDispatch(type: number, obj: any, callBack?: (success:boolean)=>void):boolean {
         switch(type) {
 
             case ActionTypes.LOG:
@@ -198,12 +225,14 @@ export class AppStore extends BaseStore {
             case ActionTypes.LOADING_STOP:
                 this._isLoading = false;
                 break;
-
+            case ActionTypes.LOAD_INIT_DATA:
+                this._loadInitDataAsync();
+                return true;
 
             default:
                 return true;
         }
-        this.emitChange(); // ВНИМАНИЕ: если break, то сразу отправка подписчикам
+        this.emitChange(); // ВНИМАНИЕ: если выше break, то сразу отправка подписчикам
         return true;
     }
     

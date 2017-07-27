@@ -17,7 +17,6 @@ import Client from './../datas/ClientManager';
  */
 export class TransactionStore extends BaseStore {
 
-    private __accounts: Accounts.AccountEntity[] = [];
     private __transactions: Transactions.TransactionEntity[] = [];
     private __transactionFilter: Transactions.TransactionFilters;
 
@@ -37,7 +36,6 @@ export class TransactionStore extends BaseStore {
     // Функции интерфейсы для Вьюшек.
     // Эти данные для их состояний. При изменении которых, Вьюшки обновляются.
     //
-    public getAccounts(): Accounts.AccountEntity[] { return this.__accounts; }
     public getTransactions(): Transactions.TransactionEntity[] { return this.__transactions; }
     public getTransactionById(id: string): Transactions.TransactionEntity { if (id === undefined || id == null || id === "") return null; return this.__transactions.filter(f => f.id == id)[0]; }
     public getCurrentEditTransactionId(): string { return this.__currentEditTransactionId; }
@@ -70,36 +68,8 @@ export class TransactionStore extends BaseStore {
     //
 
 
-    /**
-     * Первый запрос при запуске приложения. Получаем данные инициализации - на все приложение, и какие-то начальные транзакции.
-     */
-    private _loadInitDataAsync() {
-        let self = this;
-        Actions.loadingStart();
-        // TODO: загрузка валют, категорий
-        // счета
-        self._loadAccountsAsync((s2,m2) => { 
-            if (!s2) { self._onFatalError(m2); return;}
-            // транзакции
-            self._loadTransactionsAsync((s3,m3) => { 
-                if (!s3) { self._onFatalError(m3); return;}
-                // оповещаем
-                self.updateEnd(false);
-            });
-        });
-    }
 
 
-
-
-
-    private _loadAccountsAsync(callBack: (success:boolean, errorMsg: string) => void) {
-        let self = this;
-        Client.getClient().getAccounts((s, m, d) => { 
-            self.__accounts = d;
-            callBack(s,m);
-        });
-    }
 
     private _loadTransactionsAsync(callBack: (success:boolean, errorMsg: string) => void) {
         let self = this;
@@ -108,6 +78,7 @@ export class TransactionStore extends BaseStore {
             callBack(s, m);
         });
     }
+    public loadTransactionsAsync(callBack: (success:boolean, errorMsg: string) => void) { return this._loadTransactionsAsync(callBack);}
 
 
 
@@ -132,7 +103,7 @@ export class TransactionStore extends BaseStore {
         // удаляем
         Client.getClient().deleteTransaction(transaction.id, withRecalculateAccounts, function(s,m,d){
             if (!s) { self._onFatalError(m); self.emitChange(); return; }
-            // обновление данных в приложении (просто загружаем заново данные) - эту часть можно не обновляя обновить локально
+            // обновление данных в приложении (просто загружаем заново данные) - эту часть можно обновить локально
             self._loadTransactionsAsync((ss,mm) => { 
                 if (!ss) { self._onFatalError(mm); return;}
                 // закончили
@@ -163,7 +134,7 @@ export class TransactionStore extends BaseStore {
                 self.updateEnd(false);
                 return;
             }
-            // 4. обновление данных в приложении (просто загружаем заново данные) - эту часть можно не обновляя обновить локально
+            // 4. обновление данных в приложении (просто загружаем заново данные) - эту часть можно обновить локально
             self._loadTransactionsAsync((ss,mm) => { 
                 if (!ss) { self._onFatalError(mm); return;}
                 // закончили
@@ -186,22 +157,12 @@ export class TransactionStore extends BaseStore {
      * @param type 
      * @param obj 
      */
-    onDispatch(type: number, obj: any):boolean {
+    onDispatch(type: number, obj: any, callBack?: (success:boolean)=>void):boolean {
         switch(type) {
 
-
-            case ActionTypes.LOAD_INIT_DATA:
-                this._loadInitDataAsync();
-                return true;
-
-            case ActionTypes.ACCOUNTS_LOAD:
-                this._loadAccountsAsync((s,m) => { if (!s) { this._onError(m);} this.emitChange(); });
-                return true;
-
             case ActionTypes.TRANSACTIONS_LOAD:
-                this._loadTransactionsAsync((s,m) => { if (!s) { this._onError(m);} this.emitChange(); });
+                this._loadTransactionsAsync((s,m) => { if (!s) { this._onError(m);} this.emitChange(); if (callBack != null) callBack(s); });
                 return true;
-
 
             case ActionTypes.TRANSACTIONS_EDIT_SHOW:
                 this._onEditTransactionShow(obj);

@@ -3,6 +3,7 @@
 import * as React from "react";
 import View from './../../flux/View';
 import TransactionStore from './../../stores/TransactionStore';
+import AccountStore from './../../stores/AccountStore';
 import {BaseActive, IBaseActiveProps} from './BaseActive';
 
 import Accounts from './../../models/Accounts';
@@ -20,7 +21,7 @@ export interface IAccountActiveStates { accounts: Accounts.AccountEntity[]; }
 export class AccountActive extends BaseActive<IAccountActiveStates> {
 
     constructor(props: any){
-        super(props, [TransactionStore]);
+        super(props, [AccountStore]);
 
     }
 
@@ -29,7 +30,7 @@ export class AccountActive extends BaseActive<IAccountActiveStates> {
     // Интересующие нас состояния (получаем их строго из Сторов)
     protected getState() : IAccountActiveStates {
         return {
-            accounts: TransactionStore.getAccounts()
+            accounts: AccountStore.getAccounts()
         };
     }
 
