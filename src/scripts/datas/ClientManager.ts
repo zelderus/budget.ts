@@ -7,6 +7,8 @@ import ClientLocalStorage from './Clients/ClientLocalStorage';
 import ClientSite from './Clients/ClientSite';
 
 import Authentication from './../models/Authentication';
+import Currencies from './../models/Currencies';
+import Categories from './../models/Categories';
 import Accounts from './../models/Accounts';
 import Transactions from './../models/Transactions';
 
@@ -17,11 +19,15 @@ import Transactions from './../models/Transactions';
 export interface IClient {
     registration(userName: string, userPass: string, callBack: BClient.IClientResponse<Authentication.AuthenticationData>): void;
     authentication(userName: string, userPass: string, callBack: BClient.IClientResponse<Authentication.AuthenticationData>): void;
+    getCurrencies(callBack: BClient.IClientResponse<Currencies.CurrencyEntity[]>): void;
+    editCurrency(currency: Currencies.CurrencyEntity, callBack: BClient.IClientResponse<Currencies.CurrencyFormValidation>): void;
+    getCategories(callBack: BClient.IClientResponse<Categories.CategoryEntity[]>): void;
+    editCategory(category: Categories.CategoryEntity, callBack: BClient.IClientResponse<Categories.CategoryFormValidation>): void;
     getAccounts(callBack: BClient.IClientResponse<Accounts.AccountEntity[]>): void;
     editAccount(account: Accounts.AccountEntity, callBack: BClient.IClientResponse<Accounts.AccountFormValidation>): void;
     getTransactions(filters: Transactions.TransactionFilters, callBack: BClient.IClientResponse<Transactions.TransactionEntity[]>) : void;
-    editTransaction(transaction: Transactions.TransactionEntity, withRecalculateAccounts: boolean, callBack: BClient.IClientResponse<Transactions.TransactionFormValidation>): void;
-    deleteTransaction(transactionId: string, withRecalculateAccounts: boolean, callBack: BClient.IClientResponse<any>) : void;
+    editTransaction(transaction: Transactions.TransactionEntity, withRecalculations: boolean, callBack: BClient.IClientResponse<Transactions.TransactionFormValidation>): void;
+    deleteTransaction(transactionId: string, withRecalculations: boolean, callBack: BClient.IClientResponse<any>) : void;
 }
 
 

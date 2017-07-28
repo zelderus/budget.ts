@@ -133,19 +133,25 @@ export class AppStore extends BaseStore {
     private _loadInitDataAsync() {
         let self = this;
         Actions.loadingStart();
-        // TODO: загрузка валют, категорий
-        // счета
-        Actions.loadAccounts();
-        
-        AccountStore.loadAccountsAsync((s2,m2) => { 
-            if (!s2) { self._onFatalError(m2); return;}
-            // транзакции
-            TransactionStore.loadTransactionsAsync((s3,m3) => { 
-                if (!s3) { self._onFatalError(m3); return;}
-                // оповещаем
-                self.updateEnd(false);
+        // валюта
+        Actions.loadCurrecnies((s1,m1)=>{
+            if (!s1) { self._onFatalError(m1); return;}
+            // категории
+            Actions.loadCategories((s2,m2)=>{
+                if (!s2) { self._onFatalError(m2); return;}
+                // счета
+                Actions.loadAccounts((s3,m3) => { 
+                    if (!s3) { self._onFatalError(m3); return;}
+                    // транзакции
+                    Actions.loadTransactions((s4,m4) => { 
+                        if (!s4) { self._onFatalError(m4); return;}
+                        // оповещаем
+                        self.updateEnd(false);
+                    });
+                });
             });
         });
+        
     }
 
 
@@ -191,7 +197,7 @@ export class AppStore extends BaseStore {
      * @param type 
      * @param obj 
      */
-    onDispatch(type: number, obj: any, callBack?: (success:boolean)=>void):boolean {
+    onDispatch(type: number, obj: any, callBack?: StoreFlux.DispatchCallBack):boolean {
         switch(type) {
 
             case ActionTypes.LOG:

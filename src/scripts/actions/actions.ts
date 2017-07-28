@@ -3,6 +3,7 @@
 import ActionTypes from './ActionTypes';
 import Dispatcher from './../flux/Dispatcher';
 import AppData from './../datas/AppData';
+import StoreFlux from './../flux/store';
 
 import Transactions from './../models/Transactions';
 
@@ -69,12 +70,22 @@ export namespace Actions{
         }
 
 
-        loadAccounts() {
-            Dispatcher.dispatch(ActionTypes.ACCOUNTS_LOAD, null);
+
+
+        loadCurrecnies(callBack?: StoreFlux.DispatchCallBack) {
+            Dispatcher.dispatch(ActionTypes.CURRECIES_LOAD, null, callBack);
         }
 
-        loadTransactions() {
-            Dispatcher.dispatch(ActionTypes.TRANSACTIONS_LOAD, null);
+        loadCategories(callBack?: StoreFlux.DispatchCallBack) {
+            Dispatcher.dispatch(ActionTypes.CATEGORIES_LOAD, null, callBack);
+        }
+
+        loadAccounts(callBack?: StoreFlux.DispatchCallBack) {
+            Dispatcher.dispatch(ActionTypes.ACCOUNTS_LOAD, null, callBack);
+        }
+
+        loadTransactions(callBack?: StoreFlux.DispatchCallBack) {
+            Dispatcher.dispatch(ActionTypes.TRANSACTIONS_LOAD, null, callBack);
         }
 
 

@@ -6,17 +6,17 @@ import BaseStore from './../flux/BaseStore';
 import ActionTypes from './../actions/ActionTypes';
 import Actions from './../actions/Actions';
 
-import Accounts from './../models/Accounts';
+import Categories from './../models/Categories';
 
 import Client from './../datas/ClientManager';
 
 
 /**
- * Хранилище со счетами.
+ * Хранилище категорий.
  */
-export class AccountStore extends BaseStore {
+export class CategoryStore extends BaseStore {
 
-    private __accounts: Accounts.AccountEntity[] = [];
+    private __categories: Categories.CategoryEntity[] = [];
 
 
     constructor() {
@@ -29,7 +29,7 @@ export class AccountStore extends BaseStore {
     // Функции интерфейсы для Вьюшек.
     // Эти данные для их состояний. При изменении которых, Вьюшки обновляются.
     //
-    public getAccounts(): Accounts.AccountEntity[] { return this.__accounts; }
+    public getCategories(): Categories.CategoryEntity[] { return this.__categories; }
 
 
 
@@ -61,10 +61,10 @@ export class AccountStore extends BaseStore {
 
 
 
-    private _loadAccountsAsync(callBack: (success:boolean, errorMsg: string) => void) {
+    private _loadCategoriesAsync(callBack: (success:boolean, errorMsg: string) => void) {
         let self = this;
-        Client.getClient().getAccounts((s, m, d) => { 
-            self.__accounts = d;
+        Client.getClient().getCategories((s, m, d) => { 
+            self.__categories = d;
             callBack(s,m);
         });
     }
@@ -92,8 +92,8 @@ export class AccountStore extends BaseStore {
     onDispatch(type: number, obj: any, callBack?: StoreFlux.DispatchCallBack):boolean {
         switch(type) {
 
-            case ActionTypes.ACCOUNTS_LOAD:
-                this._loadAccountsAsync((s,m) => { 
+            case ActionTypes.CATEGORIES_LOAD:
+                this._loadCategoriesAsync((s,m) => { 
                     if (!s) { this._onError(m);} 
                     this.emitChange(); 
                     if (callBack != null) { callBack(s,m); }
@@ -111,4 +111,4 @@ export class AccountStore extends BaseStore {
     
 }
 
-export default new AccountStore;
+export default new CategoryStore;

@@ -25,7 +25,7 @@ namespace Flux {
          * @param type Тип события
          * @param obj Объект события
          */
-        public dispatch(type: ActionTypes, obj: any, callBack?: (success:boolean, errorMessage:String)=>void){
+        public dispatch(type: ActionTypes, obj: any, callBack?: StoreFlux.DispatchCallBack){
             this._stores.forEach(store => store.onDispatch(type, obj, callBack));
         }
 

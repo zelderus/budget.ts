@@ -8,6 +8,8 @@ import FluxUtils from './../../flux/Utils';
 import Authentication from './../../models/Authentication';
 import Accounts from './../../models/Accounts';
 import Transactions from './../../models/Transactions';
+import Currencies from './../../models/Currencies';
+import Categories from './../../models/Categories';
 
 
 
@@ -63,19 +65,23 @@ namespace Client {
         private _initIdleData(callBack: BClient.IClientResponse<any>): void {
             let self = this;
             let responseModel: any = null;
-            // счета
-            self.getFromJsonModels(Mock.getAccountsJson(), Accounts.AccountEntity, function(c1,m1,d1){
-                // сохраняем
-                d1.forEach(a => {
-                    self.editAccount(a, function(ss,mm,v){ 
-                        if (!ss || v.hasError()) { callBack(ss, mm, responseModel); return; }
+
+            // валюты
+            self.getFromJsonModels(Mock.getCurrenciesJson(), Currencies.CurrencyEntity, function(c1,m1,d1){
+                d1.forEach(a => { self.editCurrency(a, function(ss1,mm1,v1){ if (!ss1 || v1.hasError()) { callBack(ss1, mm1, responseModel); return; }  }); });
+                // категории
+                self.getFromJsonModels(Mock.getCategoriesJson(), Categories.CategoryEntity, function(c2,m2,d2){
+                    d2.forEach(a => { self.editCategory(a, function(ss2,mm2,v2){ if (!ss2 || v2.hasError()) { callBack(ss2, mm2, responseModel); return; }  }); });
+                    // счета
+                    self.getFromJsonModels(Mock.getAccountsJson(), Accounts.AccountEntity, function(c3,m3,d3){
+                        d3.forEach(a => { self.editAccount(a, function(ss3,mm3,v3){ if (!ss3 || v3.hasError()) { callBack(ss3, mm3, responseModel); return; }  }); });
+                        // TODO: другие данные
+
+                        // успешный ответ
+                        callBack(true, "", responseModel);
                     });
+
                 });
-                // TODO: другие данные
-
-
-                // успешный ответ
-                callBack(true, "", responseModel);
             });
         }
 
@@ -116,6 +122,107 @@ namespace Client {
         }
 
 
+
+
+
+
+        /**
+         * Валюты.
+         */
+        getCurrencies(callBack: BClient.IClientResponse<Currencies.CurrencyEntity[]>): void {
+            let self = this;
+            self.getFromJsonModels(self._getDatasResponse("currencies"), Currencies.CurrencyEntity, callBack);
+        }
+
+        /**
+         * Редактирование валюты.
+         */
+        editCurrency(currency: Currencies.CurrencyEntity, callBack: BClient.IClientResponse<Currencies.CurrencyFormValidation>): void {
+            let self = this;
+            // достаем все
+            self.getFromJsonModels(self._getDatasResponse("currencies"), Currencies.CurrencyEntity, function(s,m,d){
+                let data = d;
+                if (data == null || data.length == 0) data = [];
+                // серверная проверка валидации
+                let validation = new Currencies.CurrencyFormValidation(currency);
+                if (validation.hasError()){
+                    callBack(s, m, validation);
+                    return;
+                }
+                // добавляем
+                if (currency.id == null || currency.id === "") {
+                    currency.id = FluxUtils.guidGenerator();
+                    data.push(currency);
+                }
+                // редактируем
+                else {
+                    let exists = data.filter(e => e.id == currency.id)[0];
+                    if (exists != null) exists.fill(currency);
+                    else data.push(currency);
+                }
+                // сохраняем
+                self._setDatas("currencies", data);
+                // оповещаем
+                callBack(s, m, validation);
+            });
+        }
+
+
+
+
+
+
+
+
+
+        /**
+         * Категории.
+         */
+        getCategories(callBack: BClient.IClientResponse<Categories.CategoryEntity[]>): void {
+            let self = this;
+            self.getFromJsonModels(self._getDatasResponse("categories"), Categories.CategoryEntity, callBack);
+        }
+        /**
+         * Редактирование категории.
+         */
+        editCategory(category: Categories.CategoryEntity, callBack: BClient.IClientResponse<Categories.CategoryFormValidation>): void {
+            let self = this;
+            // достаем все
+            self.getFromJsonModels(self._getDatasResponse("categories"), Categories.CategoryEntity, function(s,m,d){
+                let data = d;
+                if (data == null || data.length == 0) data = [];
+                // серверная проверка валидации
+                let validation = new Categories.CategoryFormValidation(category);
+                if (validation.hasError()){
+                    callBack(s, m, validation);
+                    return;
+                }
+                // добавляем
+                if (category.id == null || category.id === "") {
+                    category.id = FluxUtils.guidGenerator();
+                    data.push(category);
+                }
+                // редактируем
+                else {
+                    let exists = data.filter(e => e.id == category.id)[0];
+                    if (exists != null) exists.fill(category);
+                    else data.push(category);
+                }
+                // сохраняем
+                self._setDatas("categories", data);
+                // оповещаем
+                callBack(s, m, validation);
+            });
+        }
+
+
+
+
+
+
+
+
+
         /**
          * Счета.
          */
@@ -133,8 +240,8 @@ namespace Client {
             self.getFromJsonModels(self._getDatasResponse("accounts"), Accounts.AccountEntity, function(s,m,d){
                 let data = d;
                 if (data == null || data.length == 0) data = [];
-                // TODO: серверная проверка валидации
-                let validation = new Accounts.AccountFormValidation(false);
+                // серверная проверка валидации
+                let validation = new Accounts.AccountFormValidation(account);
                 if (validation.hasError()){
                     callBack(s, m, validation);
                     return;
@@ -203,15 +310,15 @@ namespace Client {
         /**
          * Редактирование транзакции.
          */
-        editTransaction(transaction: Transactions.TransactionEntity, withRecalculateAccounts: boolean, callBack: BClient.IClientResponse<Transactions.TransactionFormValidation>): void {
+        editTransaction(transaction: Transactions.TransactionEntity, withRecalculations: boolean, callBack: BClient.IClientResponse<Transactions.TransactionFormValidation>): void {
             let self = this;
             let isNewTransaction = transaction.id == null || transaction.id === "";
             // достаем все
             self.getFromJsonModels(self._getDatasResponse("transactions"), Transactions.TransactionEntity, function(s,m,d){
                 let data = d;
                 if (data == null || data.length == 0) data = [];
-                // TODO: серверная проверка валидации
-                let validation = new Transactions.TransactionFormValidation(false);
+                // серверная проверка валидации
+                let validation = new Transactions.TransactionFormValidation(transaction);
                 if (validation.hasError()){
                     callBack(s, m, validation);
                     return;
@@ -219,7 +326,7 @@ namespace Client {
                 // прошлая запись
                 let exists = isNewTransaction ? null : data.filter(e => e.id == transaction.id)[0];
                 // перерасчет счетов (суммы)
-                if (withRecalculateAccounts) {
+                if (withRecalculations) {
                     self._updateAccountByTransactionEdit(transaction, exists, false);
                 }
                 // добавляем
@@ -243,13 +350,13 @@ namespace Client {
         /**
          * Удаление транзакции.
          */
-        deleteTransaction(transactionId: string, withRecalculateAccounts: boolean, callBack: BClient.IClientResponse<any>) : void {
+        deleteTransaction(transactionId: string, withRecalculations: boolean, callBack: BClient.IClientResponse<any>) : void {
             let self = this;
             // достаем все
             self.getFromJsonModels(self._getDatasResponse("transactions"), Transactions.TransactionEntity, function(s,m,d){
                 let data = d;
                 // перерасчет счетов (суммы)
-                if (withRecalculateAccounts) {
+                if (withRecalculations) {
                     let transaction = data.filter(t => t.id == transactionId)[0];
                     self._updateAccountByTransactionEdit(transaction, null, true);
                 }

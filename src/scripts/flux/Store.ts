@@ -5,6 +5,12 @@ namespace Flux {
 
     export type StoreCallback = () => any;
    
+   /**
+    * Обратный вызов через диспетчера.
+    */
+    export type DispatchCallBack = (success:boolean, errorMessage:string) => void;
+
+
     export interface IStore{
 
 
@@ -26,7 +32,7 @@ namespace Flux {
          * - меняем состояния, модели объектов, обращаемся на сервер и прочее
          * - посылаем событие Change
          */
-        onDispatch(type: number, obj: any, callBack?: (success:boolean, errorMessage:String)=>void):boolean;
+        onDispatch(type: number, obj: any, callBack?: DispatchCallBack):boolean;
     }
 
     

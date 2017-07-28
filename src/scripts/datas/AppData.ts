@@ -15,7 +15,9 @@ import {TransactionEditControls} from "./../components/ControlPanels/Transaction
 // сторы
 import AppStore from './../stores/AppStore';
 import TransactionStore from './../stores/TransactionStore';
-
+import AccountStore from './../stores/AccountStore';
+import CurrencyStore from './../stores/CurrencyStore';
+import CategoryStore from './../stores/CategoryStore';
 
 
 
@@ -30,6 +32,9 @@ namespace AppData {
         ACCOUNTS            = 2,
 
         TRANSACTION_EDIT    = 51
+
+
+        // TODO: edit category, currency
     }
 
 
@@ -68,7 +73,7 @@ namespace AppData {
      * Необходимо для Диспетчера.
      */
     export function getStores(): StoreFlux.IStore[] {
-        return [AppStore, TransactionStore];
+        return [AppStore, CurrencyStore, CategoryStore, AccountStore, TransactionStore];
     }
 
 

@@ -1,16 +1,16 @@
 
-namespace Accounts {
+namespace Currencies {
 
 
 
     /**
-     * Счет.
+     * Валюта.
      */
-    export class AccountEntity implements IClientObjectResponse {
+    export class CurrencyEntity implements IClientObjectResponse {
         id: string;
         title: string;
+        show: string;
         order: number;
-        sum: number;
 
         constructor () {
 
@@ -20,35 +20,35 @@ namespace Accounts {
         fromJson (j: any): void {
             this.id = j.id;
             this.title = j.title;
+            this.show = j.show;
             this.order = j.order;
-            this.sum = j.sum;
         }
 
         toJson(): any {
             let json = {
                 id: this.id,
                 title: this.title,
+                show: this.show,
                 order: this.order,
-                sum: this.sum
             };
             return json;
         }
 
-        private _clonig(toNew: boolean = true, from: AccountEntity = null):AccountEntity  {
-            let objTo = toNew ? new AccountEntity() : this;
+        private _clonig(toNew: boolean = true, from: CurrencyEntity = null):CurrencyEntity  {
+            let objTo = toNew ? new CurrencyEntity() : this;
             let objFrom = from == null ? this : from;
             //objTo = Object.create(objFrom);
 
             objTo.id = objFrom.id;
             objTo.title = objFrom.title;
+            objTo.show = objFrom.show;
             objTo.order = objFrom.order;
-            objTo.sum = objFrom.sum;
             return objTo;
         }
-        clone(): AccountEntity {
+        clone(): CurrencyEntity {
             return this._clonig(true, null);
         }
-        fill(from: AccountEntity): void {
+        fill(from: CurrencyEntity): void {
             this._clonig(false, from);
         }
 
@@ -56,17 +56,15 @@ namespace Accounts {
     }
 
 
-    
-
 
     /**
-     * Валидация формы счета.
+     * Валидация формы валюты.
      */
-    export class AccountFormValidation {
+    export class CurrencyFormValidation {
 
         private _hasError: boolean;        
 
-        constructor(entity: AccountEntity) {
+        constructor(entity: CurrencyEntity) {
             this._hasError = false;
             // TODO:
             
@@ -80,6 +78,9 @@ namespace Accounts {
     }
 
 
+
+
+
 }
 
-export default Accounts;
+export default Currencies;

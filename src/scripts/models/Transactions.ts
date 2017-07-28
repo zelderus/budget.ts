@@ -36,8 +36,10 @@ namespace Transactions {
 
         private _hasError: boolean;        
 
-        constructor(hasError: boolean) {
-            this._hasError = hasError;
+        constructor(entity: TransactionEntity) {
+            this._hasError = false;
+            // TODO:
+            
         }
 
 

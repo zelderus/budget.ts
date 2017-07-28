@@ -70,7 +70,6 @@ export class TransactionStore extends BaseStore {
 
 
 
-
     private _loadTransactionsAsync(callBack: (success:boolean, errorMsg: string) => void) {
         let self = this;
         Client.getClient().getTransactions(self.__transactionFilter, (s, m, d) => {
@@ -78,7 +77,7 @@ export class TransactionStore extends BaseStore {
             callBack(s, m);
         });
     }
-    public loadTransactionsAsync(callBack: (success:boolean, errorMsg: string) => void) { return this._loadTransactionsAsync(callBack);}
+
 
 
 
@@ -157,11 +156,11 @@ export class TransactionStore extends BaseStore {
      * @param type 
      * @param obj 
      */
-    onDispatch(type: number, obj: any, callBack?: (success:boolean)=>void):boolean {
+    onDispatch(type: number, obj: any, callBack?: StoreFlux.DispatchCallBack):boolean {
         switch(type) {
 
             case ActionTypes.TRANSACTIONS_LOAD:
-                this._loadTransactionsAsync((s,m) => { if (!s) { this._onError(m);} this.emitChange(); if (callBack != null) callBack(s); });
+                this._loadTransactionsAsync((s,m) => { if (!s) { this._onError(m);} this.emitChange(); if (callBack != null) callBack(s,m); });
                 return true;
 
             case ActionTypes.TRANSACTIONS_EDIT_SHOW:

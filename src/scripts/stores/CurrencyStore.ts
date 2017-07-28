@@ -6,17 +6,17 @@ import BaseStore from './../flux/BaseStore';
 import ActionTypes from './../actions/ActionTypes';
 import Actions from './../actions/Actions';
 
-import Accounts from './../models/Accounts';
+import Currencies from './../models/Currencies';
 
 import Client from './../datas/ClientManager';
 
 
 /**
- * Хранилище со счетами.
+ * Хранилище валюты.
  */
-export class AccountStore extends BaseStore {
+export class CurrencyStore extends BaseStore {
 
-    private __accounts: Accounts.AccountEntity[] = [];
+    private __currencies: Currencies.CurrencyEntity[] = [];
 
 
     constructor() {
@@ -29,7 +29,7 @@ export class AccountStore extends BaseStore {
     // Функции интерфейсы для Вьюшек.
     // Эти данные для их состояний. При изменении которых, Вьюшки обновляются.
     //
-    public getAccounts(): Accounts.AccountEntity[] { return this.__accounts; }
+    public getCurrecies(): Currencies.CurrencyEntity[] { return this.__currencies; }
 
 
 
@@ -61,10 +61,10 @@ export class AccountStore extends BaseStore {
 
 
 
-    private _loadAccountsAsync(callBack: (success:boolean, errorMsg: string) => void) {
+    private _loadCurreciesAsync(callBack: (success:boolean, errorMsg: string) => void) {
         let self = this;
-        Client.getClient().getAccounts((s, m, d) => { 
-            self.__accounts = d;
+        Client.getClient().getCurrencies((s, m, d) => { 
+            self.__currencies = d;
             callBack(s,m);
         });
     }
@@ -92,8 +92,8 @@ export class AccountStore extends BaseStore {
     onDispatch(type: number, obj: any, callBack?: StoreFlux.DispatchCallBack):boolean {
         switch(type) {
 
-            case ActionTypes.ACCOUNTS_LOAD:
-                this._loadAccountsAsync((s,m) => { 
+            case ActionTypes.CURRECIES_LOAD:
+                this._loadCurreciesAsync((s,m) => { 
                     if (!s) { this._onError(m);} 
                     this.emitChange(); 
                     if (callBack != null) { callBack(s,m); }
@@ -111,4 +111,4 @@ export class AccountStore extends BaseStore {
     
 }
 
-export default new AccountStore;
+export default new CurrencyStore;

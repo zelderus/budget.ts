@@ -6,7 +6,8 @@ import {IClient} from './../ClientManager';
 import Authentication from './../../models/Authentication';
 import Accounts from './../../models/Accounts';
 import Transactions from './../../models/Transactions';
-
+import Currencies from './../../models/Currencies';
+import Categories from './../../models/Categories';
 
 
 namespace Client {
@@ -46,6 +47,33 @@ namespace Client {
         }
 
         
+
+        /**
+         * Валюты.
+         */
+        getCurrencies(callBack: BClient.IClientResponse<Currencies.CurrencyEntity[]>): void {
+            callBack(false, "получение валют не реализованно в этом клиенте", null);
+        }
+        editCurrency(currency: Currencies.CurrencyEntity, callBack: BClient.IClientResponse<Currencies.CurrencyFormValidation>): void {
+            callBack(false, "редактирование валют не реализованно в этом клиенте", null);
+        }
+
+
+
+
+        /**
+         * Категории.
+         */
+        getCategories(callBack: BClient.IClientResponse<Categories.CategoryEntity[]>): void {
+            callBack(false, "получение категорий не реализованно в этом клиенте", null);
+        }
+        editCategory(category: Categories.CategoryEntity, callBack: BClient.IClientResponse<Categories.CategoryFormValidation>): void {
+            callBack(false, "редактирование категорий не реализованно в этом клиенте", null);
+        }
+
+
+
+
         /**
          * Счета.
          */
@@ -63,7 +91,7 @@ namespace Client {
             // TODO: Редактирование счета
 
             // оповещаем
-            let validation = new Accounts.AccountFormValidation(false);
+            let validation = new Accounts.AccountFormValidation(account);
             callBack(false, "редактирование счета не реализованно в этом клиенте", validation);
         }
 
@@ -80,19 +108,19 @@ namespace Client {
         /**
          * Редактирование транзакции.
          */
-        editTransaction(transaction: Transactions.TransactionEntity, withRecalculateAccounts: boolean, callBack: BClient.IClientResponse<Transactions.TransactionFormValidation>): void {
+        editTransaction(transaction: Transactions.TransactionEntity, withRecalculations: boolean, callBack: BClient.IClientResponse<Transactions.TransactionFormValidation>): void {
             let self = this;
             // TODO: Редактирование транзакции
 
             // оповещаем
-            let validation = new Transactions.TransactionFormValidation(false);
+            let validation = new Transactions.TransactionFormValidation(transaction);
             callBack(false, "редактирование транзакции не реализованно в этом клиенте", validation);
         }
 
         /**
          * Удаление транзакции.
          */
-        deleteTransaction(transactionId: string, withRecalculateAccounts: boolean, callBack: BClient.IClientResponse<any>) : void {
+        deleteTransaction(transactionId: string, withRecalculations: boolean, callBack: BClient.IClientResponse<any>) : void {
             let self = this;
             // TODO: Удаление транзакции
 
