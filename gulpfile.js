@@ -14,7 +14,8 @@ var path = {
     lessFiles: [
         //'src/styles/**/*.less',
         'src/styles/main.less',
-        'src/styles/ext.less'
+        'src/styles/actives.less',
+        'src/styles/inputs.less'
     ],
     destCssFile: 'main.css',
     scriptsForWatch: [

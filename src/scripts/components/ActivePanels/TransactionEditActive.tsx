@@ -71,7 +71,14 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
         let currentTransactionId = TransactionStore.getCurrentEditTransactionId();
         let transaction = TransactionStore.getTransactionById(currentTransactionId);
         if (transaction != null) this.__formModel = transaction.clone(); // не трогаем реальные данные, работаем с клоном
-        else this.__formModel = new Transactions.TransactionEntity();
+        else {
+            let accounts = AccountStore.getAccounts();
+            this.__formModel = new Transactions.TransactionEntity();
+            this.__formModel.accountFromId = accounts.length > 0 ? accounts[0].id : null;
+            this.__formModel.accountToId = null;
+            this.__formModel.type = Transactions.TransactionTypes.Spend;
+            this.__formModel.comment = "";
+        }
         return this.__formModel;
     }
 
@@ -105,7 +112,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
 
     private _validateForm(): boolean {
         let hasError = false;
-        let model = this.__formModel;
+        let model = this.state.formModel; //this.__formModel;
         // TODO: 1. check form
         // TODO: 2. if any error - Dispatch about errors - модель валидации в Сторе
 
@@ -120,7 +127,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
     // сохраняем форму
     private _onEditSave(): void {
         this.getActionCreator().log("Сохранение транзакции..");
-        let model = this.__formModel;
+        let model = this.state.formModel; // this.__formModel;
         let recalculateAccounts = this.state.withRecalc;
         // клиентская валидация формы
         if (this._validateForm()) return; // при ошибке, ничего далее не делаем
@@ -131,7 +138,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
     // удаляем транзакцию
     private _onEditDelete(): void {
         this.getActionCreator().log("Удаление транзакции..");
-        let model = this.__formModel;
+        let model = this.state.formModel; //this.__formModel;
         let recalculateAccounts = this.state.withRecalc;
         this.getActionCreator().editTransactionDelete(model, recalculateAccounts);
     }
@@ -163,30 +170,68 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
         this.__formModel.accountToId = val;
         this._checkAndUpdateState();
     }
-
+    private _onFormChangeType(transType: Transactions.TransactionTypes): void {
+        this.__formModel.type = transType;
+        this._checkAndUpdateState();
+    }
 
 
     ///
     /// Render
     ///
 
-    renderSelectAccountsFrom() {
+    renderType(isEdit: boolean) {
+        if (isEdit) {
+            let btnStyles = "TransactionType ";
+            let btnTitle = "Расход";
+            switch(this.state.formModel.type){
+                case Transactions.TransactionTypes.Spend: btnTitle = "Расход"; btnStyles += "Spend"; break;
+                case Transactions.TransactionTypes.Profit: btnTitle = "Доход"; btnStyles += "Profit"; break;
+                case Transactions.TransactionTypes.Transfer: btnTitle = "Перевод"; btnStyles += "Transfer"; break;
+            }
+            return <div className={btnStyles}>{btnTitle}</div>
+        }
+        return <div>
+            <div className={"TransactionTypeBtn Spend " + (this.state.formModel.type == Transactions.TransactionTypes.Spend ? "Active" : "")} onClick={e => this._onFormChangeType(Transactions.TransactionTypes.Spend)}>Расход</div>
+            <div className={"TransactionTypeBtn Profit " + (this.state.formModel.type == Transactions.TransactionTypes.Profit ? "Active" : "")} onClick={e => this._onFormChangeType(Transactions.TransactionTypes.Profit)}>Доход</div>
+            <div className={"TransactionTypeBtn Transfer " + (this.state.formModel.type == Transactions.TransactionTypes.Transfer ? "Active" : "")} onClick={e => this._onFormChangeType(Transactions.TransactionTypes.Transfer)}>Перевод</div>
+        </div>
+    }
+
+    renderSelectAccountsFrom(isEdit: boolean) {
+        if (isEdit) {
+            let currentAccountFrom = this.state.accounts.filter(f => f.id == this.state.formModel.accountFromId)[0];
+            let title = currentAccountFrom != null ? currentAccountFrom.title : "- несуществующий счет -";
+            return <div>
+                {title}
+            </div>
+        }
         return <Select 
             name="accountFrom" 
             currentKey={this.state.formModel.accountFromId}
             list={this.state.accounts.filter(f => f.id != this.state.formModel.accountToId)}
             objKey="id"
             objText="title"
-            default={ {key:"", text:"- без счета -"} }
+            //default={ {key:"", text:"- без счета -"} }
             onChange={ e=> this._onFormChangeAccountFrom(e) }
-            emptyText="нет других счетов"
+            emptyText="нет счетов"
         />
     }
-    renderSelectAccountsTo() {
+    renderSelectAccountsTo(isEdit: boolean) {
+        if (this.state.formModel.type != Transactions.TransactionTypes.Transfer) return null;
+        if (isEdit) {
+            let currentAccountTo = this.state.accounts.filter(f => f.id == this.state.formModel.accountToId)[0];
+            let title = currentAccountTo != null ? currentAccountTo.title : "- несуществующий счет -";
+            return <div>
+                {title}
+            </div>
+        }
+        let accountsToList = this.state.accounts.filter(f => f.id != this.state.formModel.accountFromId);
+        if (accountsToList.length <= 1) accountsToList = []; // если только один счет в наличии, то значит с него пытаемся перевести (на самого себя не можем, удаляем его из списка)
         return <Select 
             name="accountFrom" 
             currentKey={this.state.formModel.accountToId}
-            list={this.state.accounts.filter(f => f.id != this.state.formModel.accountFromId)}
+            list={accountsToList}
             objKey="id"
             objText="title"
             onChange={ e=> this._onFormChangeAccountTo(e) }
@@ -196,30 +241,35 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
 
 
 	render() {
+        //- редактирование или создание нового
+        let isEdit = this.state.editId != null;
+
+
         // TODO: на основе модели валидации из Стора (state), подсвечиваем ошибки
 
         // TODO: учесть тип выбранной транзакции (если не перевод, скрыть счет зачисления..)
 
-		return <div className="TransactionActive">
-            <div className="TransactionEditWnd">
-                <div>
-                    <span>перерасчитать счета:</span>
-                    <input name="recalc" type="checkbox" value="Recalc" checked={this.state.withRecalc} onChange={e => this._onFormChangeRecalc(e)} />
-                </div>
-                <div>
-                    <span>счет списания:</span>
-                    {this.renderSelectAccountsFrom()}
-                </div>
-                <div>
-                    <span>счет зачисления:</span>
-                    {this.renderSelectAccountsTo()}
-                </div>
-                <div>
-                    <span>сумма:</span>
-                    <input name="cost" value={this.state.formModel.cost} onChange={e => this._onFormChangeCost(e)} />
-                </div>
+		return <div className="TransactionEditActive">
+            <div>
+                {this.renderType(isEdit)}
             </div>
-        </div>;
+            <div>
+                <span>перерасчитать счета:</span>
+                <input name="recalc" type="checkbox" value="Recalc" checked={this.state.withRecalc} onChange={e => this._onFormChangeRecalc(e)} />
+            </div>
+            <div>
+                <span>счет списания:</span>
+                {this.renderSelectAccountsFrom(isEdit)}
+            </div>
+            <div>
+                <span>счет зачисления:</span>
+                {this.renderSelectAccountsTo(isEdit)}
+            </div>
+            <div>
+                <span>сумма:</span>
+                <input name="cost" value={this.state.formModel.cost} onChange={e => this._onFormChangeCost(e)} />
+            </div>
+        </div>
 	}
 
 

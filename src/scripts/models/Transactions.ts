@@ -68,6 +68,7 @@ namespace Transactions {
             this.id = "";
             this.date = new Date();
             this.type = Transactions.TransactionTypes.Spend;
+            this.accountFromId = null;
         }
 
         fromJson (j: any): void {

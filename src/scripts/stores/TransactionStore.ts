@@ -20,13 +20,13 @@ export class TransactionStore extends BaseStore {
     private __transactions: Transactions.TransactionEntity[] = [];
     private __transactionFilter: Transactions.TransactionFilters;
 
-    private __currentEditTransactionId: string;
+    private __currentEditTransactionId: string = null;
 
 
     constructor() {
         super();
 
-        this.__currentEditTransactionId = "";
+        this.__currentEditTransactionId = null;
         this.__transactionFilter = new Transactions.TransactionFilters();
 
     }
@@ -91,7 +91,7 @@ export class TransactionStore extends BaseStore {
 
     private _onEditTransactionShow(obj: any): void {
         let isEdit = (obj !== undefined && obj != null);
-        let transactionId: string = isEdit ? <string>obj : "";
+        let transactionId: string = isEdit ? <string>obj : null;
         this.__currentEditTransactionId = transactionId;
     }
     private _onEditTransactionDelete(obj: any): void {

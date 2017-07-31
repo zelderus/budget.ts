@@ -120,103 +120,19 @@
 
 /*************************************************
 *
-* основная часть приложения (центральная часть)
+* основная часть приложения (центральная часть, которая содержит Активные панели)
 *
 **************************************************/
 .ActionPanel { .actionPanelSize; clear: both; overflow: hidden; }
 
 
-//
-// Расходы/доходы активная панель
-//
-.TransactionActive {
-    overflow: hidden;
-
-    // список с платежками
-    .LinesPlace {
-        .sizeForActivePanel;
-        .list-vert;
-
-        .TransactionLine { 
-            display: block; margin: 0px; padding: 12px; border: 1px solid transparent; border-bottom: 1px solid #ccc; color: #333; background-color: #FFF; clear: both; overflow: hidden;
-
-            .Date { color:#888; display: block; float: left; margin: 0 0 0 5px; font-size: 0.8em;}
-            .Time { color:#888; font-style: italic; display: block; float: left; margin: 0 0 0 5px; font-size: 0.75em;}
-            .Title { font-weight: bold; color:#000; display: block; float: left; margin: 0 0 0 5px;}
-            .Cost { 
-                .Value { .roundBorder4; padding: 2px 4px; margin: 0 0 0 10px; }
-                .Currency {margin: 0 0 0 2px;}
-            }
-            .Cost.Profit { 
-                .Value { border: 1px solid #468847; background-color: #468847; color:#FFF; }
-                .Currency {color:#468847;}
-            }
-            .Cost.Spend { 
-                .Value { border: 1px solid #953B39; background-color: #953B39; color:#FFF; }
-                .Currency {color:#953B39;}
-            }
-            .Cost.Transfer { 
-                .Value { border: 1px solid #326D83; background-color: #326D83; color:#FFF; }
-                .Currency {color:#326D83;}
-            }   
-
-            .Button { display: none; float: right; background-color: #aaa; border: 1px solid #666; padding: 2px 6px; margin: 0; max-height: 10px; font-size: 10px;  cursor: pointer;}
-            .Button:hover {background-color: #777;}
-        }
-        .TransactionLine:hover {
-            background-color: #f6f6f6;
-
-            .Button { display: block; }
-        }
-    }
-
-    // окно редактирования транзакции
-    .TransactionEditWnd {
-        display: block;
-
-        .Button { display: block; float: right; background-color: #aaa; border: 1px solid #666; padding: 2px 6px; margin: 0; max-height: 10px; font-size: 10px;  cursor: pointer;}
-        .Button:hover {background-color: #777;}
-    }
-}
 
 
-//
-// Счета
-//
-.AccountActive {
-    overflow: hidden;
-
-    // список со счетами
-    .LinesPlace {
-        .sizeForActivePanel;
-        .list-vert;
-        
-        .AccountLine { 
-            display: block; margin: 0px; padding: 12px; border: 1px solid transparent; border-bottom: 1px solid #ccc; color: #333; background-color: #FFF; clear: both; overflow: hidden;
-
-            .Sum { 
-                .Value { .roundBorder4; padding: 2px 4px; margin: 0 0 0 10px; }
-                .Currency {margin: 0 0 0 2px;}
-            }
-            .Sum.Profit { 
-                .Value { border: 1px solid #468847; background-color: #468847; color:#FFF; }
-                .Currency {color:#468847;}
-            }
-            .Sum.Debt { 
-                .Value { border: 1px solid #953B39; background-color: #953B39; color:#FFF; }
-                .Currency {color:#953B39;}
-            }
-            .Sum.Zero { 
-                .Value { border: 1px solid #326D83; background-color: #326D83; color:#FFF; }
-                .Currency {color:#326D83;}
-            }   
-        }
-        .AccountLine:hover {
-            background-color: #f6f6f6;
-        }
-    }
-}
-
+/*************************************************
+*
+* активные панели (в файле actives.less)
+*
+**************************************************/
 
 
 
