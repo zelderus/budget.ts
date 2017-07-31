@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import View from './../../flux/View';
+import Maths from './../../utils/Maths';
 //import AppStore from './../../stores/AppStore';
 
 import Transactions from './../../models/Transactions';
@@ -30,7 +31,7 @@ export class TransactionLine extends View<ITransactionLineProps, ITransactionLin
     }
 
     private numberFormat(num: number, slices: number): string {
-        return ("0" + num).slice(-slices);
+        return Maths.numberFormat(num, slices);
     }
     private numTo2Zero(num: number): string {
         return this.numberFormat(num, 2);
@@ -64,7 +65,7 @@ export class TransactionLine extends View<ITransactionLineProps, ITransactionLin
         }
 
         // TODO: тянем связанные данные
-        let currency = "rub";
+        let currency = "todo";
 
 
 		return <div className="TransactionLine">

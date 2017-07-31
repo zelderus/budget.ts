@@ -4,10 +4,16 @@ import * as React from "react";
 import View from './../../flux/View';
 import TransactionStore from './../../stores/TransactionStore';
 import AccountStore from './../../stores/AccountStore';
+import CurrencyStore from './../../stores/CurrencyStore';
+import CategoryStore from './../../stores/CategoryStore';
+
 import {BaseActive, IBaseActiveProps} from './BaseActive';
+import Maths from './../../utils/Maths';
 
 import Accounts from './../../models/Accounts';
 import Transactions from './../../models/Transactions';
+import Currencies from './../../models/Currencies';
+import Categories from './../../models/Categories';
 import TransactionLine from './../Partials/TransactionLine';
 
 import Select from './../Partials/Controls/Select';
@@ -18,6 +24,8 @@ export interface ITransactionEditActiveStates {
     editId: string; 
     formModel: Transactions.TransactionEntity;
     accounts: Accounts.AccountEntity[];
+    currencies: Currencies.CurrencyEntity[];
+    categories: Categories.CategoryEntity[];
     withRecalc: boolean;
 }
 
@@ -42,7 +50,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
     //__withRecalc: boolean;
 
     constructor(props: any){
-        super(props, [TransactionStore, AccountStore]);
+        super(props, [TransactionStore, AccountStore, CurrencyStore, CategoryStore]);
 
     }
 
@@ -55,6 +63,8 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
             editId: TransactionStore.getCurrentEditTransactionId(),
             formModel: this._getCurrentFormModel(),
             accounts: AccountStore.getAccounts(),
+            currencies: CurrencyStore.getCurrecies(),
+            categories: CategoryStore.getCategories(),
             withRecalc: true
         };
     }
@@ -70,7 +80,10 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
     private _getCurrentFormModel(): any {
         let currentTransactionId = TransactionStore.getCurrentEditTransactionId();
         let transaction = TransactionStore.getTransactionById(currentTransactionId);
-        if (transaction != null) this.__formModel = transaction.clone(); // не трогаем реальные данные, работаем с клоном
+        if (transaction != null) {
+            this.__formModel = transaction.clone(); // не трогаем реальные данные, работаем с клоном
+            this.__formModel.costStr = this.__formModel.cost.toString();
+        }
         else {
             let accounts = AccountStore.getAccounts();
 
@@ -79,6 +92,8 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
             this.__formModel.accountToId = null;
             this.__formModel.type = Transactions.TransactionTypes.Spend;
             this.__formModel.comment = "";
+            this.__formModel.costStr = "";
+            this.__formModel.cost = 0;
         }
         return this.__formModel;
     }
@@ -144,7 +159,13 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
         this.getActionCreator().editTransactionDelete(model, recalculateAccounts);
     }
 
-    
+
+    //
+    // Helpers
+    //
+
+
+
 
 
 
@@ -153,8 +174,6 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
     ///
 
     private _onFormChangeRecalc(e: any): void {
-        //this.__withRecalc = !this.__withRecalc;
-        //this.setState({withRecalc: this.__withRecalc});
         this.setState({withRecalc: !this.state.withRecalc});
     }
 
@@ -170,7 +189,8 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
         this._checkAndUpdateState();
     }
     private _onFormChangeCost(e: any): void {
-        this.__formModel.cost = e.target.value;
+        this.__formModel.costStr = e.target.value;
+        this.__formModel.cost = Maths.calculateSum(e.target.value);
         this._checkAndUpdateState();
     }
 
@@ -226,7 +246,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
             emptyText="нет счетов"
         />
     }
-    renderSelectAccountsTo(isEdit: boolean) {
+    renderSelectAccountsTo(isEdit: boolean, accountFrom: Accounts.AccountEntity) {
         if (this.state.formModel.type != Transactions.TransactionTypes.Transfer) return <div>-</div>;
         if (isEdit) {
             let currentAccountTo = this.state.accounts.filter(f => f.id == this.state.formModel.accountToId)[0];
@@ -236,6 +256,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
             </div>
         }
         let accountsToList = this.state.accounts.filter(f => f.id != this.state.formModel.accountFromId);
+        if (accountFrom != null) accountsToList = accountsToList.filter(f => f.currencyId == accountFrom.currencyId); // берем счета, только с той же валютой
         return <Select 
             name="accountTo" 
             currentKey={this.state.formModel.accountToId}
@@ -243,15 +264,21 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
             objKey="id"
             objText="title"
             onChange={ e=> this._onFormChangeAccountTo(e) }
-            emptyText="нет других счетов"
+            emptyText="нет других счетов с такой валютой"
         />
     }
+
+
+
+
+
 
 
 	render() {
         //- редактирование или создание нового
         let isEdit = this.state.editId != null;
-
+        let accountFrom = this.state.accounts.filter(f => f.id == this.state.formModel.accountFromId)[0];
+        let currencyName = CurrencyStore.getCurrencyShowNameByAccount(accountFrom);
 
         // TODO: на основе модели валидации из Стора (state), подсвечиваем ошибки
 
@@ -271,11 +298,12 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
             </div>
             <div>
                 <span>счет зачисления:</span>
-                {this.renderSelectAccountsTo(isEdit)}
+                {this.renderSelectAccountsTo(isEdit, accountFrom)}
             </div>
             <div>
                 <span>сумма:</span>
-                <input name="cost" value={this.state.formModel.cost} onChange={e => this._onFormChangeCost(e)} />
+                <input name="costStr" value={this.state.formModel.costStr} onChange={e => this._onFormChangeCost(e)} />
+                <div>= {this.state.formModel.cost} {currencyName}</div>
             </div>
         </div>
 	}

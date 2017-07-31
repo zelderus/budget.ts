@@ -11,6 +11,7 @@ namespace Accounts {
         title: string;
         order: number;
         sum: number;
+        currencyId: string;
 
         constructor () {
 
@@ -22,6 +23,7 @@ namespace Accounts {
             this.title = j.title;
             this.order = j.order;
             this.sum = j.sum;
+            this.currencyId = j.currencyId;
         }
 
         toJson(): any {
@@ -29,7 +31,8 @@ namespace Accounts {
                 id: this.id,
                 title: this.title,
                 order: this.order,
-                sum: this.sum
+                sum: this.sum,
+                currencyId: this.currencyId
             };
             return json;
         }
@@ -43,6 +46,7 @@ namespace Accounts {
             objTo.title = objFrom.title;
             objTo.order = objFrom.order;
             objTo.sum = objFrom.sum;
+            objTo.currencyId = objFrom.currencyId;
             return objTo;
         }
         clone(): AccountEntity {

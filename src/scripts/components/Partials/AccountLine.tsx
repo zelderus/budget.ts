@@ -49,7 +49,7 @@ export class AccountLine extends View<IAccountLineProps, IAccountLineStates> {
 
 
         // TODO: тянем связанные данные
-        let currency = "rub";
+        let currency = "todo";
 
 		return <div className="AccountLine">
             {this.props.account.title}

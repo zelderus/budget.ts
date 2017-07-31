@@ -6,6 +6,7 @@ import BaseStore from './../flux/BaseStore';
 import ActionTypes from './../actions/ActionTypes';
 import Actions from './../actions/Actions';
 
+import Accounts from './../models/Accounts';
 import Currencies from './../models/Currencies';
 
 import Client from './../datas/ClientManager';
@@ -30,6 +31,16 @@ export class CurrencyStore extends BaseStore {
     // Эти данные для их состояний. При изменении которых, Вьюшки обновляются.
     //
     public getCurrecies(): Currencies.CurrencyEntity[] { return this.__currencies; }
+
+    public getCurrencyShowNameByAccount(account: Accounts.AccountEntity): string {
+        let notCurrencyShow = "-";
+        if (account == null || account.currencyId == null) return notCurrencyShow;
+        let currency = this.__currencies.filter(f => f.id == account.currencyId)[0];
+        return currency == null ? notCurrencyShow : currency.show;
+    }
+
+
+
 
 
 

@@ -59,6 +59,7 @@ namespace Transactions {
         date: Date;
         type: TransactionTypes;
         cost: number;
+        costStr: string;
         accountFromId: string;
         accountToId?: string;
         comment: string;
@@ -67,6 +68,7 @@ namespace Transactions {
         constructor() {
             this.id = "";
             this.date = new Date();
+            this.costStr = "";
             this.type = Transactions.TransactionTypes.Spend;
             this.accountFromId = null;
         }
