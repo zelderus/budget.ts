@@ -284,7 +284,7 @@ namespace Client {
                 // 2. account to
                 let accountTo = accounts.filter(f => f.id == transaction.accountToId)[0];
                 if (accountTo != null) {
-                    accountTo.sum -= cost; // сюда был перевод, значит только вычитаем
+                    accountTo.sum += cost * (isDelete?-1:1); // сюда был перевод
                 }
                 // 3. save accounts
                 self._setDatas("accounts", accounts);
@@ -313,6 +313,10 @@ namespace Client {
         editTransaction(transaction: Transactions.TransactionEntity, withRecalculations: boolean, callBack: BClient.IClientResponse<Transactions.TransactionFormValidation>): void {
             let self = this;
             let isNewTransaction = transaction.id == null || transaction.id === "";
+            // небольшие правки
+            if (transaction.type != Transactions.TransactionTypes.Transfer) {
+                transaction.accountToId = null;
+            }
             // достаем все
             self.getFromJsonModels(self._getDatasResponse("transactions"), Transactions.TransactionEntity, function(s,m,d){
                 let data = d;

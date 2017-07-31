@@ -73,6 +73,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
         if (transaction != null) this.__formModel = transaction.clone(); // не трогаем реальные данные, работаем с клоном
         else {
             let accounts = AccountStore.getAccounts();
+
             this.__formModel = new Transactions.TransactionEntity();
             this.__formModel.accountFromId = accounts.length > 0 ? accounts[0].id : null;
             this.__formModel.accountToId = null;
@@ -157,6 +158,17 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
         this.setState({withRecalc: !this.state.withRecalc});
     }
 
+    private _onFormChangeType(transType: Transactions.TransactionTypes): void {
+        this.__formModel.type = transType;
+        if (transType == Transactions.TransactionTypes.Transfer){ // при выборе Перевод, ставим счет начисления первый попавшийся, но не счет с которого перевод
+            let accountNotFrom = this.state.accounts.filter(f => f.id != this.state.formModel.accountFromId)[0];
+            this.__formModel.accountToId = accountNotFrom != null ? accountNotFrom.id : null;
+        }
+        else {
+            this.__formModel.accountToId = null;
+        }
+        this._checkAndUpdateState();
+    }
     private _onFormChangeCost(e: any): void {
         this.__formModel.cost = e.target.value;
         this._checkAndUpdateState();
@@ -170,10 +182,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
         this.__formModel.accountToId = val;
         this._checkAndUpdateState();
     }
-    private _onFormChangeType(transType: Transactions.TransactionTypes): void {
-        this.__formModel.type = transType;
-        this._checkAndUpdateState();
-    }
+    
 
 
     ///
@@ -209,7 +218,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
         return <Select 
             name="accountFrom" 
             currentKey={this.state.formModel.accountFromId}
-            list={this.state.accounts.filter(f => f.id != this.state.formModel.accountToId)}
+            list={this.state.accounts}
             objKey="id"
             objText="title"
             //default={ {key:"", text:"- без счета -"} }
@@ -227,9 +236,8 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
             </div>
         }
         let accountsToList = this.state.accounts.filter(f => f.id != this.state.formModel.accountFromId);
-        if (accountsToList.length <= 1) accountsToList = []; // если только один счет в наличии, то значит с него пытаемся перевести (на самого себя не можем, удаляем его из списка)
         return <Select 
-            name="accountFrom" 
+            name="accountTo" 
             currentKey={this.state.formModel.accountToId}
             list={accountsToList}
             objKey="id"
