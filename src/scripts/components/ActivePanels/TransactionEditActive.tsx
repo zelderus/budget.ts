@@ -192,9 +192,9 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
             return <div className={btnStyles}>{btnTitle}</div>
         }
         return <div>
-            <div className={"TransactionTypeBtn Spend " + (this.state.formModel.type == Transactions.TransactionTypes.Spend ? "Active" : "")} onClick={e => this._onFormChangeType(Transactions.TransactionTypes.Spend)}>Расход</div>
-            <div className={"TransactionTypeBtn Profit " + (this.state.formModel.type == Transactions.TransactionTypes.Profit ? "Active" : "")} onClick={e => this._onFormChangeType(Transactions.TransactionTypes.Profit)}>Доход</div>
-            <div className={"TransactionTypeBtn Transfer " + (this.state.formModel.type == Transactions.TransactionTypes.Transfer ? "Active" : "")} onClick={e => this._onFormChangeType(Transactions.TransactionTypes.Transfer)}>Перевод</div>
+            <div className={"TransactionTypeBtn Spend " + (this.state.formModel.type == Transactions.TransactionTypes.Spend ? "" : "NotActive")} onClick={e => this._onFormChangeType(Transactions.TransactionTypes.Spend)}>Расход</div>
+            <div className={"TransactionTypeBtn Profit " + (this.state.formModel.type == Transactions.TransactionTypes.Profit ? "" : "NotActive")} onClick={e => this._onFormChangeType(Transactions.TransactionTypes.Profit)}>Доход</div>
+            <div className={"TransactionTypeBtn Transfer " + (this.state.formModel.type == Transactions.TransactionTypes.Transfer ? "" : "NotActive")} onClick={e => this._onFormChangeType(Transactions.TransactionTypes.Transfer)}>Перевод</div>
         </div>
     }
 
@@ -218,7 +218,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
         />
     }
     renderSelectAccountsTo(isEdit: boolean) {
-        if (this.state.formModel.type != Transactions.TransactionTypes.Transfer) return null;
+        if (this.state.formModel.type != Transactions.TransactionTypes.Transfer) return <div>-</div>;
         if (isEdit) {
             let currentAccountTo = this.state.accounts.filter(f => f.id == this.state.formModel.accountToId)[0];
             let title = currentAccountTo != null ? currentAccountTo.title : "- несуществующий счет -";
