@@ -91,7 +91,8 @@ namespace Client {
             // TODO: Редактирование счета
 
             // оповещаем
-            let validation = new Accounts.AccountFormValidation(account);
+            let validation = new Accounts.AccountFormValidation();
+            validation.validate(account);
             callBack(false, "редактирование счета не реализованно в этом клиенте", validation);
         }
         /**
@@ -121,7 +122,8 @@ namespace Client {
             // TODO: Редактирование транзакции
 
             // оповещаем
-            let validation = new Transactions.TransactionFormValidation(transaction);
+            let validation = new Transactions.TransactionFormValidation();
+            validation.validate(transaction);
             callBack(false, "редактирование транзакции не реализованно в этом клиенте", validation);
         }
 

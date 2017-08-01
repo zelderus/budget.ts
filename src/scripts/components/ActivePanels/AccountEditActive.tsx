@@ -24,6 +24,7 @@ export interface IAccountEditActiveStates {
     editId: string; 
     formModel: Accounts.AccountEntity;
     currencies: Currencies.CurrencyEntity[];
+    validator: Accounts.AccountFormValidation;
 }
 
 
@@ -59,7 +60,8 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
         return {
             editId: AccountStore.getCurrentEditAccountId(),
             formModel: this._getCurrentFormModel(),
-            currencies: CurrencyStore.getCurrecies()
+            currencies: CurrencyStore.getCurrecies(),
+            validator: AccountStore.getFormValidator()
         };
     }
 
@@ -78,9 +80,14 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
             this.__formModel = account.clone(); // не трогаем реальные данные, работаем с клоном
         }
         else {
+            let currencies = CurrencyStore.getCurrecies();
 
             this.__formModel = new Accounts.AccountEntity();
             this.__formModel.sum = 0;
+            this.__formModel.currencyId = currencies.length > 0 ? currencies[0].id : null;
+            this.__formModel.isCredit = false;
+            this.__formModel.creditLimit = 0;
+            this.__formModel.order = AccountStore.getNextAccountOrder();
         }
         return this.__formModel;
     }
@@ -116,13 +123,15 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
     private _validateForm(): boolean {
         let hasError = false;
         let model = this.state.formModel; //this.__formModel;
-        // TODO: 1. check form
-        // TODO: 2. if any error - Dispatch about errors - модель валидации в Сторе
-
+        // проверка валидатором (вариант обновления модели сразу в Сторе, без посылки сообщения через Action)
+        this.state.validator.validate(model);
+        hasError = this.state.validator.hasError();
+        // отправляем сообщение Диспетчеру (НЕ ИСПОЛЬЗУЕТСЯ, обновили модель валидации напрямую)
+        //this.getActionCreator().editAccountValidate(validator);
         return hasError;
     }
     private _checkAndUpdateState(): void {
-        this._validateForm();
+        this._validateForm(); // ?+ а надо ли на каждом чихе проверять форму???
         this.setState({formModel: this.__formModel});
     }
 
@@ -158,6 +167,30 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
     /// User interactions
     ///
 
+    private _onFormChangeCurrency(val: string): void {
+        this.__formModel.currencyId = val;
+        this._checkAndUpdateState();
+    }
+
+    private _onFormChangeTitle(e: any): void {
+        this.__formModel.title = e.target.value;
+        this._checkAndUpdateState();
+    }
+
+    private _onFormChangeSumm(e: any): void {
+        this.__formModel.sum = Maths.calculateSum(e.target.value);
+        this._checkAndUpdateState();
+    }
+
+    private _onFormChangeLimit(e: any): void {
+        this.__formModel.creditLimit = Maths.calculateSum(e.target.value);
+        this._checkAndUpdateState();
+    }
+
+    private _onFormChangeIsCredit(e: any): void {
+        this.__formModel.isCredit = !this.__formModel.isCredit;
+        this._checkAndUpdateState();
+    }
  
 
 
@@ -166,21 +199,75 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
     /// Render
     ///
 
+    renderTitle() {
+        let error = this.state.validator.getError(Accounts.AccountFormValidationKeys.Title);
+        let errorRender = error==null ? null : <span>({error.message})</span>
+
+        return <div>название {errorRender}
+            <input name="title" value={this.state.formModel.title} onChange={e => this._onFormChangeTitle(e)} />
+        </div>
+    }
+
+    renderSelectCurrencies(isEdit: boolean) {
+        if (isEdit) {
+            let currency = this.state.currencies.filter(f => f.id == this.state.formModel.currencyId)[0];
+            let title = currency != null ? currency.title : "- несуществующая валюта -";
+            return <span>
+                {title}
+            </span>
+        }
+        let error = this.state.validator.getError(Accounts.AccountFormValidationKeys.Currency);
+        // TODO: подсветка ошибки в Select
+        return <Select 
+            name="currency" 
+            currentKey={this.state.formModel.currencyId}
+            list={this.state.currencies}
+            objKey="id"
+            objText="title"
+            //default={ {key:"", text:"- без счета -"} }
+            onChange={ e=> this._onFormChangeCurrency(e) }
+            emptyText="нет валют"
+        />
+    }
+
+
+    renderCreditLimit(currencyName: string) {
+        if (!this.state.formModel.isCredit) return null;
+        return <div>лимит кредитки
+            <input name="debt" value={this.state.formModel.creditLimit} onChange={e => this._onFormChangeLimit(e)} />
+            <span>{currencyName}</span>
+        </div>
+    }
+
+
+
+
 
 
 
 	render() {
         //- редактирование или создание нового
         let isEdit = this.state.editId != null;
-        //let currencyName = CurrencyStore.getCurrencyShowNameByAccount(accountFrom);
+        let currencyName = CurrencyStore.getCurrencyShowNameByAccount(this.state.formModel);
 
         // TODO: на основе модели валидации из Стора (state), подсвечиваем ошибки
 
 
 		return <div className="AccountEditActive">
-            <div>
-                account edit...
+            <div>icon</div>
+            {this.renderTitle()}
+            <div>валюта
+                {this.renderSelectCurrencies(isEdit)}
+                <div>переход редактирование валют</div>
             </div>
+            <div>кредитная карта
+                <input name="iscredit" type="checkbox" checked={this.state.formModel.isCredit} onChange={e => this._onFormChangeIsCredit(e)} />
+            </div>
+            <div>начальная сумма
+                <input name="summ" value={this.state.formModel.sum} onChange={e => this._onFormChangeSumm(e)} />
+                <span>{currencyName}</span>
+            </div>
+            {this.renderCreditLimit(currencyName)}
         </div>
 	}
 

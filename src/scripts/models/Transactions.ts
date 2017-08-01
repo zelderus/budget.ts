@@ -1,4 +1,6 @@
 
+import FormValidator from './FormValidator';
+
 
 namespace Transactions {
 
@@ -27,29 +29,7 @@ namespace Transactions {
         Transfer    = 3     // перевод на другой счет
     }
 
-
-
-    /**
-     * Валидация формы транзакции.
-     */
-    export class TransactionFormValidation {
-
-        private _hasError: boolean;        
-
-        constructor(entity: TransactionEntity) {
-            this._hasError = false;
-            // TODO:
-            
-        }
-
-
-        public hasError(): boolean {
-            return this._hasError;
-        }
-
-    }
-
-
+    
 
     /**
      * Сущность транзакции.
@@ -116,6 +96,34 @@ namespace Transactions {
         }
         fill(from: TransactionEntity): void {
             this._clonig(false, from);
+        }
+
+    }
+
+
+
+    /**
+     * Ключи ошибок валидации.
+     */
+    export enum TransactionFormValidationKeys {
+        Cost        = 1
+        
+    }
+
+    /**
+     * Валидация формы транзакции.
+     */
+    export class TransactionFormValidation extends FormValidator.Validator<TransactionEntity> {
+        constructor() {
+            super();
+        }
+        public validate(entity: TransactionEntity): void {
+            this.clearErrors();
+
+            // TODO: валидация транзакции
+            this.errNumberIsNullOrZero(entity.cost, TransactionFormValidationKeys.Cost, "укажите сумму");
+            
+
         }
 
     }

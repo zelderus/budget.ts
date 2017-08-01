@@ -18,11 +18,13 @@ export class AccountStore extends BaseStore {
 
     private __accounts: Accounts.AccountEntity[] = [];
     private __currentEditId: string = null;
+    private __formValidator: Accounts.AccountFormValidation;
 
     constructor() {
         super();
 
         this.__currentEditId = null;
+        this.__formValidator = new Accounts.AccountFormValidation();
     }
 
 
@@ -33,7 +35,8 @@ export class AccountStore extends BaseStore {
     public getAccounts(): Accounts.AccountEntity[] { return this.__accounts; }
     public getAccountById(id: string): Accounts.AccountEntity { if (id === undefined || id == null || id === "") return null; return this.__accounts.filter(f => f.id == id)[0]; }
     public getCurrentEditAccountId(): string { return this.__currentEditId; }
-
+    public getNextAccountOrder(): number { if (this.__accounts.length == 0) return 9999; let maxOrder = this.__accounts.sort((a,b) => a.order > b.order ? -1 : 1)[0].order; return maxOrder+1; }
+    public getFormValidator(): Accounts.AccountFormValidation { return this.__formValidator; }
 
 
     //
@@ -84,6 +87,7 @@ export class AccountStore extends BaseStore {
         let isEdit = (obj !== undefined && obj != null);
         let accountId: string = isEdit ? <string>obj : null;
         this.__currentEditId = accountId;
+        this.__formValidator.clearErrors();
     }
     private _onEditDelete(obj: any): void {
         let self = this;

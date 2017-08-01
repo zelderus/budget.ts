@@ -26,6 +26,7 @@ export interface ITransactionEditActiveStates {
     accounts: Accounts.AccountEntity[];
     currencies: Currencies.CurrencyEntity[];
     categories: Categories.CategoryEntity[];
+    validator: Transactions.TransactionFormValidation;
     withRecalc: boolean;
 }
 
@@ -65,6 +66,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
             accounts: AccountStore.getAccounts(),
             currencies: CurrencyStore.getCurrecies(),
             categories: CategoryStore.getCategories(),
+            validator: TransactionStore.getFormValidator(),
             withRecalc: true
         };
     }
@@ -129,13 +131,15 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
     private _validateForm(): boolean {
         let hasError = false;
         let model = this.state.formModel; //this.__formModel;
-        // TODO: 1. check form
-        // TODO: 2. if any error - Dispatch about errors - модель валидации в Сторе
-
+        // проверка валидатором (вариант обновления модели сразу в Сторе, без посылки сообщения через Action)
+        this.state.validator.validate(model);
+        hasError = this.state.validator.hasError();
+        // отправляем сообщение Диспетчеру (НЕ ИСПОЛЬЗУЕТСЯ, обновили модель валидации напрямую)
+        //this.getActionCreator().editTransactionValidate(validator);
         return hasError;
     }
     private _checkAndUpdateState(): void {
-        this._validateForm();
+        this._validateForm(); // ?+ а надо ли на каждом чихе проверять форму???
         this.setState({formModel: this.__formModel});
     }
 

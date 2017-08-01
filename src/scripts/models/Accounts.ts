@@ -1,4 +1,7 @@
 
+import FormValidator from './FormValidator';
+
+
 namespace Accounts {
 
 
@@ -12,9 +15,13 @@ namespace Accounts {
         order: number;
         sum: number;
         currencyId: string;
+        isCredit: boolean;
+        creditLimit: number;
+        iconId: string;
 
         constructor () {
-
+            this.isCredit = false;
+            this.creditLimit = 0;
         }
 
 
@@ -24,6 +31,9 @@ namespace Accounts {
             this.order = j.order;
             this.sum = j.sum;
             this.currencyId = j.currencyId;
+            this.isCredit = j.isCredit;
+            this.creditLimit = j.creditLimit;
+            this.iconId = j.iconId;
         }
 
         toJson(): any {
@@ -32,7 +42,10 @@ namespace Accounts {
                 title: this.title,
                 order: this.order,
                 sum: this.sum,
-                currencyId: this.currencyId
+                currencyId: this.currencyId,
+                isCredit: this.isCredit,
+                creditLimit: this.creditLimit,
+                iconId: this.iconId
             };
             return json;
         }
@@ -47,6 +60,9 @@ namespace Accounts {
             objTo.order = objFrom.order;
             objTo.sum = objFrom.sum;
             objTo.currencyId = objFrom.currencyId;
+            objTo.isCredit = objFrom.isCredit;
+            objTo.creditLimit = objFrom.creditLimit;
+            objTo.iconId = objFrom.iconId;
             return objTo;
         }
         clone(): AccountEntity {
@@ -62,25 +78,28 @@ namespace Accounts {
 
     
 
+    /**
+     * Ключи ошибок валидации.
+     */
+    export enum AccountFormValidationKeys {
+        Title       = 1,
+        Currency    = 2
+    }
+
 
     /**
      * Валидация формы счета.
      */
-    export class AccountFormValidation {
-
-        private _hasError: boolean;        
-
-        constructor(entity: AccountEntity) {
-            this._hasError = false;
-            // TODO:
-            
+    export class AccountFormValidation extends FormValidator.Validator<AccountEntity> {
+        constructor() {
+            super();
         }
+        public validate(entity: AccountEntity): void {
+            this.clearErrors();
 
-
-        public hasError(): boolean {
-            return this._hasError;
+            this.errStringIsNullOrEmpty(entity.title, AccountFormValidationKeys.Title, "введите название");
+            this.errIsNull(entity.currencyId, AccountFormValidationKeys.Currency, "укажите валюту");
         }
-
     }
 
 

@@ -241,7 +241,8 @@ namespace Client {
                 let data = d;
                 if (data == null || data.length == 0) data = [];
                 // серверная проверка валидации
-                let validation = new Accounts.AccountFormValidation(account);
+                let validation = new Accounts.AccountFormValidation();
+                validation.validate(account);
                 if (validation.hasError()){
                     callBack(s, m, validation);
                     return;
@@ -345,7 +346,8 @@ namespace Client {
                 let data = d;
                 if (data == null || data.length == 0) data = [];
                 // серверная проверка валидации
-                let validation = new Transactions.TransactionFormValidation(transaction);
+                let validation = new Transactions.TransactionFormValidation();
+                validation.validate(transaction);
                 if (validation.hasError()){
                     callBack(s, m, validation);
                     return;

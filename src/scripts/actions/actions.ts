@@ -74,7 +74,7 @@ export namespace Actions{
 
 
         loadCurrecnies(callBack?: StoreFlux.DispatchCallBack) {
-            Dispatcher.dispatch(ActionTypes.CURRECIES_LOAD, null, callBack);
+            Dispatcher.dispatch(ActionTypes.CURRENCIES_LOAD, null, callBack);
         }
 
         loadCategories(callBack?: StoreFlux.DispatchCallBack) {
@@ -105,7 +105,9 @@ export namespace Actions{
             let model: [Accounts.AccountEntity] = [ obj ];
             Dispatcher.dispatch(ActionTypes.ACCOUNTS_EDIT_DELETE, model);
         }
-
+        /*editAccountValidate(obj: Accounts.AccountFormValidation) {
+            Dispatcher.dispatch(ActionTypes.ACCOUNTS_EDIT_VALIDATOR, obj);
+        }*/
 
 
         editTransactionShow(id: string) {
@@ -120,7 +122,9 @@ export namespace Actions{
             let model: [Transactions.TransactionEntity, boolean] = [ obj, withCalculateAccounts];
             Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_DELETE, model);
         }
-
+        /*editTransactionValidate(obj: Transactions.TransactionFormValidation) {
+            Dispatcher.dispatch(ActionTypes.TRANSACTIONS_EDIT_VALIDATOR, obj);
+        }*/
 
 
 

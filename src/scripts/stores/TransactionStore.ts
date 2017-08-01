@@ -21,6 +21,7 @@ export class TransactionStore extends BaseStore {
     private __transactionFilter: Transactions.TransactionFilters;
 
     private __currentEditTransactionId: string = null;
+    private __formValidator: Transactions.TransactionFormValidation;
 
 
     constructor() {
@@ -28,6 +29,7 @@ export class TransactionStore extends BaseStore {
 
         this.__currentEditTransactionId = null;
         this.__transactionFilter = new Transactions.TransactionFilters();
+        this.__formValidator = new Transactions.TransactionFormValidation();
 
     }
 
@@ -39,7 +41,7 @@ export class TransactionStore extends BaseStore {
     public getTransactions(): Transactions.TransactionEntity[] { return this.__transactions; }
     public getTransactionById(id: string): Transactions.TransactionEntity { if (id === undefined || id == null || id === "") return null; return this.__transactions.filter(f => f.id == id)[0]; }
     public getCurrentEditTransactionId(): string { return this.__currentEditTransactionId; }
-
+    public getFormValidator(): Transactions.TransactionFormValidation { return this.__formValidator; }
 
 
 
@@ -93,6 +95,7 @@ export class TransactionStore extends BaseStore {
         let isEdit = (obj !== undefined && obj != null);
         let transactionId: string = isEdit ? <string>obj : null;
         this.__currentEditTransactionId = transactionId;
+        this.__formValidator.clearErrors();
     }
     private _onEditTransactionDelete(obj: any): void {
         let self = this;

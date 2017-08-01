@@ -103,7 +103,7 @@ export class CurrencyStore extends BaseStore {
     onDispatch(type: number, obj: any, callBack?: StoreFlux.DispatchCallBack):boolean {
         switch(type) {
 
-            case ActionTypes.CURRECIES_LOAD:
+            case ActionTypes.CURRENCIES_LOAD:
                 this._loadCurreciesAsync((s,m) => { 
                     if (!s) { this._onError(m);} 
                     this.emitChange(); 
