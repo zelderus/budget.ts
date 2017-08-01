@@ -17,11 +17,12 @@ import Client from './../datas/ClientManager';
 export class AccountStore extends BaseStore {
 
     private __accounts: Accounts.AccountEntity[] = [];
-
+    private __currentEditId: string = null;
 
     constructor() {
         super();
 
+        this.__currentEditId = null;
     }
 
 
@@ -30,7 +31,8 @@ export class AccountStore extends BaseStore {
     // Эти данные для их состояний. При изменении которых, Вьюшки обновляются.
     //
     public getAccounts(): Accounts.AccountEntity[] { return this.__accounts; }
-
+    public getAccountById(id: string): Accounts.AccountEntity { if (id === undefined || id == null || id === "") return null; return this.__accounts.filter(f => f.id == id)[0]; }
+    public getCurrentEditAccountId(): string { return this.__currentEditId; }
 
 
 
@@ -78,6 +80,58 @@ export class AccountStore extends BaseStore {
     //  UI
     //
 
+    private _onEditShow(obj: any): void {
+        let isEdit = (obj !== undefined && obj != null);
+        let accountId: string = isEdit ? <string>obj : null;
+        this.__currentEditId = accountId;
+    }
+    private _onEditDelete(obj: any): void {
+        let self = this;
+        Actions.loadingStart();
+        let editData: [Accounts.AccountEntity] = obj;
+        let account = editData[0];
+        // удаляем
+        Client.getClient().deleteAccount(account.id, function(s,m,d){
+            if (!s) { self._onFatalError(m); self.emitChange(); return; }
+            // обновление данных в приложении (просто загружаем заново данные) - эту часть можно обновить локально
+            self._loadAccountsAsync((ss,mm) => { 
+                if (!ss) { self._onFatalError(mm); return;}
+                // закончили
+                self.updateEnd(true);
+            });
+        });
+    }
+    private _onEditDo(obj: any): void { // сохранение формы редактирования транзакции
+        let self = this;
+        Actions.loadingStart();
+
+        let editData: [Accounts.AccountEntity] = obj;
+        let account = editData[0];
+
+        // 1. отправка данных на сервер
+        Client.getClient().editAccount(account, function(s, m, validationForm){
+            // 2. если критическая ошибка - конец
+            if (!s) { self._onFatalError(m); self.emitChange(); return; }
+            // 3. если в ответе (в моделе данных) есть ошибки валидации - обновляем модель формы (добавляем ошибки) - конец
+            let hasFormError = validationForm.hasError();
+            if (hasFormError) {
+                // TODO: добавляем в модель формы ошибки валидации
+
+                // закончили
+                self.updateEnd(false);
+                return;
+            }
+            // 4. обновление данных в приложении (просто загружаем заново данные) - эту часть можно обновить локально
+            self._loadAccountsAsync((ss,mm) => { 
+                if (!ss) { self._onFatalError(mm); return;}
+                // закончили
+                self.updateEnd(true);
+            });
+        });
+    }
+
+
+
 
 
 
@@ -98,6 +152,18 @@ export class AccountStore extends BaseStore {
                     this.emitChange(); 
                     if (callBack != null) { callBack(s,m); }
                 });
+                return true;
+
+
+            case ActionTypes.ACCOUNTS_EDIT_SHOW:
+                this._onEditShow(obj);
+                this.emitChange();
+                return true;
+            case ActionTypes.ACCOUNTS_EDIT_DO:
+                this._onEditDo(obj);
+                return true;
+            case ActionTypes.ACCOUNTS_EDIT_DELETE:
+                this._onEditDelete(obj);
                 return true;
 
 

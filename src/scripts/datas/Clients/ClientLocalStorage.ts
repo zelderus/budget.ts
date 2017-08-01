@@ -292,6 +292,29 @@ namespace Client {
             });
         }
 
+        /**
+         * Удаление счета.
+         */
+        deleteAccount(accountId: string, callBack: BClient.IClientResponse<any>) : void {
+            let self = this;
+            // достаем все
+            self.getFromJsonModels(self._getDatasResponse("accounts"), Accounts.AccountEntity, function(s,m,accounts){
+                let data = accounts;
+                // удаляем
+                data = data.filter(t => t.id != accountId);
+                self._setDatas("accounts", data);
+                // оповещаем
+                callBack(s, m, null);
+            });
+        }
+
+
+
+
+
+
+
+
 
         /**
          * Транзакции.

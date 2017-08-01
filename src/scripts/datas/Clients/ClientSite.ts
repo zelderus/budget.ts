@@ -94,6 +94,14 @@ namespace Client {
             let validation = new Accounts.AccountFormValidation(account);
             callBack(false, "редактирование счета не реализованно в этом клиенте", validation);
         }
+        /**
+         * Удаление счета.
+         */
+        deleteAccount(accountId: string, callBack: BClient.IClientResponse<any>) : void {
+            let self = this;
+            callBack(false, "удаление счета не реализованно в этом клиенте", null);
+        }
+
 
 
         /**

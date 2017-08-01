@@ -25,6 +25,7 @@ export interface IClient {
     editCategory(category: Categories.CategoryEntity, callBack: BClient.IClientResponse<Categories.CategoryFormValidation>): void;
     getAccounts(callBack: BClient.IClientResponse<Accounts.AccountEntity[]>): void;
     editAccount(account: Accounts.AccountEntity, callBack: BClient.IClientResponse<Accounts.AccountFormValidation>): void;
+    deleteAccount(accountId: string, callBack: BClient.IClientResponse<any>) : void;
     getTransactions(filters: Transactions.TransactionFilters, callBack: BClient.IClientResponse<Transactions.TransactionEntity[]>) : void;
     editTransaction(transaction: Transactions.TransactionEntity, withRecalculations: boolean, callBack: BClient.IClientResponse<Transactions.TransactionFormValidation>): void;
     deleteTransaction(transactionId: string, withRecalculations: boolean, callBack: BClient.IClientResponse<any>) : void;

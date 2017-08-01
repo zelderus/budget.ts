@@ -96,6 +96,7 @@ export class TransactionStore extends BaseStore {
     }
     private _onEditTransactionDelete(obj: any): void {
         let self = this;
+        Actions.loadingStart();
         let editData: [Transactions.TransactionEntity, boolean] = obj;
         let transaction = editData[0];
         let withRecalculateAccounts = editData[1];

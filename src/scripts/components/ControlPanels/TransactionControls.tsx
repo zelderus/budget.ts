@@ -49,13 +49,6 @@ export class TransactionControls extends BaseControls<ITransactionControlsProps,
     /// Render
     ///
 
-    private drawButtonsForIdle(){
-        return <div className="Buttons">
-            <div className="Button Success" onClick={e => this.onButtonAdd()}>добавить транзакцию</div>
-        </div>
-    }
-
-
 	render() {
 		return <div className="TransactionControls">
             <div className="Buttons">

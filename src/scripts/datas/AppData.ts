@@ -6,11 +6,14 @@ import Navigation from './../models/Navigation';
 import {TransactionActive} from "./../components/ActivePanels/TransactionActive";
 import {AccountActive} from "./../components/ActivePanels/AccountActive";
 import {TransactionEditActive} from "./../components/ActivePanels/TransactionEditActive";
+import {AccountEditActive} from "./../components/ActivePanels/AccountEditActive";
 
 // панели управлений
 import {TransactionControls} from "./../components/ControlPanels/TransactionControls";
 import {AccountControls} from "./../components/ControlPanels/AccountControls";
 import {TransactionEditControls} from "./../components/ControlPanels/TransactionEditControls";
+import {AccountEditControls} from "./../components/ControlPanels/AccountEditControls";
+
 
 // сторы
 import AppStore from './../stores/AppStore';
@@ -31,7 +34,8 @@ namespace AppData {
         TRANSACTIONS        = 1,
         ACCOUNTS            = 2,
 
-        TRANSACTION_EDIT    = 51
+        ACCOUNT_EDIT        = 55,
+        TRANSACTION_EDIT    = 56
 
 
         // TODO: edit category, currency
@@ -49,6 +53,7 @@ namespace AppData {
             new Navigation.NavigationLine(Pages.TRANSACTIONS, "Транзакции", TransactionActive, TransactionControls),
             new Navigation.NavigationLine(Pages.ACCOUNTS, "Счета", AccountActive, AccountControls),
 
+            new Navigation.NavigationLine(Pages.ACCOUNT_EDIT, "Редактирование счета", AccountEditActive, AccountEditControls),
             new Navigation.NavigationLine(Pages.TRANSACTION_EDIT, "Редактирование транзакции", TransactionEditActive, TransactionEditControls)
         ];
     }

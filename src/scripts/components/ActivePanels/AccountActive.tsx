@@ -4,6 +4,7 @@ import * as React from "react";
 import View from './../../flux/View';
 import TransactionStore from './../../stores/TransactionStore';
 import AccountStore from './../../stores/AccountStore';
+import CurrencyStore from './../../stores/CurrencyStore';
 import {BaseActive, IBaseActiveProps} from './BaseActive';
 
 import Accounts from './../../models/Accounts';
@@ -52,8 +53,16 @@ export class AccountActive extends BaseActive<IAccountActiveStates> {
         let lines = this.state.accounts;
         // sort
         lines = lines.sort((a,b) => a.order < b.order ? -1 : 1);
-        // render
-        let linesForRender = lines.map(line => { return <AccountLine account={line} /> });
+        //
+        let lastCurrencyShow: string = "";
+        //
+        let linesForRender = lines.map(account => { 
+            // достаем связанные данные (каждая линия с данными будет автономная, без прослушки чего-либо - это окно все равно обновится, если что)
+            lastCurrencyShow = CurrencyStore.getCurrencyShowNameByAccount(account);
+
+            // render
+            return <AccountLine account={account} currencyShow={lastCurrencyShow} /> 
+        });
         
         return <div className="LinesPlace">
             {linesForRender}

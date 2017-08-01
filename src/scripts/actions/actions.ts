@@ -5,6 +5,7 @@ import Dispatcher from './../flux/Dispatcher';
 import AppData from './../datas/AppData';
 import StoreFlux from './../flux/store';
 
+import Accounts from './../models/Accounts';
 import Transactions from './../models/Transactions';
 
 
@@ -88,6 +89,22 @@ export namespace Actions{
             Dispatcher.dispatch(ActionTypes.TRANSACTIONS_LOAD, null, callBack);
         }
 
+
+
+
+
+        editAccountShow(id: string) {
+            Dispatcher.dispatch(ActionTypes.ACCOUNTS_EDIT_SHOW, id);
+            this.navigationPage(AppData.Pages.ACCOUNT_EDIT);
+        }
+        editAccountDo(obj: Accounts.AccountEntity) {
+            let model: [Accounts.AccountEntity] = [ obj ];
+            Dispatcher.dispatch(ActionTypes.ACCOUNTS_EDIT_DO, model);
+        }
+        editAccountDelete(obj: Accounts.AccountEntity) {
+            let model: [Accounts.AccountEntity] = [ obj ];
+            Dispatcher.dispatch(ActionTypes.ACCOUNTS_EDIT_DELETE, model);
+        }
 
 
 

@@ -16,7 +16,7 @@ export interface IAccountControlsStates { }
 export class AccountControls extends View<IAccountControlsProps, IAccountControlsStates> {
 
     constructor(props: any){
-        super(props, [TransactionStore]);
+        super(props, []);
 
     }
 
@@ -36,6 +36,9 @@ export class AccountControls extends View<IAccountControlsProps, IAccountControl
     /// User interactions
     ///
 
+    private onButtonAdd(){
+        this.getActionCreator().editAccountShow(null);
+    }
  
 
 
@@ -46,7 +49,9 @@ export class AccountControls extends View<IAccountControlsProps, IAccountControl
 
 	render() {
 		return <div className="AccountControls">
-            controools account
+            <div className="Buttons">
+                <div className="Button Success" onClick={e => this.onButtonAdd()}>добавить счет</div>
+            </div>
         </div>;
 	}
 

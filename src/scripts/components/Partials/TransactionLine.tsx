@@ -5,10 +5,16 @@ import View from './../../flux/View';
 import Maths from './../../utils/Maths';
 //import AppStore from './../../stores/AppStore';
 
+import Accounts from './../../models/Accounts';
 import Transactions from './../../models/Transactions';
 
 
-export interface ITransactionLineProps { transaction: Transactions.TransactionEntity  }
+export interface ITransactionLineProps { 
+    transaction: Transactions.TransactionEntity;
+    accountFrom: Accounts.AccountEntity;
+    accountTo: Accounts.AccountEntity;
+    currencyShow: string;
+}
 export interface ITransactionLineStates {  }
 
 
@@ -64,9 +70,11 @@ export class TransactionLine extends View<ITransactionLineProps, ITransactionLin
             case Transactions.TransactionTypes.Transfer: transTypeClass = "Transfer"; break;
         }
 
-        // TODO: тянем связанные данные
-        let currency = "todo";
-
+        // связанные данные
+        let accountFrom = this.props.accountFrom;
+        let accountTo = this.props.accountTo;
+        let currency = this.props.currencyShow;
+        
 
 		return <div className="TransactionLine">
             <span className="Date">{this.numTo2Zero(this.props.transaction.date.getDate())}.{this.numTo2Zero(this.props.transaction.date.getMonth())}.{this.props.transaction.date.getFullYear()}</span>

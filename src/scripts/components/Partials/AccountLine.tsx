@@ -7,7 +7,10 @@ import View from './../../flux/View';
 import Accounts from './../../models/Accounts';
 
 
-export interface IAccountLineProps { account: Accounts.AccountEntity  }
+export interface IAccountLineProps { 
+    account: Accounts.AccountEntity;
+    currencyShow: string;
+}
 export interface IAccountLineStates {  }
 
 
@@ -35,6 +38,9 @@ export class AccountLine extends View<IAccountLineProps, IAccountLineStates> {
     /// User interactions
     ///
 
+    private onItemEditClick(id: string) {
+        this.getActionCreator().editAccountShow(id);
+    }
 
 
 
@@ -47,15 +53,16 @@ export class AccountLine extends View<IAccountLineProps, IAccountLineStates> {
         let sum = this.props.account.sum == null ? 0 : this.props.account.sum;
         let typeClass = sum > 0 ? "Profit" : sum == 0 ? "Zero" :  "Debt";
 
+        // связанные данные
+        let currency = this.props.currencyShow;
 
-        // TODO: тянем связанные данные
-        let currency = "todo";
 
 		return <div className="AccountLine">
             {this.props.account.title}
             <span className={"Sum " + typeClass}>
                 <span className="Value">{sum}</span><span className="Currency">{currency}</span>
             </span>
+            <span className="Button Edit" onClick={e => this.onItemEditClick(this.props.account.id)} >EDIT</span>
         </div>;
 	}
 

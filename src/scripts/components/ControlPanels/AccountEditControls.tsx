@@ -2,24 +2,24 @@
 
 import * as React from "react";
 import View from './../../flux/View';
-import TransactionStore from './../../stores/TransactionStore';
-import {TransactionEditActive, TransactionEditCmdEvents} from './../ActivePanels/TransactionEditActive';
+import AccountStore from './../../stores/AccountStore';
+import {AccountEditActive, AccountEditCmdEvents} from './../ActivePanels/AccountEditActive';
 import {BaseControls, IBaseControlsProps} from './BaseControls';
 
 
-export interface ITransactionEditControlsProps extends IBaseControlsProps {  }
-export interface ITransactionEditControlsStates { editId: string;  }
+export interface IAccountEditControlsProps extends IBaseControlsProps {  }
+export interface IAccountEditControlsStates { editId: string;  }
 
 
 /**
- * Управление - редактор транзакции.
+ * Управление - редактор счета.
  */
-export class TransactionEditControls extends BaseControls<ITransactionEditControlsProps, ITransactionEditControlsStates> {
+export class AccountEditControls extends BaseControls<IAccountEditControlsProps, IAccountEditControlsStates> {
 
 
 
     constructor(props: any){
-        super(props, [TransactionStore]);
+        super(props, [AccountStore]);
 
     }
 
@@ -27,9 +27,9 @@ export class TransactionEditControls extends BaseControls<ITransactionEditContro
 
 
     // Интересующие нас состояния (получаем их строго из Сторов)
-    protected getState() : ITransactionEditControlsStates {
+    protected getState() : IAccountEditControlsStates {
         return {
-            editId: TransactionStore.getCurrentEditTransactionId(),
+            editId: AccountStore.getCurrentEditAccountId(),
         };
     }
 
@@ -43,10 +43,10 @@ export class TransactionEditControls extends BaseControls<ITransactionEditContro
         this.getActionCreator().navigationBack();
     }
     private onButtonSave(){
-        this.sendEventToActivePanel(TransactionEditCmdEvents.FORM_SAVE);
+        this.sendEventToActivePanel(AccountEditCmdEvents.FORM_SAVE);
     }
     private onButtonDelete(){
-        this.sendEventToActivePanel(TransactionEditCmdEvents.FORM_DELETE);
+        this.sendEventToActivePanel(AccountEditCmdEvents.FORM_DELETE);
     }
 
     

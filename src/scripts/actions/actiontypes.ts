@@ -13,7 +13,10 @@ enum ActionTypes {
   ERROR_FATAL       = 40,
   ERROR_FATAL_CLOSE = 41,
   
-  ACCOUNTS_LOAD     = 100,
+  ACCOUNTS_LOAD             = 100,
+  ACCOUNTS_EDIT_SHOW        = 110,
+  ACCOUNTS_EDIT_DO          = 111,
+  ACCOUNTS_EDIT_DELETE      = 112,
   
   TRANSACTIONS_LOAD         = 200,
   TRANSACTIONS_EDIT_SHOW    = 210,
