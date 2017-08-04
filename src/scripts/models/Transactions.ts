@@ -46,7 +46,7 @@ namespace Transactions {
 
 
         constructor() {
-            this.id = "";
+            this.id = null;
             this.date = new Date();
             this.costStr = "";
             this.type = Transactions.TransactionTypes.Spend;

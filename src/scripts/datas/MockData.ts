@@ -59,7 +59,7 @@ namespace Mock {
             "success": true,
             "message": "",
             "data": [
-                { "id": "47c7ff5d-9f61-405e-a8d1-e09a31fb1510", "title": "Кошелек", "sum": 12000, "order": 1, "currencyId": "1b78233f-87b6-47d6-9a4c-bc686b77bc05" },
+                { "id": "47c7ff5d-9f61-405e-a8d1-e09a31fb1510", "title": "Кошелек", "sum": 12000, "order": 1, "currencyId": "1b78233f-87b6-47d6-9a4c-bc686b77bc05", isDefault: true },
                 { "id": "47c7ff5d-9f61-405e-a8d1-e09a31fb1512", "title": "Вклад", "sum": 0, "order": 2, "currencyId": "1b78233f-87b6-47d6-9a4c-bc686b77bc05" },
                 { "id": "47c7ff5d-9f61-405e-a8d1-e09a31fb1513", "title": "Валюта", "sum": 0, "order": 3, "currencyId": "d45c054f-3f40-4300-96c1-e186d7021a1b" }
             ]

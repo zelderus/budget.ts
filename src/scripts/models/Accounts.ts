@@ -18,10 +18,15 @@ namespace Accounts {
         isCredit: boolean;
         creditLimit: number;
         iconId: string;
+        isDefault: boolean;
 
         constructor () {
+            this.id = null;
             this.isCredit = false;
             this.creditLimit = 0;
+            this.currencyId = null;
+            this.iconId = null;
+            this.isDefault = false;
         }
 
 
@@ -34,6 +39,7 @@ namespace Accounts {
             this.isCredit = j.isCredit;
             this.creditLimit = j.creditLimit;
             this.iconId = j.iconId;
+            this.isDefault = j.isDefault;
         }
 
         toJson(): any {
@@ -45,7 +51,8 @@ namespace Accounts {
                 currencyId: this.currencyId,
                 isCredit: this.isCredit,
                 creditLimit: this.creditLimit,
-                iconId: this.iconId
+                iconId: this.iconId,
+                isDefault: this.isDefault
             };
             return json;
         }
@@ -63,6 +70,7 @@ namespace Accounts {
             objTo.isCredit = objFrom.isCredit;
             objTo.creditLimit = objFrom.creditLimit;
             objTo.iconId = objFrom.iconId;
+            objTo.isDefault = objFrom.isDefault;
             return objTo;
         }
         clone(): AccountEntity {

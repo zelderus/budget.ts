@@ -50,14 +50,16 @@ export class AccountLine extends View<IAccountLineProps, IAccountLineStates> {
 
 
 	render() {
+        let blockClass = "AccountLine ";
         let sum = this.props.account.sum == null ? 0 : this.props.account.sum;
         let typeClass = sum > 0 ? "Profit" : sum == 0 ? "Zero" :  "Debt";
+        if (this.props.account.isDefault) blockClass += "Default ";
 
         // связанные данные
         let currency = this.props.currencyShow;
 
-
-		return <div className="AccountLine">
+		return <div className={blockClass}>
+            <span className="DefaultSpot"></span>
             {this.props.account.title}
             <span className={"Sum " + typeClass}>
                 <span className="Value">{sum}</span><span className="Currency">{currency}</span>

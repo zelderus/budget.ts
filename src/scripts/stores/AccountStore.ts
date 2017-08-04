@@ -5,6 +5,7 @@ import StoreFlux from './../flux/store';
 import BaseStore from './../flux/BaseStore';
 import ActionTypes from './../actions/ActionTypes';
 import Actions from './../actions/Actions';
+import Collections from './../utils/Collections';
 
 import Accounts from './../models/Accounts';
 
@@ -18,12 +19,14 @@ export class AccountStore extends BaseStore {
 
     private __accounts: Accounts.AccountEntity[] = [];
     private __currentEditId: string = null;
+    private __currentEditAccountModel: Accounts.AccountEntity;
     private __formValidator: Accounts.AccountFormValidation;
 
     constructor() {
         super();
 
         this.__currentEditId = null;
+        this.__currentEditAccountModel = null;
         this.__formValidator = new Accounts.AccountFormValidation();
     }
 
@@ -33,8 +36,11 @@ export class AccountStore extends BaseStore {
     // Эти данные для их состояний. При изменении которых, Вьюшки обновляются.
     //
     public getAccounts(): Accounts.AccountEntity[] { return this.__accounts; }
+    public getAccountsSorted(): Accounts.AccountEntity[] { return this.__accounts.sort((a,b) => a.order < b.order ? -1 : 1); }
+    public getDefaultAccountId(): string { let defaultAccount = Collections.first(this.__accounts, (f) => f.isDefault); if (defaultAccount != null) return defaultAccount.id; return this.__accounts.length > 0 ? this.getAccountsSorted()[0].id : null; }
     public getAccountById(id: string): Accounts.AccountEntity { if (id === undefined || id == null || id === "") return null; return this.__accounts.filter(f => f.id == id)[0]; }
     public getCurrentEditAccountId(): string { return this.__currentEditId; }
+    public getCurrentEditAccount(): Accounts.AccountEntity { return this.__currentEditAccountModel; }
     public getNextAccountOrder(): number { if (this.__accounts.length == 0) return 9999; let maxOrder = this.__accounts.sort((a,b) => a.order > b.order ? -1 : 1)[0].order; return maxOrder+1; }
     public getFormValidator(): Accounts.AccountFormValidation { return this.__formValidator; }
 
@@ -88,6 +94,21 @@ export class AccountStore extends BaseStore {
         let accountId: string = isEdit ? <string>obj : null;
         this.__currentEditId = accountId;
         this.__formValidator.clearErrors();
+        // модель для редактирования
+        this.__currentEditAccountModel = null;
+        let account = this.getAccountById(this.__currentEditId);
+        if (account != null) {
+            this.__currentEditAccountModel = account.clone(); // не трогаем реальные данные, работаем с клоном
+        }
+        else {
+            this.__currentEditAccountModel = new Accounts.AccountEntity();
+            this.__currentEditAccountModel.id = null;
+            this.__currentEditAccountModel.sum = 0;
+            this.__currentEditAccountModel.currencyId = null;
+            this.__currentEditAccountModel.isCredit = false;
+            this.__currentEditAccountModel.creditLimit = 0;
+            this.__currentEditAccountModel.order = this.getNextAccountOrder();
+        }
     }
     private _onEditDelete(obj: any): void {
         let self = this;

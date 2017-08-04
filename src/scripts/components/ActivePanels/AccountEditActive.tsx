@@ -9,6 +9,7 @@ import CategoryStore from './../../stores/CategoryStore';
 
 import {BaseActive, IBaseActiveProps} from './BaseActive';
 import Maths from './../../utils/Maths';
+import Collections from './../../utils/Collections';
 
 import Accounts from './../../models/Accounts';
 import Transactions from './../../models/Transactions';
@@ -60,7 +61,7 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
         return {
             editId: AccountStore.getCurrentEditAccountId(),
             formModel: this._getCurrentFormModel(),
-            currencies: CurrencyStore.getCurrecies(),
+            currencies: CurrencyStore.getCurreciesSorted(),
             validator: AccountStore.getFormValidator()
         };
     }
@@ -74,20 +75,10 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
 
     // выбранная транзакция для редактирования
     private _getCurrentFormModel(): any {
-        let currentAccountId = AccountStore.getCurrentEditAccountId();
-        let account = AccountStore.getAccountById(currentAccountId);
-        if (account != null) {
-            this.__formModel = account.clone(); // не трогаем реальные данные, работаем с клоном
-        }
-        else {
-            let currencies = CurrencyStore.getCurrecies();
-
-            this.__formModel = new Accounts.AccountEntity();
-            this.__formModel.sum = 0;
-            this.__formModel.currencyId = currencies.length > 0 ? currencies[0].id : null;
-            this.__formModel.isCredit = false;
-            this.__formModel.creditLimit = 0;
-            this.__formModel.order = AccountStore.getNextAccountOrder();
+        this.__formModel = AccountStore.getCurrentEditAccount();
+        // если новый счет, и не выбрана валюта, то выбираем поумолчанию
+        if (this.__formModel.id == null && this.__formModel.currencyId == null) {
+            this.__formModel.currencyId = CurrencyStore.getDefaultCurrencyId();
         }
         return this.__formModel;
     }
@@ -191,6 +182,11 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
         this.__formModel.isCredit = !this.__formModel.isCredit;
         this._checkAndUpdateState();
     }
+
+    private _onFormChangeIsDefault(e: any): void {
+        this.__formModel.isDefault = !this.__formModel.isDefault;
+        this._checkAndUpdateState();
+    }
  
 
 
@@ -268,6 +264,9 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
                 <span>{currencyName}</span>
             </div>
             {this.renderCreditLimit(currencyName)}
+            <div>по умолчанию
+                <input name="isdefault" type="checkbox" checked={this.state.formModel.isDefault} onChange={e => this._onFormChangeIsDefault(e)} />
+            </div>
         </div>
 	}
 

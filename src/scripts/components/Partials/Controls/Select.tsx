@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import View from './../../../flux/View';
-
+import Collections from './../../../utils/Collections';
 
 export interface IControlSelectDefault {
     key: string;
@@ -18,6 +18,7 @@ export interface IControlSelectProps {
     default?: IControlSelectDefault;
     onChange: (val:string)=>void;
     emptyText?: string;
+    errorText?: string;
 }
 
 /*
@@ -30,6 +31,7 @@ export interface IControlSelectProps {
             default={ {key:"", text:"- без счета -"} }
             onChange={ e=> this._onFormChangeAccountFrom(e) }
             emptyText="нет данных"
+            errorText="- текущего элемента нет в списке -"
         />
 */
 
@@ -69,6 +71,12 @@ export class Select extends View<IControlSelectProps, {}> {
         let keyName = this.props.objKey;
         let textName = this.props.objText;
 
+        // если выбран элемент, но его нет в списке, и нет пункта поумолчанию - то отображаем пункт с ошибкой
+        let isSelectedNotExistsInList = (currId != null && (Collections.contains(list, (e)=>{ return e[keyName] == currId })==false)) ? true : false;
+        let errorOption = this.props.default != null || !isSelectedNotExistsInList ? null :
+            <option value={null} selected={true}>{this.props.errorText == null ? "- текущего элемента нет в списке -" : this.props.errorText}</option>
+
+        // значение по умолчанию
         let defaultOption = this.props.default == null ? null : 
             <option value={this.props.default.key} selected={currId==this.props.default.key}>{this.props.default.text}</option>
 
@@ -84,6 +92,7 @@ export class Select extends View<IControlSelectProps, {}> {
         }
 
         return <select name={this.props.name} onChange={e => this._onFormChangeAccountFrom(e)}>
+            {/*errorOption*/}
             {defaultOption}
             {options}
         </select>

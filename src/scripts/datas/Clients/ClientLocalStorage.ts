@@ -4,6 +4,7 @@ import Mock from './../MockData';
 import {IClient} from './../ClientManager';
 import Life from './../../Life';
 import FluxUtils from './../../flux/Utils';
+import Collections from './../../utils/Collections';
 
 import Authentication from './../../models/Authentication';
 import Accounts from './../../models/Accounts';
@@ -156,7 +157,7 @@ namespace Client {
                 }
                 // редактируем
                 else {
-                    let exists = data.filter(e => e.id == currency.id)[0];
+                    let exists = Collections.first(data, (e) => e.id == currency.id);
                     if (exists != null) exists.fill(currency);
                     else data.push(currency);
                 }
@@ -204,7 +205,7 @@ namespace Client {
                 }
                 // редактируем
                 else {
-                    let exists = data.filter(e => e.id == category.id)[0];
+                    let exists = Collections.first(data, (e) => e.id == category.id);
                     if (exists != null) exists.fill(category);
                     else data.push(category);
                 }
@@ -254,9 +255,13 @@ namespace Client {
                 }
                 // редактируем
                 else {
-                    let exists = data.filter(e => e.id == account.id)[0];
+                    let exists = Collections.first(data, (e) => e.id == account.id);
                     if (exists != null) exists.fill(account);
                     else data.push(account);
+                }
+                // если отметили как по умолчанию
+                if (account.isDefault) {
+                    data.forEach(e => {if (e.id != account.id) e.isDefault = false;});
                 }
                 // сохраняем
                 self._setDatas("accounts", data);
@@ -276,14 +281,16 @@ namespace Client {
                 if (oldTransaction != null) cost = (oldTransaction.cost - transaction.cost) * -1; // было 500, стало 300, разница: -200 (надо вычесть разницу)
 
                 // 1. account from
-                let accountFrom = accounts.filter(f => f.id == transaction.accountFromId)[0];
+                //x let accountFrom = accounts.filter(f => f.id == transaction.accountFromId)[0];
+                let accountFrom = Collections.first(accounts, (e) => e.id == transaction.accountFromId);
                 if (accountFrom != null) {
                     let dif = (transaction.type == Transactions.TransactionTypes.Profit ? 1 : -1); // Spend и Change это вывод средств, идут в минус
                     if (isDelete) dif *= -1; // при удалении, обратное
                     accountFrom.sum += cost * dif;
                 }
                 // 2. account to
-                let accountTo = accounts.filter(f => f.id == transaction.accountToId)[0];
+                //x let accountTo = accounts.filter(f => f.id == transaction.accountToId)[0];
+                let accountTo = Collections.first(accounts, (e) => e.id == transaction.accountToId);
                 if (accountTo != null) {
                     accountTo.sum += cost * (isDelete?-1:1); // сюда был перевод
                 }
@@ -365,7 +372,6 @@ namespace Client {
                 }
                 // редактируем
                 else {
-                    //let exists = data.filter(e => e.id == transaction.id)[0];
                     if (exists != null) exists.fill(transaction);
                     else data.push(transaction);
                 }

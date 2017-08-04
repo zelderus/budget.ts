@@ -9,6 +9,7 @@ import CategoryStore from './../../stores/CategoryStore';
 
 import {BaseActive, IBaseActiveProps} from './BaseActive';
 import Maths from './../../utils/Maths';
+import Collections from './../../utils/Collections';
 
 import Accounts from './../../models/Accounts';
 import Transactions from './../../models/Transactions';
@@ -63,7 +64,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
         return {
             editId: TransactionStore.getCurrentEditTransactionId(),
             formModel: this._getCurrentFormModel(),
-            accounts: AccountStore.getAccounts(),
+            accounts: AccountStore.getAccountsSorted(),
             currencies: CurrencyStore.getCurrecies(),
             categories: CategoryStore.getCategories(),
             validator: TransactionStore.getFormValidator(),
@@ -79,23 +80,11 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
 
 
     // выбранная транзакция для редактирования
-    private _getCurrentFormModel(): any {
-        let currentTransactionId = TransactionStore.getCurrentEditTransactionId();
-        let transaction = TransactionStore.getTransactionById(currentTransactionId);
-        if (transaction != null) {
-            this.__formModel = transaction.clone(); // не трогаем реальные данные, работаем с клоном
-            this.__formModel.costStr = this.__formModel.cost.toString();
-        }
-        else {
-            let accounts = AccountStore.getAccounts();
-
-            this.__formModel = new Transactions.TransactionEntity();
-            this.__formModel.accountFromId = accounts.length > 0 ? accounts[0].id : null;
-            this.__formModel.accountToId = null;
-            this.__formModel.type = Transactions.TransactionTypes.Spend;
-            this.__formModel.comment = "";
-            this.__formModel.costStr = "";
-            this.__formModel.cost = 0;
+    private _getCurrentFormModel(): Transactions.TransactionEntity {
+        this.__formModel = TransactionStore.getCurrentEditTransaction();
+        // если новая запись, и еще не выбран счет, то выбираем ему поумолчанию первый счет
+        if (this.__formModel.id == null && this.__formModel.accountFromId == null) {
+            this.__formModel.accountFromId = AccountStore.getDefaultAccountId();
         }
         return this.__formModel;
     }
@@ -170,7 +159,9 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
 
 
 
-
+    private _onAddAccountLink(): void {
+        this.getActionCreator().editAccountShow(null);
+    }
 
 
     ///
@@ -184,7 +175,8 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
     private _onFormChangeType(transType: Transactions.TransactionTypes): void {
         this.__formModel.type = transType;
         if (transType == Transactions.TransactionTypes.Transfer){ // при выборе Перевод, ставим счет начисления первый попавшийся, но не счет с которого перевод
-            let accountNotFrom = this.state.accounts.filter(f => f.id != this.state.formModel.accountFromId)[0];
+            //let accountNotFrom = this.state.accounts.filter(f => f.id != this.state.formModel.accountFromId)[0];
+            let accountNotFrom = Collections.first(this.state.accounts, (f)=>f.id != this.state.formModel.accountFromId);
             this.__formModel.accountToId = accountNotFrom != null ? accountNotFrom.id : null;
         }
         else {
@@ -233,7 +225,8 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
 
     renderSelectAccountsFrom(isEdit: boolean) {
         if (isEdit) {
-            let currentAccountFrom = this.state.accounts.filter(f => f.id == this.state.formModel.accountFromId)[0];
+            //let currentAccountFrom = this.state.accounts.filter(f => f.id == this.state.formModel.accountFromId)[0];
+            let currentAccountFrom = Collections.first(this.state.accounts, (f)=>f.id == this.state.formModel.accountFromId);
             let title = currentAccountFrom != null ? currentAccountFrom.title : "- несуществующий счет -";
             return <div>
                 {title}
@@ -245,15 +238,17 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
             list={this.state.accounts}
             objKey="id"
             objText="title"
-            //default={ {key:"", text:"- без счета -"} }
+            //default={ {key:"", text:"- выберите счет -"} }
             onChange={ e=> this._onFormChangeAccountFrom(e) }
             emptyText="нет счетов"
+            errorText="- счет отсутствует -"
         />
     }
     renderSelectAccountsTo(isEdit: boolean, accountFrom: Accounts.AccountEntity) {
         if (this.state.formModel.type != Transactions.TransactionTypes.Transfer) return <div>-</div>;
         if (isEdit) {
-            let currentAccountTo = this.state.accounts.filter(f => f.id == this.state.formModel.accountToId)[0];
+            //let currentAccountTo = this.state.accounts.filter(f => f.id == this.state.formModel.accountToId)[0];
+            let currentAccountTo = Collections.first(this.state.accounts, (f)=>f.id == this.state.formModel.accountToId);
             let title = currentAccountTo != null ? currentAccountTo.title : "- несуществующий счет -";
             return <div>
                 {title}
@@ -269,6 +264,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
             objText="title"
             onChange={ e=> this._onFormChangeAccountTo(e) }
             emptyText="нет других счетов с такой валютой"
+            errorText="- счет отсутствует -"
         />
     }
 
@@ -281,7 +277,8 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
 	render() {
         //- редактирование или создание нового
         let isEdit = this.state.editId != null;
-        let accountFrom = this.state.accounts.filter(f => f.id == this.state.formModel.accountFromId)[0];
+        //let accountFrom = this.state.accounts.filter(f => f.id == this.state.formModel.accountFromId)[0];
+        let accountFrom = Collections.first(this.state.accounts, (f)=>f.id == this.state.formModel.accountFromId);
         let currencyName = CurrencyStore.getCurrencyShowNameByAccount(accountFrom);
 
         // TODO: на основе модели валидации из Стора (state), подсвечиваем ошибки
@@ -299,6 +296,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
             <div>
                 <span>счет списания:</span>
                 {this.renderSelectAccountsFrom(isEdit)}
+                <span className="link" onClick={e => this._onAddAccountLink()} >+ добавить счет</span>
             </div>
             <div>
                 <span>счет зачисления:</span>

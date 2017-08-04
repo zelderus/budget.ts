@@ -40,7 +40,7 @@ export class TransactionActive extends BaseActive<ITransactionActiveStates> {
     protected getState() : ITransactionActiveStates {
         return {
             transactions: TransactionStore.getTransactions(),
-            accounts: AccountStore.getAccounts()
+            accounts: AccountStore.getAccountsSorted()
         };
     }
 

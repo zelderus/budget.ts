@@ -12,6 +12,7 @@ import Transactions from './../models/Transactions';
 import Client from './../datas/ClientManager';
 
 
+
 /**
  * Хранилище с транзакциями
  */
@@ -21,6 +22,8 @@ export class TransactionStore extends BaseStore {
     private __transactionFilter: Transactions.TransactionFilters;
 
     private __currentEditTransactionId: string = null;
+    private __currentEditTransactionModel: Transactions.TransactionEntity;
+
     private __formValidator: Transactions.TransactionFormValidation;
 
 
@@ -28,6 +31,7 @@ export class TransactionStore extends BaseStore {
         super();
 
         this.__currentEditTransactionId = null;
+        this.__currentEditTransactionModel = null;
         this.__transactionFilter = new Transactions.TransactionFilters();
         this.__formValidator = new Transactions.TransactionFormValidation();
 
@@ -41,6 +45,7 @@ export class TransactionStore extends BaseStore {
     public getTransactions(): Transactions.TransactionEntity[] { return this.__transactions; }
     public getTransactionById(id: string): Transactions.TransactionEntity { if (id === undefined || id == null || id === "") return null; return this.__transactions.filter(f => f.id == id)[0]; }
     public getCurrentEditTransactionId(): string { return this.__currentEditTransactionId; }
+    public getCurrentEditTransaction(): Transactions.TransactionEntity { return this.__currentEditTransactionModel; }
     public getFormValidator(): Transactions.TransactionFormValidation { return this.__formValidator; }
 
 
@@ -96,6 +101,23 @@ export class TransactionStore extends BaseStore {
         let transactionId: string = isEdit ? <string>obj : null;
         this.__currentEditTransactionId = transactionId;
         this.__formValidator.clearErrors();
+        // модель для редактирования
+        this.__currentEditTransactionModel = null;
+        let transaction = this.getTransactionById(this.__currentEditTransactionId);
+        if (transaction != null) {
+            this.__currentEditTransactionModel = transaction.clone(); // не трогаем реальные данные, работаем с клоном
+            this.__currentEditTransactionModel.costStr = this.__currentEditTransactionModel.cost.toString();
+        }
+        else {
+            this.__currentEditTransactionModel = new Transactions.TransactionEntity();
+            this.__currentEditTransactionModel.id = null;
+            this.__currentEditTransactionModel.accountFromId = null;
+            this.__currentEditTransactionModel.accountToId = null;
+            this.__currentEditTransactionModel.type = Transactions.TransactionTypes.Spend;
+            this.__currentEditTransactionModel.comment = "";
+            this.__currentEditTransactionModel.costStr = "";
+            this.__currentEditTransactionModel.cost = 0;
+        }
     }
     private _onEditTransactionDelete(obj: any): void {
         let self = this;

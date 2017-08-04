@@ -31,6 +31,8 @@ export class CurrencyStore extends BaseStore {
     // Эти данные для их состояний. При изменении которых, Вьюшки обновляются.
     //
     public getCurrecies(): Currencies.CurrencyEntity[] { return this.__currencies; }
+    public getCurreciesSorted(): Currencies.CurrencyEntity[] { return this.__currencies.sort((a,b) => a.order < b.order ? -1 : 1); }
+    public getDefaultCurrencyId(): string { return this.__currencies.length > 0 ? this.getCurreciesSorted()[0].id : null; } //? по умолчанию, возможно будет не первый из списка, а выбранный
 
     public getCurrencyShowNameByAccount(account: Accounts.AccountEntity): string {
         let notCurrencyShow = "-";
