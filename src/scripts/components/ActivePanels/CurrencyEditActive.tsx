@@ -73,7 +73,6 @@ export class CurrencyEditActive extends BaseActive<ICurrencyEditActiveStates> {
     // выбранная транзакция для редактирования
     private _getCurrentFormModel(): any {
         this.__formModel = CurrencyStore.getCurrentEditModel();
-        console.log(this.__formModel);
         return this.__formModel;
     }
 
