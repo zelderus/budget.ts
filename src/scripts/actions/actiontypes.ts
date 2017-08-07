@@ -12,6 +12,8 @@ enum ActionTypes {
   LOADING_STOP      = 31,
   ERROR_FATAL       = 40,
   ERROR_FATAL_CLOSE = 41,
+
+  SURE_SHOW         = 80,
   
   ACCOUNTS_LOAD             = 100,
   ACCOUNTS_EDIT_SHOW        = 110,

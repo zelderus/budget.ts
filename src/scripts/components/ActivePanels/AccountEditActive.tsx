@@ -139,9 +139,11 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
 
     // удаляем транзакцию
     private _onEditDelete(): void {
-        this.getActionCreator().log("Удаление счета..");
-        let model = this.state.formModel; //this.__formModel;
-        this.getActionCreator().editAccountDelete(model);
+        this.getActionCreator().questionShow("Удалить счет?", () => {
+            this.getActionCreator().log("Удаление счета..");
+            let model = this.state.formModel; //this.__formModel;
+            this.getActionCreator().editAccountDelete(model);
+        });
     }
 
 

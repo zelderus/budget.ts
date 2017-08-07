@@ -11,3 +11,4 @@ interface IClientServerParsedModelsResponse<T> { success:boolean, message: strin
 interface IClientObjectResponse { fromJson (j: any): void; toJson(): any; }
 
 
+type SimpleCallback = () => any;

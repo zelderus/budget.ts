@@ -26,6 +26,9 @@ export class AppStore extends BaseStore {
     private _navHistory: number[];
     private _isLoading: boolean;
 
+    private _questionText: string;
+    private _questionOnOk: SimpleCallback;
+
     constructor() {
         super();
 
@@ -50,7 +53,8 @@ export class AppStore extends BaseStore {
     public getNavigationIndex(): number { return this._navIndex; }
     public getTabIndex(): number { return this._tabIndex; }
     public isLoading(): boolean { return this._isLoading; }
-
+    public questionText(): string { return this._questionText; }
+    public questionCallbackOnSuccess(): SimpleCallback { return this._questionOnOk; }
 
 
     //
@@ -182,6 +186,12 @@ export class AppStore extends BaseStore {
     }
 
 
+    private onQuestionPage(obj: any): void {
+        let qdata: [string, SimpleCallback] = obj;
+        this._questionText = qdata[0];
+        this._questionOnOk = qdata[1];
+    }
+
     
 
 
@@ -234,6 +244,10 @@ export class AppStore extends BaseStore {
             case ActionTypes.LOAD_INIT_DATA:
                 this._loadInitDataAsync();
                 return true;
+            case ActionTypes.SURE_SHOW:
+                this.onQuestionPage(obj);
+                break;
+
 
             default:
                 return true;

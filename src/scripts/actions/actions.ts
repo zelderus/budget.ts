@@ -71,6 +71,12 @@ export namespace Actions{
         }
 
 
+        questionShow(msg: string, callBackOnOk?: SimpleCallback) {
+            let qdata: [string, SimpleCallback] = [msg, callBackOnOk];
+            Dispatcher.dispatch(ActionTypes.SURE_SHOW, qdata);
+            this.navigationPage(AppData.Pages.QUESTION);
+        }
+
 
 
         loadCurrecnies(callBack?: StoreFlux.DispatchCallBack) {

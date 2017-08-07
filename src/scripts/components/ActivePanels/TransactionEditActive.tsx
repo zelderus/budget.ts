@@ -146,10 +146,12 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
 
     // удаляем транзакцию
     private _onEditDelete(): void {
-        this.getActionCreator().log("Удаление транзакции..");
-        let model = this.state.formModel; //this.__formModel;
-        let recalculateAccounts = this.state.withRecalc;
-        this.getActionCreator().editTransactionDelete(model, recalculateAccounts);
+        this.getActionCreator().questionShow("Удалить транзакцию?", () => {
+            this.getActionCreator().log("Удаление транзакции..");
+            let model = this.state.formModel; //this.__formModel;
+            let recalculateAccounts = this.state.withRecalc;
+            this.getActionCreator().editTransactionDelete(model, recalculateAccounts);
+        });
     }
 
 
