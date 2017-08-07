@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import View from './../../flux/View';
+import Life from './../../Life';
 //import AppStore from './../../stores/AppStore';
 
 import Accounts from './../../models/Accounts';
@@ -62,7 +63,7 @@ export class AccountLine extends View<IAccountLineProps, IAccountLineStates> {
             <span className="DefaultSpot"></span>
             {this.props.account.title}
             <span className={"Sum " + typeClass}>
-                <span className="Value">{sum}</span><span className="Currency">{currency}</span>
+                <span className="Value">{Life.showMoney(sum)}</span><span className="Currency">{currency}</span>
             </span>
             <span className="Button Edit" onClick={e => this.onItemEditClick(this.props.account.id)} >EDIT</span>
         </div>;

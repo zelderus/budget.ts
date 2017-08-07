@@ -2,10 +2,12 @@
 
 import * as React from "react";
 import View from './../../flux/View';
+import Life from './../../Life';
 import TransactionStore from './../../stores/TransactionStore';
 import AccountStore from './../../stores/AccountStore';
 import CurrencyStore from './../../stores/CurrencyStore';
 import CategoryStore from './../../stores/CategoryStore';
+
 
 import {BaseActive, IBaseActiveProps} from './BaseActive';
 import Maths from './../../utils/Maths';
@@ -307,7 +309,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
             <div>
                 <span>сумма:</span>
                 <input name="costStr" value={this.state.formModel.costStr} onChange={e => this._onFormChangeCost(e)} />
-                <div>= {this.state.formModel.cost} {currencyName}</div>
+                <div>= {Life.showMoney(this.state.formModel.cost)} {currencyName}</div>
             </div>
         </div>
 	}

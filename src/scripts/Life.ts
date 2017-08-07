@@ -30,6 +30,16 @@ namespace Life {
          */
         public getUser(): Authentication.AuthenticationData { return this.__user; }
 
+
+        /**
+         * Вывод стоимости/суммы.
+         * @param money 
+         */
+        public showMoney(money: number): string {
+            // TODO: вывод +-, вывод разделителей тысячных, вывод копеек..
+            return money.toString();
+        }
+
     }
 
 

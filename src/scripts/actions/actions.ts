@@ -5,6 +5,7 @@ import Dispatcher from './../flux/Dispatcher';
 import AppData from './../datas/AppData';
 import StoreFlux from './../flux/store';
 
+import Currencies from './../models/Currencies';
 import Accounts from './../models/Accounts';
 import Transactions from './../models/Transactions';
 
@@ -133,6 +134,14 @@ export namespace Actions{
         }*/
 
 
+        editCurrencyShow(id: string) {
+            Dispatcher.dispatch(ActionTypes.CURRENCIES_EDIT_SHOW, id);
+            this.navigationPage(AppData.Pages.CURRENCY_EDIT);
+        }
+        editCurrencyDo(obj: Currencies.CurrencyEntity) {
+            let model: [Currencies.CurrencyEntity] = [ obj ];
+            Dispatcher.dispatch(ActionTypes.CURRENCIES_EDIT_DO, model);
+        }
 
 
 

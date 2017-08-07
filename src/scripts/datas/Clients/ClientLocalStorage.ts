@@ -145,7 +145,8 @@ namespace Client {
                 let data = d;
                 if (data == null || data.length == 0) data = [];
                 // серверная проверка валидации
-                let validation = new Currencies.CurrencyFormValidation(currency);
+                let validation = new Currencies.CurrencyFormValidation();
+                validation.validate(currency);
                 if (validation.hasError()){
                     callBack(s, m, validation);
                     return;

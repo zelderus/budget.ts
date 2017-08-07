@@ -1,4 +1,7 @@
 
+import FormValidator from './FormValidator';
+
+
 namespace Currencies {
 
 
@@ -57,24 +60,30 @@ namespace Currencies {
 
 
 
+
+
+    /**
+     * Ключи ошибок валидации.
+     */
+    export enum CurrencyFormValidationKeys {
+        Title       = 1,
+        ShowName    = 2
+    }
+
+
     /**
      * Валидация формы валюты.
      */
-    export class CurrencyFormValidation {
-
-        private _hasError: boolean;        
-
-        constructor(entity: CurrencyEntity) {
-            this._hasError = false;
-            // TODO:
-            
+    export class CurrencyFormValidation extends FormValidator.Validator<CurrencyEntity> {
+        constructor() {
+            super();
         }
+        public validate(entity: CurrencyEntity): void {
+            this.clearErrors();
 
-
-        public hasError(): boolean {
-            return this._hasError;
+            this.errStringIsNullOrEmpty(entity.title, CurrencyFormValidationKeys.Title, "введите название");
+            this.errStringIsNullOrEmpty(entity.show, CurrencyFormValidationKeys.ShowName, "укажите строку вывода");
         }
-
     }
 
 

@@ -8,6 +8,8 @@ import {AccountActive} from "./../components/ActivePanels/AccountActive";
 import {TransactionEditActive} from "./../components/ActivePanels/TransactionEditActive";
 import {AccountEditActive} from "./../components/ActivePanels/AccountEditActive";
 import {QuestionActive} from "./../components/ActivePanels/QuestionActive";
+import {CurrencyEditActive} from "./../components/ActivePanels/CurrencyEditActive";
+
 
 // панели управлений
 import {TransactionControls} from "./../components/ControlPanels/TransactionControls";
@@ -15,6 +17,7 @@ import {AccountControls} from "./../components/ControlPanels/AccountControls";
 import {TransactionEditControls} from "./../components/ControlPanels/TransactionEditControls";
 import {AccountEditControls} from "./../components/ControlPanels/AccountEditControls";
 import {QuestionControls} from "./../components/ControlPanels/QuestionControls";
+import {CurrencyEditControls} from "./../components/ControlPanels/CurrencyEditControls";
 
 
 // сторы
@@ -37,6 +40,7 @@ namespace AppData {
         ACCOUNTS            = 2,
 
         QUESTION            = 30,
+        CURRENCY_EDIT       = 40,
 
         ACCOUNT_EDIT        = 55,
         TRANSACTION_EDIT    = 56
@@ -58,6 +62,7 @@ namespace AppData {
             new Navigation.NavigationLine(Pages.ACCOUNTS, "Счета", AccountActive, AccountControls),
 
             new Navigation.NavigationLine(Pages.QUESTION, "Вопрос", QuestionActive, QuestionControls),
+            new Navigation.NavigationLine(Pages.CURRENCY_EDIT, "Редактирование валюты", CurrencyEditActive, CurrencyEditControls),
 
             new Navigation.NavigationLine(Pages.ACCOUNT_EDIT, "Редактирование счета", AccountEditActive, AccountEditControls),
             new Navigation.NavigationLine(Pages.TRANSACTION_EDIT, "Редактирование транзакции", TransactionEditActive, TransactionEditControls)

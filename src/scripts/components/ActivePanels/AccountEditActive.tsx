@@ -152,8 +152,12 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
     //
 
 
-
-
+    private _onEditCurrencyLinkLink(): void {
+        this.getActionCreator().editCurrencyShow(this.state.formModel.currencyId);
+    }
+    private _onAddCurrencyLinkLink(): void {
+        this.getActionCreator().editCurrencyShow(null);
+    }
 
 
     ///
@@ -256,7 +260,8 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
             {this.renderTitle()}
             <div>валюта
                 {this.renderSelectCurrencies(isEdit)}
-                <div>переход редактирование валют</div>
+                <span className="link" onClick={e => this._onEditCurrencyLinkLink()} >редактировать счет</span>
+                <span className="link" onClick={e => this._onAddCurrencyLinkLink()} >+ добавить счет</span>
             </div>
             <div>кредитная карта
                 <input name="iscredit" type="checkbox" checked={this.state.formModel.isCredit} onChange={e => this._onFormChangeIsCredit(e)} />

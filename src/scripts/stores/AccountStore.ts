@@ -126,7 +126,7 @@ export class AccountStore extends BaseStore {
             });
         });
     }
-    private _onEditDo(obj: any): void { // сохранение формы редактирования транзакции
+    private _onEditDo(obj: any): void { // сохранение формы редактирования
         let self = this;
         Actions.loadingStart();
 
