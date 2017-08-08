@@ -91,7 +91,10 @@ namespace Accounts {
      */
     export enum AccountFormValidationKeys {
         Title       = 1,
-        Currency    = 2
+        Currency    = 2,
+        Sum         = 3,
+        CreditLimit = 4
+
     }
 
 
@@ -107,6 +110,8 @@ namespace Accounts {
 
             this.errStringIsNullOrEmpty(entity.title, AccountFormValidationKeys.Title, "введите название");
             this.errIsNull(entity.currencyId, AccountFormValidationKeys.Currency, "укажите валюту");
+
+            // TODO:
         }
     }
 

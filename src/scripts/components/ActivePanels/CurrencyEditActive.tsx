@@ -17,7 +17,11 @@ import Currencies from './../../models/Currencies';
 import Categories from './../../models/Categories';
 import TransactionLine from './../Partials/TransactionLine';
 
+import Header from './../Partials/Page/Header';
+import Col1 from './../Partials/Page/Col1';
 import Select from './../Partials/Controls/Select';
+import Input from './../Partials/Controls/Input';
+
 
 
 //export interface ITransactionEditActiveProps extends IBaseActiveProps { }
@@ -141,13 +145,13 @@ export class CurrencyEditActive extends BaseActive<ICurrencyEditActiveStates> {
 
 
 
-    private _onFormChangeTitle(e: any): void {
-        this.__formModel.title = e.target.value;
+    private _onFormChangeTitle(v: string): void {
+        this.__formModel.title = v;
         this._checkAndUpdateState();
     }
 
-    private _onFormChangeShow(e: any): void {
-        this.__formModel.show = e.target.value;
+    private _onFormChangeShow(v: string): void {
+        this.__formModel.show = v;
         this._checkAndUpdateState();
     }
 
@@ -159,28 +163,6 @@ export class CurrencyEditActive extends BaseActive<ICurrencyEditActiveStates> {
     /// Render
     ///
 
-    renderTitle() {
-        let error = this.state.validator.getError(Currencies.CurrencyFormValidationKeys.Title);
-        let errorRender = error==null ? null : <span>({error.message})</span>
-
-        return <div>название {errorRender}
-            <input name="title" value={this.state.formModel.title} onChange={e => this._onFormChangeTitle(e)} />
-        </div>
-    }
-
-    renderShow() {
-        let error = this.state.validator.getError(Currencies.CurrencyFormValidationKeys.ShowName);
-        let errorRender = error==null ? null : <span>({error.message})</span>
-
-        return <div>строка вывода {errorRender}
-            <input name="show" value={this.state.formModel.show} onChange={e => this._onFormChangeShow(e)} />
-        </div>
-    }
-
-
-
-
-
 
 
 	render() {
@@ -188,8 +170,29 @@ export class CurrencyEditActive extends BaseActive<ICurrencyEditActiveStates> {
         let isEdit = this.state.editId != null;
 
 		return <div className="CurrencyEditActive">
-            {this.renderTitle()}
-            {this.renderShow()}
+            <Header title="Редактирование валюты" />
+            <Col1 
+                obj1={
+                    <Input 
+                        name="title" 
+                        title="Название" 
+                        value={this.state.formModel.title} 
+                        onChange={e => this._onFormChangeTitle(e)} 
+                        error={this.state.validator.getError(Currencies.CurrencyFormValidationKeys.Title)} 
+                    />
+                } 
+            />
+            <Col1 
+                obj1={
+                    <Input 
+                        name="show" 
+                        title="Строка вывода" 
+                        value={this.state.formModel.show} 
+                        onChange={e => this._onFormChangeShow(e)} 
+                        error={this.state.validator.getError(Currencies.CurrencyFormValidationKeys.ShowName)} 
+                    />  
+                } 
+            />
         </div>
 	}
 

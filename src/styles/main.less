@@ -55,6 +55,34 @@
 .link { cursor: pointer; text-decoration: underline; color:#0E346A;}
 .link:hover {color:#042B4F;}
 
+.clear { clear: both;}
+
+
+
+/********************
+*
+*     Layouts
+*
+*******************/
+.Header { text-align: left; margin: 25px 0 20px 10px; font: 400 16px/22px MyriadPro_Cond, sans-serif; text-transform: uppercase; letter-spacing: 6px;}
+
+.PageCol1 { margin: 10px 0 20px 10px;}
+
+.PageCol2 {
+    margin: 10px 0 20px 10px; .clear;
+
+    .PageCol2Left {
+        float:left;
+    }
+    .PageCol2Right {
+        float:left;
+    }
+
+    .Clear { .clear; }
+}
+
+
+
 /********************
 *
 *     системные
@@ -126,7 +154,7 @@
 * основная часть приложения (центральная часть, которая содержит Активные панели)
 *
 **************************************************/
-.ActionPanel { .actionPanelSize; clear: both; overflow: hidden; }
+.ActionPanel { .actionPanelSize; clear: both; overflow: hidden; font-family: Segoe UI;}
 
 
 

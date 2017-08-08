@@ -25,7 +25,7 @@ export class View<P, S> extends React.Component<P, S> {
     }
 
 
-    private _hasAnyStore(): boolean {
+    private __hasAnyStore(): boolean {
         return this.__stores != null && this.__stores != undefined && this.__stores.length > 0;
     }
 
@@ -34,8 +34,8 @@ export class View<P, S> extends React.Component<P, S> {
      * Если наследующая Вьюшка переопределит этот метод, не забыть вызвать этот базовый super.componentDidMount();
      */
     componentDidMount () {
-        if (this._hasAnyStore()) {
-            this.__stores.forEach(store => this.__emmiterTokens.push(store.addChangeListener(this._onChange, this)));
+        if (this.__hasAnyStore()) {
+            this.__stores.forEach(store => this.__emmiterTokens.push(store.addChangeListener(this.__onChange, this)));
         }
     }
     /**
@@ -43,9 +43,9 @@ export class View<P, S> extends React.Component<P, S> {
      * Если наследующая Вьюшка переопределит этот метод, не забыть вызвать этот базовый super.componentWillUnmount();
      */
     componentWillUnmount () {
-        if (this._hasAnyStore()) {
+        if (this.__hasAnyStore()) {
             //
-            this.__stores.forEach(store => store.removeChangeListener(this._onChange));
+            this.__stores.forEach(store => store.removeChangeListener(this.__onChange));
             this.__stores = null;
             //
             if (this.__emmiterTokens != null && this.__emmiterTokens != undefined && this.__emmiterTokens.length > 0) {
@@ -57,7 +57,7 @@ export class View<P, S> extends React.Component<P, S> {
     /**
      * Произошло изменение в зависимых Сторах, обновляем свое состояние.
      */
-    private _onChange () {
+    private __onChange () {
         this.setState(this.getState());
     }
 
@@ -68,7 +68,7 @@ export class View<P, S> extends React.Component<P, S> {
      * Если наследующая вьюшка слушает Сторы, то обязана переопределить этот метод и вернуть необходимый объект.
      */
     protected getState() : S {
-        if (this._hasAnyStore()) {
+        if (this.__hasAnyStore()) {
             let storeNames = this.__stores.map(s => FluxUtils.getClassName(s));
             FluxUtils.logError("Вьюшка '" + this.__myName + "' не переопределила метод 'getState', в котором слушает состояния из Сторов, хотя подписалась на '"+storeNames+"'");
         }

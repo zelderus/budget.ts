@@ -19,6 +19,7 @@ import Currencies from './../../models/Currencies';
 import Categories from './../../models/Categories';
 import TransactionLine from './../Partials/TransactionLine';
 
+import Header from './../Partials/Page/Header';
 import Select from './../Partials/Controls/Select';
 
 
@@ -290,6 +291,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
         // TODO: учесть тип выбранной транзакции (если не перевод, скрыть счет зачисления..)
 
 		return <div className="TransactionEditActive">
+            <Header title="Редактирование транзакции" />
             <div>
                 {this.renderType(isEdit)}
             </div>

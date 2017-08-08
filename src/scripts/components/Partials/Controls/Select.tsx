@@ -91,7 +91,7 @@ export class Select extends View<IControlSelectProps, {}> {
             </select>
         }
 
-        return <select name={this.props.name} onChange={e => this._onFormChangeAccountFrom(e)}>
+        return <select className="InpSelect" name={this.props.name} onChange={e => this._onFormChangeAccountFrom(e)}>
             {/*errorOption*/}
             {defaultOption}
             {options}

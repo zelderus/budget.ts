@@ -17,7 +17,11 @@ import Currencies from './../../models/Currencies';
 import Categories from './../../models/Categories';
 import TransactionLine from './../Partials/TransactionLine';
 
+import Header from './../Partials/Page/Header';
+import Col1 from './../Partials/Page/Col1';
+import Col2 from './../Partials/Page/Col2';
 import Select from './../Partials/Controls/Select';
+import Input from './../Partials/Controls/Input';
 
 
 //export interface ITransactionEditActiveProps extends IBaseActiveProps { }
@@ -169,18 +173,18 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
         this._checkAndUpdateState();
     }
 
-    private _onFormChangeTitle(e: any): void {
-        this.__formModel.title = e.target.value;
+    private _onFormChangeTitle(v: any): void {
+        this.__formModel.title = v; //e.target.value;
         this._checkAndUpdateState();
     }
 
     private _onFormChangeSumm(e: any): void {
-        this.__formModel.sum = Maths.calculateSum(e.target.value);
+        this.__formModel.sum = Maths.calculateSum(e); //.target.value);
         this._checkAndUpdateState();
     }
 
     private _onFormChangeLimit(e: any): void {
-        this.__formModel.creditLimit = Maths.calculateSum(e.target.value);
+        this.__formModel.creditLimit = Maths.calculateSum(e); //.target.value);
         this._checkAndUpdateState();
     }
 
@@ -201,14 +205,6 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
     /// Render
     ///
 
-    renderTitle() {
-        let error = this.state.validator.getError(Accounts.AccountFormValidationKeys.Title);
-        let errorRender = error==null ? null : <span>({error.message})</span>
-
-        return <div>название {errorRender}
-            <input name="title" value={this.state.formModel.title} onChange={e => this._onFormChangeTitle(e)} />
-        </div>
-    }
 
     renderSelectCurrencies(isEdit: boolean) {
         if (isEdit) {
@@ -233,15 +229,6 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
     }
 
 
-    renderCreditLimit(currencyName: string) {
-        if (!this.state.formModel.isCredit) return null;
-        return <div>лимит кредитки
-            <input name="debt" value={this.state.formModel.creditLimit} onChange={e => this._onFormChangeLimit(e)} />
-            <span>{currencyName}</span>
-        </div>
-    }
-
-
 
 
 
@@ -256,21 +243,58 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
 
 
 		return <div className="AccountEditActive">
+            <Header title="Редактирование счета" />
             <div>icon</div>
-            {this.renderTitle()}
+            <Col1 
+                obj1={
+                    <Input 
+                        name="title" 
+                        title="Название" 
+                        value={this.state.formModel.title} 
+                        onChange={e => this._onFormChangeTitle(e)} 
+                        error={this.state.validator.getError(Accounts.AccountFormValidationKeys.Title)} 
+                    />
+                } 
+            />
             <div>валюта
                 {this.renderSelectCurrencies(isEdit)}
-                <span className="link" onClick={e => this._onEditCurrencyLinkLink()} >редактировать счет</span>
-                <span className="link" onClick={e => this._onAddCurrencyLinkLink()} >+ добавить счет</span>
+                <span className="link" onClick={e => this._onEditCurrencyLinkLink()} >редактировать валюту</span>
+                <span className="link" onClick={e => this._onAddCurrencyLinkLink()} >+ добавить валюту</span>
             </div>
             <div>кредитная карта
                 <input name="iscredit" type="checkbox" checked={this.state.formModel.isCredit} onChange={e => this._onFormChangeIsCredit(e)} />
             </div>
-            <div>начальная сумма
-                <input name="summ" value={this.state.formModel.sum} onChange={e => this._onFormChangeSumm(e)} />
-                <span>{currencyName}</span>
-            </div>
-            {this.renderCreditLimit(currencyName)}
+
+            <Col2 
+                obj1={
+                    <Input 
+                        name="summ" 
+                        title="Начальная сумма" 
+                        value={this.state.formModel.sum} 
+                        onChange={e => this._onFormChangeSumm(e)} 
+                        error={this.state.validator.getError(Accounts.AccountFormValidationKeys.Sum)} 
+                    />
+                }
+                obj2={
+                    <span>{currencyName}</span>
+                } 
+            />
+            <Col2 
+                notRender={!this.state.formModel.isCredit}
+                obj1={
+                    <Input 
+                        name="debt" 
+                        title="Лимит кредитки" 
+                        value={this.state.formModel.creditLimit} 
+                        onChange={e => this._onFormChangeLimit(e)} 
+                        error={this.state.validator.getError(Accounts.AccountFormValidationKeys.CreditLimit)} 
+                    />
+                }
+                obj2={
+                    <span>{currencyName}</span>
+                } 
+            />
+
             <div>по умолчанию
                 <input name="isdefault" type="checkbox" checked={this.state.formModel.isDefault} onChange={e => this._onFormChangeIsDefault(e)} />
             </div>
