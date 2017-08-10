@@ -10,6 +10,7 @@ import CategoryStore from './../../stores/CategoryStore';
 import {BaseActive, IBaseActiveProps} from './BaseActive';
 import Maths from './../../utils/Maths';
 import Collections from './../../utils/Collections';
+import IconData from './../../datas/IconData';
 
 import Accounts from './../../models/Accounts';
 import Transactions from './../../models/Transactions';
@@ -22,6 +23,13 @@ import Col1 from './../Partials/Page/Col1';
 import Col2 from './../Partials/Page/Col2';
 import Select from './../Partials/Controls/Select';
 import Input from './../Partials/Controls/Input';
+import Checkbox from './../Partials/Controls/Checkbox';
+import JustText from './../Partials/Controls/JustText';
+import ButtonIcon from './../Partials/Controls/ButtonIcon';
+import {ButtonText, ControlButtonTextStyles} from './../Partials/Controls/ButtonText';
+
+
+
 
 
 //export interface ITransactionEditActiveProps extends IBaseActiveProps { }
@@ -155,7 +163,11 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
     // Helpers
     //
 
-
+    private _onSelectIconLink(): void {
+        //this.getActionCreator().editCurrencyShow(this.state.formModel.currencyId);
+        // TODO:
+        alert("Отображение выбора иконки в методе '_onSelectIconLink' в активке 'AccountEditActive'");
+    }
     private _onEditCurrencyLinkLink(): void {
         this.getActionCreator().editCurrencyShow(this.state.formModel.currencyId);
     }
@@ -209,15 +221,14 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
     renderSelectCurrencies(isEdit: boolean) {
         if (isEdit) {
             let currency = this.state.currencies.filter(f => f.id == this.state.formModel.currencyId)[0];
-            let title = currency != null ? currency.title : "- несуществующая валюта -";
-            return <span>
-                {title}
-            </span>
+            return <JustText 
+                title="Валюта"
+                value={currency != null ? currency.title : "- несуществующая валюта -"}
+            />
         }
-        let error = this.state.validator.getError(Accounts.AccountFormValidationKeys.Currency);
-        // TODO: подсветка ошибки в Select
         return <Select 
             name="currency" 
+            title="Валюта"
             currentKey={this.state.formModel.currencyId}
             list={this.state.currencies}
             objKey="id"
@@ -225,6 +236,7 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
             //default={ {key:"", text:"- без счета -"} }
             onChange={ e=> this._onFormChangeCurrency(e) }
             emptyText="нет валют"
+            error={this.state.validator.getError(Accounts.AccountFormValidationKeys.Currency)}
         />
     }
 
@@ -244,7 +256,11 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
 
 		return <div className="AccountEditActive">
             <Header title="Редактирование счета" />
-            <div>icon</div>
+            <Col1 
+                obj1={
+                    <ButtonIcon iconId={this.state.formModel.iconId} title="иконка счета" onClick={() => this._onSelectIconLink()} />
+                } 
+            />
             <Col1 
                 obj1={
                     <Input 
@@ -256,15 +272,27 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
                     />
                 } 
             />
-            <div>валюта
-                {this.renderSelectCurrencies(isEdit)}
-                <span className="link" onClick={e => this._onEditCurrencyLinkLink()} >редактировать валюту</span>
-                <span className="link" onClick={e => this._onAddCurrencyLinkLink()} >+ добавить валюту</span>
-            </div>
-            <div>кредитная карта
-                <input name="iscredit" type="checkbox" checked={this.state.formModel.isCredit} onChange={e => this._onFormChangeIsCredit(e)} />
-            </div>
-
+            <Col1 
+                obj1={
+                    <Checkbox 
+                        name="isdefault" 
+                        title="По умолчанию" 
+                        checked={this.state.formModel.isDefault}
+                        onChange={e => this._onFormChangeIsDefault(e)} 
+                    />
+                } 
+            />
+            <Col2 
+                obj1={
+                    this.renderSelectCurrencies(isEdit)
+                }
+                obj2={
+                    <div>
+                        <ButtonText title="редактировать валюту" onClick={() => this._onEditCurrencyLinkLink()} showStyle={ControlButtonTextStyles.Normal} />
+                        <ButtonText title="добавить валюту" onClick={() => this._onAddCurrencyLinkLink()} showStyle={ControlButtonTextStyles.Normal} />
+                    </div>
+                }
+            />
             <Col2 
                 obj1={
                     <Input 
@@ -277,6 +305,17 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
                 }
                 obj2={
                     <span>{currencyName}</span>
+                } 
+            />
+
+            <Col1 
+                obj1={
+                    <Checkbox 
+                        name="iscredit" 
+                        title="Кредитная карта" 
+                        checked={this.state.formModel.isCredit}
+                        onChange={e => this._onFormChangeIsCredit(e)} 
+                    />
                 } 
             />
             <Col2 
@@ -294,10 +333,8 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
                     <span>{currencyName}</span>
                 } 
             />
+            
 
-            <div>по умолчанию
-                <input name="isdefault" type="checkbox" checked={this.state.formModel.isDefault} onChange={e => this._onFormChangeIsDefault(e)} />
-            </div>
         </div>
 	}
 

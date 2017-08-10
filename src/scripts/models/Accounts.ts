@@ -1,5 +1,6 @@
 
 import FormValidator from './FormValidator';
+import IconData from './../datas/IconData';
 
 
 namespace Accounts {

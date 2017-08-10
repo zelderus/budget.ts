@@ -239,6 +239,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
         }
         return <Select 
             name="accountFrom" 
+            title="Счет списания"
             currentKey={this.state.formModel.accountFromId}
             list={this.state.accounts}
             objKey="id"
@@ -263,6 +264,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
         if (accountFrom != null) accountsToList = accountsToList.filter(f => f.currencyId == accountFrom.currencyId); // берем счета, только с той же валютой
         return <Select 
             name="accountTo" 
+            title="Счет зачисления"
             currentKey={this.state.formModel.accountToId}
             list={accountsToList}
             objKey="id"

@@ -51,6 +51,7 @@
 
 .middle-vert { margin: auto; position: absolute; top: 0; left: 0; bottom: 0; right: 0; }
 .list-vert {overflow-y: scroll; overflow-x: hidden;}
+.list-vert-sized {.sizeForActivePanel; .list-vert; }
 
 .link { cursor: pointer; text-decoration: underline; color:#0E346A;}
 .link:hover {color:#042B4F;}
@@ -70,15 +71,16 @@
 
 .PageCol2 {
     margin: 10px 0 20px 10px; .clear;
-
-    .PageCol2Left {
-        float:left;
-    }
-    .PageCol2Right {
-        float:left;
-    }
-
+    .PageCol2Left { float:left; }
+    .PageCol2Right { float:left; }
     .Clear { .clear; }
+    table {
+
+        tr {
+
+            td { vertical-align: bottom;}
+        }
+    }
 }
 
 

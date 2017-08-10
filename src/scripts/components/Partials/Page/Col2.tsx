@@ -47,10 +47,22 @@ export class Col2 extends View<IPageCol2Props, {}> {
 
 	render() {
         if (this.props.notRender != null && this.props.notRender == true) return null;
-        return <div className="PageCol2">
+        /*return <div className="PageCol2">
             <div className="PageCol2Left">{this.props.obj1}</div>
             <div className="PageCol2Right">{this.props.obj2}</div>
             <div className="Clear"></div>
+        </div>*/
+        return <div className="PageCol2">
+            <table>
+                <colgroup>
+                    <col />
+                    <col />
+                </colgroup>
+                <tr>
+                    <td>{this.props.obj1}</td>
+                    <td>{this.props.obj2}</td>
+                </tr>
+            </table>
         </div>
 	}
 

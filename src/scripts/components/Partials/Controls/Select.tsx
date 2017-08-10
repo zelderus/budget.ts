@@ -3,6 +3,7 @@
 import * as React from "react";
 import View from './../../../flux/View';
 import Collections from './../../../utils/Collections';
+import FormValidator from './../../../models/FormValidator';
 
 export interface IControlSelectDefault {
     key: string;
@@ -11,6 +12,7 @@ export interface IControlSelectDefault {
 
 export interface IControlSelectProps { 
     name: string;
+    title: string;
     currentKey?: any;
     list: any[];
     objKey: string;
@@ -19,6 +21,7 @@ export interface IControlSelectProps {
     onChange: (val:string)=>void;
     emptyText?: string;
     errorText?: string;
+    error?: FormValidator.ValidatorField;
 }
 
 /*
@@ -71,6 +74,10 @@ export class Select extends View<IControlSelectProps, {}> {
         let keyName = this.props.objKey;
         let textName = this.props.objText;
 
+        let error = this.props.error;
+        let hasError = error!=null;
+        let isRequired = false;
+
         // если выбран элемент, но его нет в списке, и нет пункта поумолчанию - то отображаем пункт с ошибкой
         let isSelectedNotExistsInList = (currId != null && (Collections.contains(list, (e)=>{ return e[keyName] == currId })==false)) ? true : false;
         let errorOption = this.props.default != null || !isSelectedNotExistsInList ? null :
@@ -91,11 +98,21 @@ export class Select extends View<IControlSelectProps, {}> {
             </select>
         }
 
-        return <select className="InpSelect" name={this.props.name} onChange={e => this._onFormChangeAccountFrom(e)}>
-            {/*errorOption*/}
-            {defaultOption}
-            {options}
-        </select>
+
+        return <div className={"InpSelect " + (hasError?"Error ":"") + (isRequired?"Required":"")}>
+            <div className="Title">{this.props.title}</div>
+            <div className="Wrap">
+                <div className="Field">
+                    <select name={this.props.name} onChange={e => this._onFormChangeAccountFrom(e)}>
+                        {/*errorOption*/}
+                        {defaultOption}
+                        {options}
+                    </select>
+                </div>
+                <div className={"Error " + (hasError?"Has":"No")}>{hasError?error.message:""}</div>
+            </div>
+        </div>
+        
 	}
 
 

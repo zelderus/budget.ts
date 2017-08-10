@@ -1,7 +1,7 @@
 @import "main.less";
 
 
-input, textarea {
+input, textarea, select {
     border: none;
     border-radius: 2px;
     background-color: #fafafa;
@@ -15,7 +15,7 @@ input, textarea {
 input {
     height: 26px;
 }
-input:focus, button:focus, textarea:focus {
+input:focus, button:focus, textarea:focus, select:focus {
     outline: none;
 }
 input[type='checkbox'] {
@@ -26,6 +26,73 @@ input[type='checkbox'] {
     position: absolute;
     z-index: 2;
 }
+
+
+
+
+
+
+/*************************************************
+*
+* ButtonIcon
+*
+**************************************************/
+
+.InpButtonIcon {
+
+}
+
+
+/*************************************************
+*
+* ButtonIcon
+*
+**************************************************/
+
+.InpButtonText {float: left; margin: 0 6px; padding: 4px;text-align: center; cursor: pointer; color: #2B6499; border: 1px solid #666;}
+.InpButtonText:hover {color: #042B4F;}
+
+.InpButtonText .ButtonStyle_1 { border: 1px solid #333; }
+.InpButtonText .ButtonStyle_2 { border: 1px solid #00AD37; color:#00AD37; }
+.InpButtonText .ButtonStyle_3 { border: 1px solid #BE0043; color:#BE0043; }
+
+
+
+
+
+
+/*************************************************
+*
+* Text
+*
+**************************************************/
+
+.InpJustText {
+    position: relative;
+
+    .Title {    
+        font: 8px/10px 'PT Sans', sans-serif;
+        padding-bottom: 4px;
+        letter-spacing: 0.05em;
+        color: #2f2f2f;
+        text-transform: uppercase;
+        position: relative;
+        display: block;
+        width: 100%;
+        min-height: 10px;
+        vertical-align: top;
+    }
+
+    .Wrap {
+
+        .Field {
+            vertical-align: middle;
+
+            input { width: 97%; }
+        }
+    }
+}
+
 
 
 /*************************************************
@@ -98,10 +165,99 @@ input[type='checkbox'] {
 
 /*************************************************
 *
+* Checkbox
+*
+**************************************************/
+.InpCheckbox {
+    position: relative;
+
+    .Title {    
+        font: 8px/10px 'PT Sans', sans-serif;
+        padding-bottom: 4px;
+        letter-spacing: 0.05em;
+        color: #2f2f2f;
+        text-transform: uppercase;
+        position: relative;
+        display: block;
+        width: 100%;
+        min-height: 10px;
+        vertical-align: top;
+    }
+
+    .Wrap {
+
+        .Field {
+            vertical-align: middle;
+
+            input { position: relative;  }
+        }
+    }
+}
+
+
+/*************************************************
+*
 * Select
 *
 **************************************************/
+
 .InpSelect {
     position: relative;
 
+    .Title {    
+        font: 8px/10px 'PT Sans', sans-serif;
+        padding-bottom: 4px;
+        letter-spacing: 0.05em;
+        color: #2f2f2f;
+        text-transform: uppercase;
+        position: relative;
+        display: block;
+        width: 100%;
+        min-height: 10px;
+        vertical-align: top;
+    }
+
+    .Wrap {
+
+        .Field {
+            vertical-align: middle;
+
+            select { width: 97%; padding: 4px 8px;  min-width: 150px;}
+        }
+
+        .Error { 
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0; margin: -3px 0 0 -1px;  padding: 0 5px;  border-radius: 2px; background-color: #ff4425;  color: #fff; 
+            font: 11px/15px 'PT Sans', sans-serif;  z-index: 20;
+        }
+        .Error.Has { display: block;}
+        .Error.No { display: none;}
+
+    }
+    
+}
+.InpSelect.Required {
+    .Title:after {
+        content: '*';
+        display: inline-block;
+        width: 9px;
+        text-align: right;
+        margin-right: -9px;
+        font-size: 15px;
+        color: #f0492f;
+        vertical-align: bottom;
+    }
+}
+.InpSelect.Error {
+    .Wrap {
+        .Field {
+            select {
+                box-shadow: 0 0 0 1px #ff4425;
+                color: #000;
+                background-color: #fafafa;
+            }
+        }
+    }
 }

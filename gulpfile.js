@@ -15,7 +15,8 @@ var path = {
         //'src/styles/**/*.less',
         'src/styles/main.less',
         'src/styles/actives.less',
-        'src/styles/inputs.less'
+        'src/styles/inputs.less',
+        'src/styles/icons.less'
     ],
     destCssFile: 'main.css',
     scriptsForWatch: [
