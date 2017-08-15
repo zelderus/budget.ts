@@ -67,10 +67,11 @@
 *******************/
 .Header { text-align: left; margin: 25px 0 20px 10px; font: 400 16px/22px MyriadPro_Cond, sans-serif; text-transform: uppercase; letter-spacing: 6px;}
 
-.PageCol1 { margin: 10px 0 20px 10px;}
+.PageCol1 { padding: 10px 0 20px 10px; margin: 0; border-top: 1px dashed #eee;}
+.PageCol1.Odd { background-color: #F5F9FB;}
 
 .PageCol2 {
-    margin: 10px 0 20px 10px; .clear;
+    padding: 10px 0 20px 10px; .clear; margin: 0; border-top: 1px dashed #eee;
     .PageCol2Left { float:left; }
     .PageCol2Right { float:left; }
     .Clear { .clear; }
@@ -82,7 +83,7 @@
         }
     }
 }
-
+.PageCol2.Odd {background-color: #F5F9FB;}
 
 
 /********************

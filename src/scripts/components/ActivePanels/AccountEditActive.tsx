@@ -250,18 +250,20 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
         //- редактирование или создание нового
         let isEdit = this.state.editId != null;
         let currencyName = CurrencyStore.getCurrencyShowNameByAccount(this.state.formModel);
-
+        let rowIndex = 0;
         // TODO: на основе модели валидации из Стора (state), подсвечиваем ошибки
 
 
 		return <div className="AccountEditActive">
             <Header title="Редактирование счета" />
             <Col1 
+                rowIndex={rowIndex++}
                 obj1={
                     <ButtonIcon iconId={this.state.formModel.iconId} title="иконка счета" onClick={() => this._onSelectIconLink()} />
                 } 
             />
             <Col1 
+                rowIndex={rowIndex++}
                 obj1={
                     <Input 
                         name="title" 
@@ -273,6 +275,7 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
                 } 
             />
             <Col1 
+                rowIndex={rowIndex++}
                 obj1={
                     <Checkbox 
                         name="isdefault" 
@@ -283,6 +286,7 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
                 } 
             />
             <Col2 
+                rowIndex={rowIndex++}
                 obj1={
                     this.renderSelectCurrencies(isEdit)
                 }
@@ -294,6 +298,7 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
                 }
             />
             <Col2 
+                rowIndex={rowIndex++}
                 obj1={
                     <Input 
                         name="summ" 
@@ -307,8 +312,8 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
                     <span>{currencyName}</span>
                 } 
             />
-
             <Col1 
+                rowIndex={rowIndex++}
                 obj1={
                     <Checkbox 
                         name="iscredit" 
@@ -320,6 +325,7 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
             />
             <Col2 
                 notRender={!this.state.formModel.isCredit}
+                rowIndex={rowIndex++}
                 obj1={
                     <Input 
                         name="debt" 

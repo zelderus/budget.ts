@@ -8,11 +8,13 @@ import Collections from './../../../utils/Collections';
 
 export interface IPageCol1Props { 
     notRender?: boolean;
+    rowIndex?: number;  // номер ряда, для отделения по стилю четные от нечетных
     obj1: JSX.Element
 }
 
 /*
         return <Col1 
+            rowIndex={index++}
             obj1={<Input.../>}
         />
 */
@@ -44,7 +46,9 @@ export class Col1 extends View<IPageCol1Props, {}> {
 
 	render() {
         if (this.props.notRender != null && this.props.notRender == true) return null;
-        return <div className="PageCol1">
+        let rowStyle = this.props.rowIndex != null && this.props.rowIndex % 2 == 0 ? "Odd" : "";
+
+        return <div className={"PageCol1 " + rowStyle}>
             {this.props.obj1}
         </div>
 	}
