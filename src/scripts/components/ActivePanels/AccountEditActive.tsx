@@ -134,10 +134,12 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
         return hasError;
     }
     private _checkAndUpdateState(): void {
-        this._validateForm(); // ?+ а надо ли на каждом чихе проверять форму???
+        this._validateForm();
         this.setState({formModel: this.__formModel});
     }
-
+    private _updateState(): void {
+        this.setState({formModel: this.__formModel});
+    }
 
     // сохраняем форму
     private _onEditSave(): void {
@@ -182,32 +184,38 @@ export class AccountEditActive extends BaseActive<IAccountEditActiveStates> {
 
     private _onFormChangeCurrency(val: string): void {
         this.__formModel.currencyId = val;
-        this._checkAndUpdateState();
+        this.state.validator.validateCurrency(this.__formModel, true);
+        this._updateState();
     }
 
     private _onFormChangeTitle(v: any): void {
         this.__formModel.title = v; //e.target.value;
-        this._checkAndUpdateState();
+        this.state.validator.validateTitle(this.__formModel, true);
+        this._updateState();
     }
 
     private _onFormChangeSumm(e: any): void {
         this.__formModel.sum = Maths.calculateSum(e); //.target.value);
-        this._checkAndUpdateState();
+        //this._checkAndUpdateState();
+        this._updateState();
     }
 
     private _onFormChangeLimit(e: any): void {
         this.__formModel.creditLimit = Maths.calculateSum(e); //.target.value);
-        this._checkAndUpdateState();
+        //this._checkAndUpdateState();
+        this._updateState();
     }
 
     private _onFormChangeIsCredit(e: any): void {
         this.__formModel.isCredit = !this.__formModel.isCredit;
-        this._checkAndUpdateState();
+        //this._checkAndUpdateState();
+        this._updateState();
     }
 
     private _onFormChangeIsDefault(e: any): void {
         this.__formModel.isDefault = !this.__formModel.isDefault;
-        this._checkAndUpdateState();
+        //this._checkAndUpdateState();
+        this._updateState();
     }
  
 

@@ -50,6 +50,18 @@ namespace FormValidator {
             else exist.message = message;
         }
         /**
+         * Удаление ошибки.
+         * @param key 
+         */
+        protected deleteError(key: number): void {
+            let exist = this.getError(key);
+            if (exist == null) return;
+            var index = this.__errors.indexOf(exist, 0);
+            if (index > -1) {
+                this.__errors.splice(index, 1);
+            }
+        }
+        /**
          * Проверка формы валидации.
          * Этот метод необходимо переопределить.
          * @param entity 

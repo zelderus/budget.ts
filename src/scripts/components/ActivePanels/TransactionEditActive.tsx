@@ -20,8 +20,14 @@ import Categories from './../../models/Categories';
 import TransactionLine from './../Partials/TransactionLine';
 
 import Header from './../Partials/Page/Header';
+import Col1 from './../Partials/Page/Col1';
+import Col2 from './../Partials/Page/Col2';
 import Select from './../Partials/Controls/Select';
-
+import Input from './../Partials/Controls/Input';
+import Checkbox from './../Partials/Controls/Checkbox';
+import JustText from './../Partials/Controls/JustText';
+import ButtonIcon from './../Partials/Controls/ButtonIcon';
+import {ButtonText, ControlButtonTextStyles} from './../Partials/Controls/ButtonText';
 
 //export interface ITransactionEditActiveProps extends IBaseActiveProps { }
 export interface ITransactionEditActiveStates { 
@@ -251,7 +257,7 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
         />
     }
     renderSelectAccountsTo(isEdit: boolean, accountFrom: Accounts.AccountEntity) {
-        if (this.state.formModel.type != Transactions.TransactionTypes.Transfer) return <div>-</div>;
+        if (this.state.formModel.type != Transactions.TransactionTypes.Transfer) return null;//<div>-</div>;
         if (isEdit) {
             //let currentAccountTo = this.state.accounts.filter(f => f.id == this.state.formModel.accountToId)[0];
             let currentAccountTo = Collections.first(this.state.accounts, (f)=>f.id == this.state.formModel.accountToId);
@@ -287,34 +293,50 @@ export class TransactionEditActive extends BaseActive<ITransactionEditActiveStat
         //let accountFrom = this.state.accounts.filter(f => f.id == this.state.formModel.accountFromId)[0];
         let accountFrom = Collections.first(this.state.accounts, (f)=>f.id == this.state.formModel.accountFromId);
         let currencyName = CurrencyStore.getCurrencyShowNameByAccount(accountFrom);
+        let rowIndex = 0;
 
         // TODO: на основе модели валидации из Стора (state), подсвечиваем ошибки
 
-        // TODO: учесть тип выбранной транзакции (если не перевод, скрыть счет зачисления..)
 
 		return <div className="TransactionEditActive">
             <Header title="Редактирование транзакции" />
             <div>
                 {this.renderType(isEdit)}
             </div>
-            <div>
-                <span>перерасчитать счета:</span>
-                <input name="recalc" type="checkbox" value="Recalc" checked={this.state.withRecalc} onChange={e => this._onFormChangeRecalc(e)} />
-            </div>
-            <div>
-                <span>счет списания:</span>
-                {this.renderSelectAccountsFrom(isEdit)}
-                <span className="link" onClick={e => this._onAddAccountLink()} >+ добавить счет</span>
-            </div>
-            <div>
-                <span>счет зачисления:</span>
-                {this.renderSelectAccountsTo(isEdit, accountFrom)}
-            </div>
-            <div>
-                <span>сумма:</span>
-                <input name="costStr" value={this.state.formModel.costStr} onChange={e => this._onFormChangeCost(e)} />
-                <div>= {Life.showMoney(this.state.formModel.cost)} {currencyName}</div>
-            </div>
+            <Col1 
+                rowIndex={rowIndex++}
+                obj1={
+                    <Checkbox 
+                        name="recalc" 
+                        title="Перерасчитать счета" 
+                        checked={this.state.withRecalc}
+                        onChange={e => this._onFormChangeRecalc(e)} 
+                    />
+                } 
+            />
+            <Col2 
+                rowIndex={rowIndex++}
+                obj1={this.renderSelectAccountsFrom(isEdit)}
+                obj2={
+                    <span className="link" onClick={e => this._onAddAccountLink()} >+ добавить счет</span>
+                }
+            />
+            <Col2 
+                rowIndex={rowIndex++}
+                notRender={this.state.formModel.type != Transactions.TransactionTypes.Transfer}
+                obj1={this.renderSelectAccountsTo(isEdit, accountFrom)} 
+                obj2={ <div></div>}
+            />
+            <Col2 
+                rowIndex={rowIndex++}
+                obj1={
+                    <input name="costStr" value={this.state.formModel.costStr} onChange={e => this._onFormChangeCost(e)} />
+                }
+                obj2={
+                    <div>= {Life.showMoney(this.state.formModel.cost)} {currencyName}</div>
+                }
+            />
+
         </div>
 	}
 

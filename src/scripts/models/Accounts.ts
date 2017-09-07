@@ -109,11 +109,20 @@ namespace Accounts {
         public validate(entity: AccountEntity): void {
             this.clearErrors();
 
-            this.errStringIsNullOrEmpty(entity.title, AccountFormValidationKeys.Title, "введите название");
-            this.errIsNull(entity.currencyId, AccountFormValidationKeys.Currency, "укажите валюту");
-
+            this.validateTitle(entity);
+            this.validateCurrency(entity);
             // TODO:
         }
+
+        public validateTitle(entity: AccountEntity, withDeleteError: boolean = false): void {
+            if (withDeleteError) this.deleteError(AccountFormValidationKeys.Title);
+            this.errStringIsNullOrEmpty(entity.title, AccountFormValidationKeys.Title, "введите название");
+        }
+        public validateCurrency(entity: AccountEntity, withDeleteError: boolean = false): void {
+            if (withDeleteError) this.deleteError(AccountFormValidationKeys.Currency);
+            this.errIsNull(entity.currencyId, AccountFormValidationKeys.Currency, "укажите валюту");
+        }
+
     }
 
 
